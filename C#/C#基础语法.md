@@ -101,12 +101,50 @@ class Calculator
 | float        | ±1.5e-45 to ± 3.4e38                        | 4    |
 | double       | ±5.0e-324 to 1.7e308                        | 8    |
 
+#### 12.C#五大数据类型
 
-2
+类Classes，如Windows，Form，Console
 
+结构体Structures：如Int32，Int64，single,double
 
+枚举Enumerations：如HorizontalAlignment Visibility
 
+接口Interfaces
 
+委托Delegates
+
+#### 13.C#类型的派生谱系
+
+![image-20230925111816132](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925111816132.png)
+
+#### 14.内存存储（补码反码）
+
+```
+internal class Program
+{
+    static void Main(string[] args)
+    {
+        short s;
+        s = -1000;
+        string str = Convert.ToString(s, 2);
+        Console.WriteLine(str);
+    }
+}
+```
+
+注意：存入时为反码，补码，注意高高低低原则，高位存高处
+
+![image-20230925125247350](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925125247350.png)
+
+![image-20230925125315698](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925125315698.png)
+
+#### 15.引用类型
+
+首先占用四个字节
+
+创建实例后将实例的首个内存地址编号存入四个字节中
+
+创建实例按照内部要求请求地址
 
 
 
@@ -124,4 +162,4 @@ ctrl+alt+L 打开资源管理器
 
 4.浮点型到底是什么，为什么有浮点型
 
-5.
+5.内存泄漏
