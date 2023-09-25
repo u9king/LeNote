@@ -4,6 +4,8 @@
 
 Unity下载地址：https://www.unity.com
 
+Unity开发文档：file:///D:/Unity/2022.3.9f1/Editor/Data/Documentation/en/Manual/index.html
+
 UnityHub应用程序资源：https://docs.unity3d.com/Manual/index.html
 
 Unity窗口功能：https://docs.unity3d.com/Manual/UsingTheEditor.html
@@ -20,7 +22,72 @@ C#技术文档:https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/
 
 #### 第2章 编程的构成要素
 
+Unity类
+
+```
+public class LearningCurve : MonoBehaviour
+其中MonoBehaviour表示该类可以附加到Unity场景中的GameObject上。在C#中，类可以独立存在。
+```
+
+C#代码注释
+
+```
+鼠标悬停显示
+在代码前输入：///+Enter
+/// <summary>
+/// 
+/// </summary>
+```
+
+来自MonoBehavior的助力
+
+```
+C#脚本是类，那么Unity又是如何知道该把哪些脚本视为组件而哪些不呢？
+答案很简单，LearningCurve（以及在Unity中创建的任何脚本）都继承自名称为MonoBehavior的另一个类。这便告诉Unity，可以将这个C#类转换为组件。
+```
+
+
+
 #### 第3章 深入研究变量、类型和方法
+
+大括号用法
+
+```
+传统C#是让每个大括号单独占一行
+public void MethodName()
+{
+    
+}
+而Unity习惯将第一个大括号与声明处于同一行
+public void MethodName(){
+    
+}
+```
+
+任何未标记为public的变量的访问修饰符将默认为private，并且不会显示在Unity编辑器的Inspector面板中。
+
+C#访问修饰符accessModifier
+
+```
+public:公有变量,所有人都能用
+private：私有变量，所属类内用
+protected:受保护变量，所属及派生类内用
+internal:内部变量，程序集中使用
+```
+
+创建内插字符串
+
+```
+可以通过$头，将变量插入文本中，同时将变量用花括号括起来
+void Start()
+{
+    Debug.Log($"A string can have variables like {firstName} inserted directly!");
+}
+```
+
+类型转换
+
+Convert类可以处理更多复杂的转换
 
 #### 第4章 控制流和集合类型
 
@@ -41,3 +108,16 @@ C#技术文档:https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/
 #### 第12章 探索泛型、委托等
 
 #### 第13章 旅程继续
+
+
+
+#### 课后作业
+
+1.翻译MonoBehavior类的解释文档https://docs.unity3d.com/Manual/30_search.html?q=MonoBehavior
+
+2.什么叫C#的访问修饰符
+
+```
+accessModifier dataType uniqueName = value;
+```
+

@@ -37,9 +37,12 @@ namespace ConsoleHelloWorld
 
 #### 7.标识符
 
-#### 8.函数编写
+#### 8.方法（函数）
+
+函数名称的首字母大写，取名用动词短语
 
 ```
+//方法头
 class Calculator
 {
 	pulic int Add(int a, int b)
@@ -145,6 +148,14 @@ internal class Program
 创建实例后将实例的首个内存地址编号存入四个字节中
 
 创建实例按照内部要求请求地址
+
+#### 16.自顶向下算法
+
+面向过程算法
+
+#### 17.
+
+
 
 
 
