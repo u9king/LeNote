@@ -91,6 +91,63 @@ Convert类可以处理更多复杂的转换
 
 #### 第4章 控制流和集合类型
 
+数组创建
+
+```
+int[] topPlayerScores = new int[3]{713,549,984};
+```
+
+列表
+
+```
+List<string>questPartyMembers = new List<string>()
+{"Grim the Barbarian", "Merlin the Wise", "Sterling the Knight"};
+//尾部插入
+questPartyMembers.Add("Carven the Necromancer");
+//指定序号插入
+questPartyMembers.Insert(1,"Tanis the Thief");
+//删除指定位置
+questPartyMembers.RemoveAt(0);
+//删除指定名称
+questPartyMembers.Remove("Grim the Barbarian");
+```
+
+字典
+
+```
+Dictionary<string, int>itemInventory = new Dictionary<string,int>()
+{
+	{“Potion”,5},
+	{“Antidote”,7},
+	{“Aspirin”,1},
+}
+```
+
+迭代语句
+
+```
+//for语句
+for(int i = 0; i < questPartyMembers.Count;i++)
+{
+	Debug.LogFormat("Index:{0} - {1}", i, questPartyMembers[i]);
+}
+
+//foreach语句
+foreach(string partyMember in questPartyMembers)
+{
+	Debug.LogFormat("{0} - Here!",partyMember);
+}
+
+//while语句
+while(playerLives > 0)
+{
+	Debug.Log("Still alive!");
+	playerLives--;
+}
+```
+
+
+
 #### 第5章 类、结构体和OOP
 
 #### 第6章 亲手实践Unity
@@ -113,11 +170,5 @@ Convert类可以处理更多复杂的转换
 
 #### 课后作业
 
-1.翻译MonoBehavior类的解释文档https://docs.unity3d.com/Manual/30_search.html?q=MonoBehavior
-
-2.什么叫C#的访问修饰符
-
-```
-accessModifier dataType uniqueName = value;
-```
+1.翻译MonoBehavior类的解释文档https://docs.unity3d.com/ScriptReference/MonoBehaviour.html
 
