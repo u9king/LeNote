@@ -53,58 +53,33 @@ c.Profiler工具（Profiler Tool）：
 #### 待解决问题
 
 1. 都用过Unity哪些模块？
-
 2. 如何查看游戏性能
-
 3. NGUI UGUI渲染顺序
-
 4. UGUI消息传递机制
-
 5. UGUI的优化
-
 6. Unity的协程
-
 7. Unity协程怎么用， 协程的源码怎么写的？
-
 8. Unity3D如何实现跨平台的
-
 9. Unity的GC原理
-
 10. Unity协程底层实现
-
 11. Unity碰撞检测原理
-
 12. Unity模型资源，模型动画
-
 13. 动画状态机驱动的是什么
-
 14. Unity如何改变一个物体的位置旋转？
-
 15. Unity本地坐标和世界坐标
-
 16. Unity调整旋转需要传什么参数
-
 17. Unity3d的生命周期
-
 18. unity脚本生命周期
-
 19. Unity 脚本函数生命周期
-
 20. UI渲染顺序
-
 21. 如何在UI上显示模型
-
 22. UI上粒子效果如何实现
-
 23. Unity函数运行顺序
-
 24. Update()和 FixedUpdate() 的区别
-
 25. unity的垃圾回收
-
 26. 预设(prefab)的好处
-
 27. 碰撞体和触发器区别与联系
+28. Unity协程
 
 **图形学**
 

@@ -273,6 +273,181 @@ public class AsyncTest : MonoBehaviour
 }
 ```
 
+#### 11.Transform组件
+
+```
+public class TransformTest : MonoBehaviour
+{
+    void Start()
+    {
+        //获取世界位置
+        Debug.Log(transform.position);
+        //获取相对位置
+        Debug.Log(transform.localPosition);
+        //获取旋转
+        Debug.Log(transform.rotation);
+        Debug.Log(transform.localRotation);
+        Debug.Log(transform.eulerAngles);
+        Debug.Log(transform.localEulerAngles);
+        //缩放
+        Debug.Log(transform.localScale);
+        //向量
+        Debug.Log(transform.forward);
+        Debug.Log(transform.right);
+        Debug.Log(transform.up);
+
+        //父子关系
+        //获取父物体
+        //transform.parent.gameObject
+        //子物体个数
+        Debug.Log(transform.childCount);
+        //解除与子物体的父子关系
+        transform.DetachChildren();
+        //获取子物体
+        Transform trans = transform.Find("Child");
+        trans = transform.GetChild(0);
+        //判断一个物体是不是另外一个物体的子物体
+        bool res = trans.IsChildOf(transform);
+        //设置为父物体
+        trans.SetParent(transform);
+    }
+
+    void Update()
+    {
+        //看向0000
+        transform.LookAt(Vector3.zero);
+        //旋转
+        transform.Rotate(Vector3.up,1);
+        //绕某个物体旋转
+        transform.RotateAround(Vector3.zero, Vector3.up, 2);
+        //移动
+        transform.Translate(Vector3.forward * 0.1f);
+    }
+}
+```
+
+#### 12.键鼠操作
+
+```
+void Update()
+{
+    //鼠标点击
+    //按下鼠标 0左键 1右键 2滚轮
+    if (Input.GetMouseButtonDown(0)) {
+        Debug.Log("按下了鼠标左键");
+    }
+    //持续按下鼠标
+    if (Input.GetMouseButton(0))
+    {
+        Debug.Log("持续按下鼠标左键");
+    }
+    //抬起鼠标
+    if (Input.GetMouseButtonUp(0)) {
+        Debug.Log("抬起了鼠标左键");
+    }
+    //按下键盘按键
+    if (Input.GetKeyDown(KeyCode.A))
+    {
+        Debug.Log("按下了A");
+    }
+    //持续按下按键
+    if (Input.GetKey(KeyCode.A))
+    {
+        Debug.Log("持续按下了A");
+    }
+    //抬起键盘按键
+    if (Input.GetKeyUp("a"))
+    {
+        Debug.Log("松开了A");
+    }
+}
+```
+
+#### 13.虚拟轴/虚拟按键
+
+```
+void Update()
+{
+    //获取水平轴
+    //float horizontal = Input.GetAxis("Horizontal");
+    //float vertical = Input.GetAxis("Vertical");
+    //Debug.Log(horizontal + "---" + vertical);
+
+    //虚拟按键
+    if (Input.GetButtonDown("Jump"))
+    {
+        Debug.Log("空格");
+    }
+}
+```
+
+#### 14.触摸操作
+
+```
+public class TouchTest : MonoBehaviour
+{
+    void Start()
+    {
+        //开启多点触摸
+        Input.multiTouchEnabled = true;
+    }
+    void Update()
+    {
+        //判断单点触摸
+        if (Input.touchCount == 1) {
+            //触摸对象
+            Touch touch = Input.touches[0];
+            //触摸位置
+            Debug.Log(touch.position);
+            //触摸阶段  alt+enter补齐代码
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    break;
+                case TouchPhase.Moved:
+                    break;
+                case TouchPhase.Stationary:
+                    break;
+                case TouchPhase.Ended:
+                    break;
+                case TouchPhase.Canceled:
+                    break;
+            }
+        }
+        //判断多点触摸
+        if (Input.touchCount == 2)
+        {
+            Touch touch = Input.touches[0];
+            Touch touch1 = Input.touches[1];
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -282,3 +457,5 @@ public class AsyncTest : MonoBehaviour
 1.欧拉角
 
 2.向量的插值是什么意思？比例计算
+
+3.通过旋转做个太阳系P29
