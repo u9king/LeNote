@@ -153,9 +153,37 @@ internal class Program
 
 面向过程算法
 
-#### 17.
+#### 17.构造器
 
+快捷键:ctor+tab+tab
 
+```
+namespace ConstructorExample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Student stu = new Student();
+            Console.WriteLine(stu.ID);
+        }
+    }
+    class Student
+    {
+        public Student()
+        {
+            this.ID = 1;
+            this.Name = "No name";
+        }
+        public int ID;
+        public string Name;
+    }
+}
+```
+
+#### 18.方法重载Overload
+
+方法签名：由方法的名称，类型参数的个数和它的每一个形参（从左到右）的类型和种类（值、引用或输出）组成。方法签名不包括返回类型。
 
 
 
@@ -174,3 +202,7 @@ ctrl+alt+L 打开资源管理器
 4.浮点型到底是什么，为什么有浮点型
 
 5.内存泄漏
+
+6.函数重载
+
+7.类型形参
