@@ -146,9 +146,33 @@ while(playerLives > 0)
 }
 ```
 
-
-
 #### 第5章 类、结构体和OOP
+
+class是引用类型，结构体是值类型
+
+```
+区别在hero2 = hero时
+修改hero2.name
+当类型为class时，hero也对应修改
+当类型为struct时,hero不修改
+```
+
+class对象都为引用类型，所以要有重置方法来还原
+
+面向对象多态
+
+```
+父元素  virtual标记为虚拟方法
+public virtual void PrintStatsInfo() 
+{
+    Debug.LogFormat("Hero :{0} - {1} EXP", name, exp);
+}
+子元素  派生类可以通过override进行改写
+public override void PrintStatsInfo()
+{
+    Debug.LogFormat("Hail :{0} - take up your {1}", name, weapon.name);
+}
+```
 
 #### 第6章 亲手实践Unity
 

@@ -424,19 +424,110 @@ public class TouchTest : MonoBehaviour
 }
 ```
 
+#### 15.灯光
 
+聚焦，定向，点，区域烘焙
 
+#### 16.摄像机
 
+透视摄像机：近大远小
 
+正交摄像机：
 
+#### 17.角色移动
 
+```
+public class PlayerControl : MonoBehaviour
+{
+    private CharacterController player;
+    void Start()
+    {
+        player = GetComponent<CharacterController>();
+    }
+    void Update()
+    {
+        //水平轴
+        float horizontal = Input.GetAxis("Horizontal");
+        //垂直轴
+        float vertical = Input.GetAxis("Vertical");
+        //创建成一个方向向量
+        Vector3 dir = new Vector3(horizontal,0,vertical);
+        //Debug.DrawRay(transform.position,dir,Color.red);
+        //朝向该方向移动
+        player.SimpleMove(dir*2);
+    }
+}
 
+```
 
+#### 18.碰撞
 
+```
+public class FireTest : MonoBehaviour
+{
+    // 创建一个爆炸预设体
+    public GameObject Prefab;
+    void Start()
+    {
+        
+    }
+    void Update()
+    {
+        
+    }
+    //监听发生碰撞
+    private void OnCollisionEnter(Collision collision)
+    {
+        //创建一个爆炸物体
+        Instantiate(Prefab,transform.position,Quaternion.identity);
+        //销毁自身
+        Destroy(gameObject);
+        //获取碰撞到的物体
+        Debug.Log(collision.gameObject.name);
+    }
+    //持续碰撞中
+    private void OnCollisionStay(Collision collision)
+    {
+        
+    }
+    //结束碰撞
+    private void OnCollisionExit(Collision collision)
+    {
+        
+    }
+}
+```
 
+#### 19.触发
 
+```
+public class CubeControl : MonoBehaviour
+{
+    void Start()
+    {        
+    }
+    void Update()
+    {        
+    }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        GameObject door = GameObject.Find("Door");
+        if (door != null)
+        {
+            door.SetActive(false);
+        }
+    }
 
+    private void OnTriggerStay(Collider other)
+    {       
+    }
+
+    private void OnTriggerExit(Collider other)
+    {        
+    }
+}
+```
 
 
 
@@ -459,3 +550,5 @@ public class TouchTest : MonoBehaviour
 2.向量的插值是什么意思？比例计算
 
 3.通过旋转做个太阳系P29
+
+4.Gizmos
