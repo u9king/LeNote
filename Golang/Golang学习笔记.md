@@ -16,3 +16,17 @@
 a := []int{x,y,z}
 ```
 
+#### 3.地址
+
+```
+func changeValue(p *int){  //指针类型
+	*p = 10  //位置赋值
+}
+
+func main(){
+	var a int = 1
+	changeValue(&a)      //取地址
+	fmt.Println("a = ",a)
+}
+```
+
