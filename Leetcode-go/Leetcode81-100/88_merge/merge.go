@@ -7,9 +7,25 @@ package main
 //伪代码
 //从大数组的最后一个位置开始，
 //依次选取两个数组中大的数，从第一个数组的尾巴开始往头放
-//疑问：如何返回，是否需要用到指针
+//最后多的补齐第二个
+func merge_v1(nums1 []int, m int, nums2 []int, n int) {
+	for m!=0 && n!=0{
+		if nums1[m-1] >= nums2[n-1]{
+			nums1[m+n-1] =  nums1[m-1]
+			m--
+		} else{
+			nums1[m+n-1] =  nums2[n-1]
+			n--
+		}
+	}
+	for ;n>0;n--{
+		nums1[n-1] = nums2[n-1]
+	}
+}
 
-func merge(nums1 []int, m int, nums2 []int, n int) {
+
+//方法2
+func merge_v2(nums1 []int, m int, nums2 []int, n int) {
 	for rk := m + n; m > 0 && n > 0; rk-- {
 		if nums1[m-1] <= nums2[n-1] {
 			nums1[rk-1] = nums2[n-1]
@@ -35,5 +51,5 @@ func main() {
 	//nums2 := []int{1}
 	//n := 1
 
-	merge(nums1, m, nums2, n)
+	merge_v1(nums1, m, nums2, n)
 }

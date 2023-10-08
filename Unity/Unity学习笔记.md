@@ -529,9 +529,34 @@ public class CubeControl : MonoBehaviour
 }
 ```
 
+#### 20.线条与拖尾
 
+```
+void Start()
+{
+    //设点线段位置
+    //获取线段渲染器
+    LineRenderer lineRenderer = GetComponent<LineRenderer>();
+    lineRenderer.positionCount = 3;
+    lineRenderer.SetPosition(0, Vector3.zero);
+    lineRenderer.SetPosition(0, Vector3.one);
+    lineRenderer.SetPosition(0, Vector3.down);
+    //lineRenderer.setup
+    //lineRenderer.startColor
+}
+```
 
+#### 21.动画
 
+```
+void Update()
+{
+    if (Input.GetMouseButtonDown(0))
+    {
+        GetComponent<Animation>().Play("right");
+    }
+}
+```
 
 
 
