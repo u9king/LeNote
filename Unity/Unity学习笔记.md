@@ -558,13 +558,66 @@ void Update()
 }
 ```
 
+#### 22.控制角色动画
 
+```
+public class PlayerControl : MonoBehaviour
+{
+    private Animator animator;
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
 
+    void Update()
+    {
+        //水平轴
+        float horizontal = Input.GetAxis("Horizontal");
+        //垂直轴
+        float vertical = Input.GetAxis("Vertical");
+        //移动向量
+        Vector3 dir = new Vector3(horizontal, 0, vertical);
+        //当用户按下了方向键
+        if (dir != Vector3.zero)
+        {
+            //面向向量
+            transform.rotation = Quaternion.LookRotation(dir);
+            //播放跑步动画
+            animator.SetBool("IsRun", true);
+            //朝向前方移动
+            transform.Translate(Vector3.forward * 2 * Time.deltaTime);
+        }
+        else 
+        {
+            //播放站立动画
+            animator.SetBool("IsRun", false);
+        }
+    }
+}
+```
 
+#### 23.混合动画
 
+#### 24.遮罩动画
 
+#### 25.IK/反向动力学
 
-
+```
+//IK写到这个方法内
+private void OnAnimatorIK(int layerIndex)
+{
+    //设置头部IK
+    animator.SetLookAtWeight(1);
+    animator.SetLookAtPosition(target.position);
+    //设置右手IK权重
+    animator.SetIKPositionWeight(AvatarIKGoal.RightHand,1);
+    //是否影响旋转权重
+    animator.SetIKPositionWeight(AvatarIKGoal.RightHand,1);
+    //设置右手IK
+    animator.SetIKPosition(AvatarIKGoal.RightHand, target.position);
+    animator.SetIKRotation(AvatarIKGoal.RightHand, target.rotation);
+}
+```
 
 
 
