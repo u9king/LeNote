@@ -17,7 +17,7 @@ import "fmt"
 const MAXSIZE = 20
 type ElemType int
 
-//SqList 顺序表（SequenceList）逻辑位序比物理位序大1,i为下标位置即物理位序
+//SqList 顺序表（SequenceList）逻辑位序比物理位序大1,i为指定位置即逻辑位序
 type SqList struct {
 	data   [MAXSIZE]ElemType
 	length int //顺序表元素个数,与i无关
@@ -62,18 +62,20 @@ func (l *SqList) ClearList() {
 	l.length = 0
 }
 
-//ListInsert 指定下标位置插入元素
+//ListInsert 指定位置插入元素
 func (l *SqList) ListInsert(i int, e ElemType) {
-	if l.length == MAXSIZE {
+	if l.length == MAXSIZE { //表满
 		fmt.Println("顺序表已满，插入数据失败")
 		return
 	}
-	if i > l.length+1 || i < 1 {
+	if i > l.length+1 || i < 1 { //i不在表内范围
 		fmt.Println("请选择合适的数据插入位置，插入数据失败")
 		return
 	}
-	for j := l.length - 1; j >= i-1; j-- {	//插入位置不在表尾,将数据向后移
-		l.data[j+1] = l.data[j]
+	if i <= l.length { //插入位置不在表尾,将数据向后移
+		for j := l.length - 1; j >= i-1; j-- {
+			l.data[j+1] = l.data[j]
+		}
 	}
 	l.data[i-1] = e //插入元素
 	l.length++
@@ -89,7 +91,7 @@ func (l *SqList) ListDelete(i int) {
 		fmt.Println("删除位置不在表范围内，删除元素失败")
 		return
 	}
-	for j := i; j <= l.length -1; j++ { //删除位置不在表尾，将数据前移
+	for j := i; j < l.length; j++ {
 		l.data[j-1] = l.data[j]
 	}
 	l.length--
@@ -104,7 +106,7 @@ func (l *SqList) GetElem(i int) ElemType {
 	return l.data[i-1]
 }
 
-//LocateElem 查找元素下标
+//LocateElem 查找元素下标（非位置）
 func (l *SqList) LocateElem(e ElemType) int {
 	for i, v := range l.data {
 		if v == e {
@@ -113,6 +115,8 @@ func (l *SqList) LocateElem(e ElemType) int {
 	}
 	return 0
 }
+
+
 
 func main() {
 	//初始化顺序表
@@ -140,7 +144,7 @@ func main() {
 
 	//查找等值元素，成功返回下标，否则返回0
 	fmt.Println(l.LocateElem(4))
-	//指定下标位置插入数据
+	//指定位置插入数据
 	l.ListInsert(7, 9)
 
 	fmt.Print("遍历数据:")

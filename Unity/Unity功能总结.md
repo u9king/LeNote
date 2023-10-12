@@ -21,3 +21,27 @@ using UnityEngine.SceneManagement;
 SceneManager.LoadScene("xxx");
 ```
 
+#### 3.相机跟随
+
+```
+public class CamerFollow1 : MonoBehaviour
+{
+    //跟随的游戏人物
+    private Transform Player;
+    //相机与人物之间的距离
+    Vector3 offset;
+    // Start is called before the first frame update
+    void Start()
+    {
+        Player = GameObject.Find("JohnLemon").transform;
+        offset = transform.position - Player.position;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        transform.position = offset + Player.position;
+    }
+}
+```
+
