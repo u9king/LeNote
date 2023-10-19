@@ -19,6 +19,29 @@ func InitList() *LinkList {
 	return &LinkList{}
 }
 
+//CreateListL 头插法建立单链表
+func CreateListL(data []ElemType) *LinkList {
+	l := InitList() // 初始化单链表
+	for _, value := range data {
+		newNode := &ListNode{Data: value}
+		newNode.Next = l.Head.Next
+		l.Head.Next = newNode
+	}
+	return l
+}
+
+//CreateListR 尾插法建立单链表
+func CreateListR(data []ElemType) *LinkList {
+	l := InitList()
+	tail := l.Head
+	for _, value := range data {
+		newNode := &ListNode{Data: value}
+		tail.Next = newNode
+		tail = newNode
+	}
+	return l
+}
+
 //ListEmpty 判断链表是否为空
 func (l *LinkList) ListEmpty() bool {
 	if l.Head == nil {
@@ -102,6 +125,8 @@ func (l *LinkList) ListDelete(i int) {
 	cur.Next = cur.Next.Next
 	return
 }
+
+
 
 func main() {
 	l := InitList() // 初始化单链表

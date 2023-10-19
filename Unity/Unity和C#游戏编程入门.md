@@ -178,6 +178,8 @@ public override void PrintStatsInfo()
 
 #### 第7章 角色移动、摄像机及碰撞
 
+Character Controller:https://docs.unity3d.com/ScriptReference/CharacterController.html
+
 #### 第8章 游戏机制脚本编写
 
 #### 第9章 AI基础与敌人行为
