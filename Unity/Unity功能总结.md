@@ -45,3 +45,14 @@ public class CamerFollow1 : MonoBehaviour
 }
 ```
 
+#### 4.鼠标点击跟随
+
+```
+private void Update()
+{
+        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        transform.position -= new Vector3(0,0,Camera.main.transform.position.z);
+    
+}
+```
+
