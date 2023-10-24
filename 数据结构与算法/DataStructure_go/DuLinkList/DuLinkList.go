@@ -21,6 +21,17 @@ func InitDuList() *DuLinkList {
 	return &DuLinkList{}
 }
 
+//GetDuListNode 按序号获取节点
+func (l *DuLinkList) GetDuListNode(i int) *DuLNode {
+	cur := l.Head.Next
+	j := 1
+	for cur != nil && j < i {
+		cur = cur.Next
+		j++
+	}
+	return cur
+}
+
 //DuListInsert 在指定节点之前插入新节点
 func (l *DuLinkList) DuListInsert(i int, data ElemType) {
 	cur := l.GetDuListNode(i)
@@ -28,7 +39,6 @@ func (l *DuLinkList) DuListInsert(i int, data ElemType) {
 		fmt.Println("没这个结点")
 		return
 	}
-
 	newNode := &DuLNode{Data: data, Prior: cur.Prior, Next: cur}
 	cur.Prior.Next = newNode  //新节点接前面的尾
 	cur.Prior = newNode  //新节点接后面的头
@@ -46,13 +56,3 @@ func (l *DuLinkList) DuListDelete(i int) {
 	cur.Next.Prior = cur.Prior
 }
 
-//GetDuListNode 按序号获取节点
-func (l *DuLinkList) GetDuListNode(i int) *DuLNode {
-	cur := l.Head.Next
-	j := 1
-	for cur != nil && j < i {
-		cur = cur.Next
-		j++
-	}
-	return cur
-}
