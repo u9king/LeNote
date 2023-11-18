@@ -56,3 +56,7 @@ $$
 答：使用设置中的内联公式
 
 重要极限2:	$$\lim_{x \to \infty}({1+\frac{1}{x}})^x = e$$
+
+#### 参考
+
+1.https://zhuanlan.zhihu.com/p/261750408
