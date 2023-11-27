@@ -12,7 +12,7 @@ func twoSum(nums []int, target int) []int {
 		if val, ok := resMap[last]; ok {
 			return []int{k, val}
 		}
-		resMap[v] = k
+		resMap[v] = k  //记录值和下标，留作下次last查询
 	}
 	return nil
 }

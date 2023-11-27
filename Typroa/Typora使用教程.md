@@ -40,7 +40,11 @@
 
 `<center>文字</center>`
 
+#### 图片改变大小，位置
 
+<img src="xxx" style="zoom:50%" align="left">
+
+参考:https://www.typora.net/460.html
 
 
 

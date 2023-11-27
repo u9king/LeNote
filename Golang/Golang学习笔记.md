@@ -30,3 +30,17 @@ func main(){
 }
 ```
 
+#### 4.字典的使用
+
+```
+判断key是否存在
+_,status := data["name"]
+```
+
+#### 5.if语句
+
+```
+if条件是可以赋值的，赋值变量的作用域在这个if语句中
+if contents,err := ioutil.ReadFile(filename);err!=nil{}
+```
+

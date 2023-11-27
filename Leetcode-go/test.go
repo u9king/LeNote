@@ -2,105 +2,50 @@ package main
 
 import "fmt"
 
-func merge(nums1 []int, m int, nums2 []int, n int) {
-	for n > 0 && m > 0 {
-		if nums1[m-1] < nums2[n-1] {
-			nums1[m+n-1] = nums2[n-1]
-			n--
-		} else {
-			nums1[m+n-1] = nums1[m-1]
-			m--
-		}
-	}
-	for n > 0 {
-		nums1[n-1] = nums2[n-1]
-		n--
-	}
-}
-
-func removeElement(nums []int, val int) int {
-	left := 0
-	for _, v := range nums {
-		if v != val {
-			nums[left] = v
-			left++
-		}
-	}
-	return left
-}
-
-func removeDuplicates(nums []int) int {
-	left := 0
+func twoSum(nums []int, target int) []int {
+	mMap := map[int]int{}
 	for i := 0; i < len(nums); i++ {
-		if i == 0 {
-			nums[left] = nums[i]
+		last := target - nums[i]
+		if index, status := mMap[last]; status {
+			return []int{index, i}
 		}
-		if nums[left] != nums[i] {
-			left++
-			nums[left] = nums[i]
-		}
+		mMap[nums[i]] = i
 	}
-	nums = nums[:left+1]
-	return len(nums)
+	return nil
 }
 
-func isValidSudoku(board [][]byte) bool {
-	//1.数字 1-9 在每一行只能出现一次。
-	for i := 0; i < len(board); i++ {
-		temp := map[byte]int{'0':1,'1':1,'2':1,'3':1,'4':1,'5':1,'6':1,'7':1,'8':1,'9':1}
-		for j := 0; j < len(board[i]); j++ {
-			if board[i][j] == '.' {
-				continue
-			}
-			if _,ok := temp[board[i][j]];ok{
-				delete(temp, board[i][j])
-			} else{
-				return false
-			}
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	head := &ListNode{Val: l1.Val + l2.Val}
+	cur := head
+	for l1.Next != nil || l2.Next != nil {
+		if l1.Next == nil {
+			l1 = &ListNode{Val: 0}
+		} else {
+			l1 = l1.Next
 		}
-	}
-	
-	//2.数字 1-9 在每一列只能出现一次。
-	for i := 0; i < len(board); i++ {
-		temp := map[byte]int{'0':1,'1':1,'2':1,'3':1,'4':1,'5':1,'6':1,'7':1,'8':1,'9':1}
-		for j := 0; j < len(board[i]); j++ {
-			if board[j][i] == '.' {
-				continue
-			}
-			if _,ok := temp[board[j][i]];ok{
-				delete(temp, board[j][i])
-			} else{
-				return false
-			}
+		if l2.Next == nil {
+			l2 = &ListNode{Val: 0}
+		} else {
+			l2 = l2.Next
 		}
+		cur.Next = &ListNode{Val: l1.Val + l2.Val + cur.Val/10}
+		cur.Val = cur.Val % 10
+		cur = cur.Next
 	}
-	//3.数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次
-	//m := len(board) % 3
-	//n := len(board[0]) % 3
-
-
-
-
-
-
-	return true
+	if cur.Val >= 10 {
+		cur.Next = &ListNode{Val: cur.Val / 10}
+		cur.Val = cur.Val % 10
+	}
+	return head
 }
 
 func main() {
-	nums1 := []int{0, 0, 1, 1, 1, 2, 2, 3, 3, 4}
-
-	boardboard := [][]byte{
-		{'5', '3', '.', '.', '7', '.', '.', '.', '3'},
-		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
-		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
-		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
-		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
-		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
-		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
-		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
-		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
-	}
-
-	isValidSudoku(boardboard)
-	fmt.Println(nums1)
+	l1 := &ListNode{Val: 2, Next: &ListNode{Val: 4, Next: &ListNode{Val: 3}}}
+	l2 := &ListNode{Val: 5, Next: &ListNode{Val: 6, Next: &ListNode{Val: 4}}}
+	fmt.Println(addTwoNumbers(l1, l2))
 }
