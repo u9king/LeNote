@@ -35,6 +35,8 @@ func main(){
 ```
 判断key是否存在
 _,status := data["name"]
+字典删除元素
+delete(hashMap,s[lk])  //前面是字典，后面是字典的键
 ```
 
 #### 5.if语句
@@ -42,5 +44,13 @@ _,status := data["name"]
 ```
 if条件是可以赋值的，赋值变量的作用域在这个if语句中
 if contents,err := ioutil.ReadFile(filename);err!=nil{}
+```
+
+#### 6.for循环
+
+```
+只使用index的简化写法
+for index := range s{	
+}
 ```
 

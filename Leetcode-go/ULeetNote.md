@@ -4,7 +4,7 @@
 
 ## 第一章	数据结构知识
 
-#### 单链表结构
+#### 1.单链表结构
 
 ```
 type ListNode struct {
@@ -14,6 +14,33 @@ type ListNode struct {
 ```
 
 ## 第二章	算法专题
+
+#### 1.滑动窗口
+
+核心：左右指针+hashMap，提升嵌套循环问题执行效率。
+
+```
+func slidingWindow(){
+	hashMap := map[byte]bool{}
+	lk := 0
+	maxLength := 0
+	for rk := range s {
+		for hashMap[s[rk]] {
+			hashMap[s[lk]] = false
+			lk++
+		}
+		hashMap[s[rk]] = true
+		if maxLength < rk - lk + 1{  //和题目有关，可以优化
+			maxLength = rk -lk + 1
+		}
+	}
+	return maxLength
+}
+```
+
+<img src="https://img-blog.csdnimg.cn/20af5e0ee7cf4bdfb514822bb23ad062.gif#pic_center">
+
+
 
 ## 第三章	题型模板
 
@@ -91,7 +118,7 @@ func twoSum(nums []int, target int) []int {
 
 #### 解题思路
 
-先引入头结点`head`和指针`cur`，然后顺序读取两个链表中的数据，数据不足用0补齐，直到两个链表都没有数据，处理最后一位的进位。
+链表需要先引入头结点`head`和指针`cur`，然后顺序读取两个链表中的数据，数据不足用0补齐，直到两个链表都没有数据，处理最后一位的进位。
 
 #### 代码
 
@@ -125,3 +152,82 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 #### 小结
 
 链表类题型。一次for循环，时间复杂度为O(n)。
+
+### 3.lengthOfLongestSubstring
+
+#### 题目
+
+给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+#### 示例
+
+```
+输入: s = "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+```
+
+#### 题目大意
+
+字符串找不重复的 **最长子串** 的长度
+
+#### 解题思路
+
+使用滑动窗口，可以优化嵌套循环问题。第一步判断右指针所指内容是否存在于hash表中，存在则删除所有右指针所指元素。第二步记录右指针所指元素。第三步计算最大长度。重复上面过程直至右指针到达数组最大长度
+
+#### 代码
+
+```
+func lengthOfLongestSubstring(s string) int {
+	hashMap := map[byte]bool{}
+	lk := 0
+	maxLength := 0
+	for rk := range s {
+		for hashMap[s[rk]] {	//判断右指针所指元素是否存在
+			hashMap[s[lk]] = false	//存在就从左指针开始，删除直至右指针所指内容不存在
+			lk++
+		}
+		hashMap[s[rk]] = true  //记录右指针所指元素
+		if maxLength < rk-lk+1 {
+			maxLength = rk - lk + 1		//更新最大长度
+		}
+	}
+	return maxLength
+}
+```
+
+#### 小结
+
+查找类题型，考察滑动窗口。左指针和右指针分别会遍历整个字符串一次，所以时间复杂度为O(n)。
+
+
+
+#### 格式
+
+### X.XXX
+
+#### 题目
+
+
+
+#### 示例
+
+```
+
+```
+
+#### 题目大意
+
+
+
+#### 解题思路
+
+
+
+#### 代码
+
+```
+
+```
+
+#### 小结
