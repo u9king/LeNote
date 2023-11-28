@@ -26,9 +26,67 @@
 \end{document}
 ```
 
+#### 2.字体
+
+```
+字体选择（字体声明，用于声明后面的字体为罗马字体，无衬线字体，打字机字体，大括号用于分组，限定字体限制范围）
+\rmfamily Roman Family{\sffamily Scans Serif Family}{\ttfamily Typewriter Family}
+加粗
+\textbf{Boldface Series}
+字体切换
+{\songti 宋体}	{\heiti 黑体}	{\kaishu 楷书}
+字体大小
+{\tiny Hello}
+{\large Hello}
+{\Huge Hello}
+{\zihao{4} 你好！}
+```
+
+#### 3.公式
+
+```
+$ W > W_0 $ 行内公式
+$$ W >W_0 $$ 行间公式
+```
+
+#### 4.特殊符号
+
+```
+符号前需要加上转义符号\
+\# \$ \% \^ \LaTeX
+\quad 空格
+大于等于  大于等于     点乘	 叉乘		除号
+\geq	\geqslant	\cdot	\times	\div
+```
 
 
 
+#### 98.论文排版
+
+```
+\begin{document}
+	\chapter{绪论}
+	\section{研究的目的和意义}
+	\section{国内外研究现状}
+	\subsection{国外研究现状}
+    \subsection{国内研究现状}
+    \section{研究内容}
+    \section{研究方法和技术路线}
+    \subsection{研究方法}
+    \subsection{研究路线}
+    \chapter{实验与结果分析}
+    \section{引言}
+    \section{实验方法}
+    \section{实验结果}
+    \subsection{数据}
+    \subsection{图表}
+    \subsubsection{实验条件}
+    \subsubsection{实验过程}
+    \subsection{结果分析}
+    \section{结论}
+    \section{致谢}
+\end{document}
+```
 
 
 
