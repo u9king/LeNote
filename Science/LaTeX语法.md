@@ -51,14 +51,46 @@ $$ W >W_0 $$ 行间公式
 
 #### 4.特殊符号
 
-```
 符号前需要加上转义符号\
-\# \$ \% \^ \LaTeX
-\quad 空格
-大于等于  大于等于     点乘	 叉乘		除号
-\geq	\geqslant	\cdot	\times	\div
-```
 
+| $\div$    |   `\div`   | $\times$  |  ` \times`    |  $\approx$  |  `\approx`  |
+| --------------- | ---- | ------------------ | ---- | --------------- | --------------- |
+| $\cdot$  |   `\cdot`   | $\neq$      |   `\neq`    |   $\gt$   |   `\gt`   |
+| $\geq$    |   `\geq`   | $\leq$       |   `\leq`   |   $\lt$   |   `\lt`   |
+| $\pm$     |   `\pm`    | $\pi$         |   `\pi`   |   $\infty$   |   `\infty`   |
+| $\geqslant$ | `\geqslant` | $\quad$ | `\quad` | $\LaTeX$ | `\LaTeX` |
+| $\#$ | `\#` | $\%$ | `\%` | $\$$ | `\$` |
+| $\triangle$ | `\triangle` | $\bigcirc$ | `\bigcirc` | $\theta$ | `\theta` |
+| $\overbrace{1+2+\cdots+100}$ | `\overbrace{1+2+\cdots+100}` | $\because$ | `\because` | $\therefore$ | `\therefore` |
+| $\overbrace{a+b+c}^{n}$ | `\overbrace{a+b+c}^{n}` | $\alpha$ | `\alpha` | $\beta$ | `\beta` |
+| $\ce{CO2 + C -> 2 CO}$ | `\ce{CO2 + C -> 2 CO}` | $\ce{h2o}$ | `\ce{h2o}` |  |  |
+
+#### 5.排版
+
+| $\frac{2}{3}$         | 默认     |
+| --------------- | ---- |
+| $\large{\frac{2}{3}}$ | `\large` |
+| $\Large{\frac{2}{3}}$ | `\Large` |
+| $\huge{\frac{2}{3}}$  | `\huge`  |
+| $\Huge{\frac{2}{3}}$  | `\Huge`  |
+
+#### 6.方程组
+
+方程组写法
+$$
+\begin{cases}
+2x-y&=5\\
+3x+4y&=2
+\end{cases}
+$$
+列式计算写法
+$$
+\begin{align}
+&am+an+bm+bn\\
+=&a(m+n)+b(m+n)\\
+=&(m+n)(a+b)
+\end{align}
+$$
 
 
 #### 98.论文排版

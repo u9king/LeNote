@@ -21,24 +21,44 @@ type ListNode struct {
 
 ```
 func slidingWindow(){
-	hashMap := map[byte]bool{}
+	hashMap := map[byte]bool{}  //建立hash表
 	lk := 0
 	maxLength := 0
 	for rk := range s {
-		for hashMap[s[rk]] {
+		for hashMap[s[rk]] {	//从左指针开始剔除元素直至没有与右指针相同的元素存在
 			hashMap[s[lk]] = false
 			lk++
 		}
 		hashMap[s[rk]] = true
-		if maxLength < rk - lk + 1{  //和题目有关，可以优化
-			maxLength = rk -lk + 1
-		}
+		//处理题目逻辑
 	}
 	return maxLength
 }
 ```
 
 <img src="https://img-blog.csdnimg.cn/20af5e0ee7cf4bdfb514822bb23ad062.gif#pic_center">
+
+#### 2.二分查找
+
+核心：左右指针+对半删除条件
+
+```
+func binarySearch(arr []int, target int) int{
+	start := 0
+	end := len(arr) - 1
+	for start <= end{
+		mid := (start + end) / 2
+		if arr[mid] > target {
+			start = mid + 1
+		} else if arr[mid] > target {
+			end = mid - 1
+		} else {
+			return mid
+		}
+	}
+	return  -1
+}
+```
 
 
 
@@ -200,9 +220,97 @@ func lengthOfLongestSubstring(s string) int {
 
 查找类题型，考察滑动窗口。左指针和右指针分别会遍历整个字符串一次，所以时间复杂度为O(n)。
 
+### 4.findMedianSortedArrays
+
+#### 题目
+
+给定两个大小分别为 `m` 和 `n` 的正序（从小到大）数组 `nums1` 和 `nums2`。请你找出并返回这两个正序数组的 **中位数** 。
+
+算法的时间复杂度应该为 `O(log (m+n))` 。
+
+#### 示例
+
+```
+输入：nums1 = [1,2], nums2 = [3,4]
+输出：2.50000
+解释：合并数组 = [1,2,3,4] ，中位数 (2 + 3) / 2 = 2.5
+```
+
+#### 题目大意
+
+两正序数组找中位数，由于时间复杂度是`O(log (m+n))`可能为二分查找
+
+#### 解题思路
+
+- 先解决和为奇数个中位数是midIndex ,和为偶数个中位数是中间两数的平均数
+- 再用二分法查找中位数，建立两个指针，循环退出条件是k为1即找到最后一个数字
+- 处理边界条件即两数组过界问题
+
+#### 代码
+
+```
+func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
+	totalLength := len(nums1) + len(nums2)
+	if totalLength%2 == 1 {
+		midIndex := totalLength/2 + 1
+		return float64(getKthElement(nums1, nums2, midIndex))
+	} else {
+		midIndex := totalLength / 2
+		return float64(getKthElement(nums1, nums2, midIndex) + getKthElement(nums1, nums2, midIndex + 1)) / 2.0
+	}
+}
+
+func getKthElement(nums1 []int, nums2 []int, k int) int {
+	index1, index2 := 0, 0	//二分法寻找中位数
+	for {
+		if index1 == len(nums1) {	//nums1元素全部用完
+			return nums2[index2+k-1]
+		}
+		if index2 == len(nums2) {
+			return nums1[index1+k-1]
+		}
+		if k == 1 {	//查到最后一个元素，判断输出较小的是中位数
+			return min(nums1[index1], nums2[index2])
+		}
+		half := k/2
+		newIndex1 := min(index1+half, len(nums1)) - 1	//避免过界，half和len(nums)都为序号，序号变为下标-1
+		newIndex2 := min(index2+half, len(nums2)) - 1	
+		pivot1, pivot2 := nums1[newIndex1], nums2[newIndex2]	//提取两数组对应新指针的目标元素
+		if pivot1 <= pivot2 {
+			k -= newIndex1 - index1 + 1	//newIndex1 - index1实际是half/2，但由于有界限限制,所以需要用newIndex代替
+			index1 = newIndex1 + 1
+		} else {
+			k -= newIndex2 - index2 + 1	//下标变为序号+1
+			index2 = newIndex2 + 1
+		}
+	}
+}
+
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+```
+
+#### 小结
+
+查找类题型，考察二分查找的代码。
 
 
-#### 格式
+
+
+
+
+
+
+
+
+
+
+
+### 格式
 
 ### X.XXX
 
