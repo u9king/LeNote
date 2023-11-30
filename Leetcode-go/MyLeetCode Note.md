@@ -20,19 +20,21 @@ type ListNode struct {
 核心：左右指针+hashMap，提升嵌套循环问题执行效率。
 
 ```
-func slidingWindow(){
-	hashMap := map[byte]bool{}  //建立hash表
-	lk := 0
-	maxLength := 0
-	for rk := range s {
-		for hashMap[s[rk]] {	//从左指针开始剔除元素直至没有与右指针相同的元素存在
-			hashMap[s[lk]] = false
-			lk++
+func slidingWindow(nums []int){
+	//视情况使用存储结构，也可以使用hash表
+	hashMap := map[byte]bool{}  	//建立hash表
+	lk,rk := 0,0					//建立左右指针
+	maxLength := 0 					//所求业务
+	for rk < len(nums) {			//如果用len(nums)-1，前面rk就得从-1开始并且需要先执行rk++,rk带动，右侧判断窗口
+		for hashMap[s[rk]] {		//窗口缩小条件
+			hashMap[s[lk]] = false	//移出窗口元素
+			lk++					//缩小窗口
 		}
-		hashMap[s[rk]] = true
-		//处理题目逻辑
+		hashMap[s[rk]] = true		//更新窗口
+        //处理题目逻辑
+		rk++						//扩大窗口
 	}
-	return maxLength
+	return maxLength				//返回业务
 }
 ```
 
@@ -298,9 +300,61 @@ func min(x, y int) int {
 
 查找类题型，考察二分查找的代码。
 
+### 5.longestPalindrome
 
+#### 题目
 
+给你一个字符串 `s`，找到 `s` 中最长的回文子串。
 
+如果字符串的反序与原始字符串相同，则该字符串称为回文字符串。
+
+#### 示例
+
+```
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+```
+
+#### 题目大意
+
+字符串 `s`找到最长的回文子串
+
+#### 解题思路
+
+- 扩大窗口，如果有相同元素则必互为互文，直接扩大即可
+- 拿着当前的lk那个元素，使用中心扩散法，找到回文数的边界
+- 记录最大符合条件的回文数
+- 重置rk,lk至此回文数中心点，并后移一位开始重新搜索
+
+#### 代码
+
+```
+//滑动窗口法
+func longestPalindrome(s string) string {
+	lk, rk := 0, 0
+	maxString := ""
+	for rk < len(s) {
+		for rk < len(s) - 1 && s[lk] == s[rk+1] {
+			rk++
+		}
+		for lk-1 >= 0 && rk < len(s) - 1 && s[lk-1] == s[rk+1] {
+			lk--
+			rk++
+		}
+		if rk-lk > len(maxString) - 1 {
+			maxString = s[lk : rk+1]
+		}
+		rk = (lk+rk)/2 + 1	//重置为中心点后的那个元素
+		lk = rk
+	}
+	return maxString
+}
+```
+
+#### 小结
+
+搜索类题型，考察滑动窗口和中心扩散法的联合使用。
 
 
 

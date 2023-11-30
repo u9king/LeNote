@@ -33,3 +33,24 @@ func longestPalindrome(s string) string {
 	}
 	return s[begin : begin+maxLength]
 }
+
+//longestPalindrome_v1 滑动视窗的方法
+func longestPalindrome_v1(s string) string {
+	lk, rk := 0, 0
+	maxString := ""
+	for rk < len(s) {
+		for rk < len(s) - 1 && s[lk] == s[rk+1] {
+			rk++
+		}
+		for lk-1 >= 0 && rk < len(s) - 1 && s[lk-1] == s[rk+1] {
+			lk--
+			rk++
+		}
+		if rk-lk > len(maxString) - 1 {
+			maxString = s[lk : rk+1]
+		}
+		rk = (lk+rk)/2 + 1
+		lk = rk
+	}
+	return maxString
+}
