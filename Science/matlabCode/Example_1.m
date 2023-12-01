@@ -1,8 +1,4 @@
-# matlab语法
-
-#### 1.数据类型
-
-```
+%% MATLAB数据类型 
 %数字、字符与字符串、矩阵、元胞数组、结构体
 %字符与字符串
 s = 'a';
@@ -33,11 +29,8 @@ books = struct('name',{{'Machine Learning','Data Mining'}},'price',[30,40])
 books.name      %用键获取值
 books.name(1)   %取出的是cell
 books.name{1}   %取出的是string
-```
 
-#### 2.矩阵操作
-
-```
+%% MATLAB矩阵操作
 %矩阵的定义与构造
 A = [1 2 3 5 8 5 4 6];
 B = 1:2:9;                  %生成1到9之间步长为2的矩阵
@@ -58,11 +51,8 @@ B = A(2,3)    %取第2行第3列的值
 C = A(3,:)    %取第3行的所有值
 D = A(:,4)    %取第4列的所有值
 [m,n] = find(A > 20)  %找大于20的序号值/矩阵
-```
 
-#### 3.逻辑与流程控制
-
-```
+%% MATLAB逻辑与流程控制
 %1.if...else...end
 a = 100;
 b = 20;
@@ -95,11 +85,8 @@ switch a
     otherwise
         "Unknow"
 end
-```
 
-#### 4.基本绘图操作
-
-```
+%% MATLAB基本绘图操作
 %二维平面绘图
 x = 0:0.01:2*pi;    %生成0到2pi差为0.01的等差数列
 y = sin(x);
@@ -149,31 +136,17 @@ subplot(4,4,8);      %将画板分为4行4列，子图在其中的第8个格
 plot(x,cot(x));
 title('cot(x)');
 axis([0,2*pi,-35,35])
-```
 
-#### 5.图形的保存与导出
-
-```
+%% 图形的保存与导出
 %(1) Figure视窗下→编辑→复制图形(窗)
 %(2) Figure视窗下→文件→导出设置
-```
 
-#### 6.补充内容
-
-```
+%% 补充内容
 [x,y,z] = peaks(30);    %peaks生成双峰函数
 mesh(x,y,z)
 grid
-```
 
-#### 7.清空环境变量及命令
 
-```
+%% 清空环境变量及命令
 clear all  % 清除Workspace中的所有变量
 clc        % 清除Command Window中的所有命令
-```
-
-
-
-1. LaTeX语法（https://superior-leo.gitee.io/2021/01/30/latex-xue-xi-bi-ji/）
-

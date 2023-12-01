@@ -356,9 +356,82 @@ func longestPalindrome(s string) string {
 
 搜索类题型，考察滑动窗口和中心扩散法的联合使用。
 
+### 6.ZigZag Conversion
 
+#### 题目
 
+将一个给定字符串 `s` 根据给定的行数 `numRows` ，以从上往下、从左到右进行 Z 字形排列。
 
+比如输入字符串为 `"PAYPALISHIRING"` 行数为 `3` 时，排列如下：
+
+```
+P   A   H   N
+A P L S I I G
+Y   I   R
+```
+
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如：`"PAHNAPLSIIGYIR"`。
+
+请你实现这个将字符串进行指定行数变换的函数：
+
+```
+string convert(string s, int numRows);
+```
+
+#### 示例
+
+```
+输入：s = "PAYPALISHIRING", numRows = 4
+输出："PINALSIGYAHRPI"
+解释：
+P     I    N
+A   L S  I G
+Y A   H R
+P     I
+```
+
+#### 题目大意
+
+字符串 `s` 根据给定的行数 `numRows` ，以从上往下、从左到右进行 Z 字形排列。
+
+#### 解题思路
+
+- 如果把Z字变换按照填入顺序进行连线，这是一个向下每次一步，到`numRows`时再反向向上每次一步的运动轨迹
+- 根据这个逻辑规律可以将其抽象成带方向的step
+- 创建一个数组存储`numRows`个字符串，先用初始值`""`来填充
+- 用`step`和`rowNum`控制循环向同行字符串添加元素
+- 复原字符串
+
+#### 代码
+
+```
+func convert(s string, numRows int) string {
+	rows := make([]string, numRows)
+	rowNum := 0	//行编号
+	step := 1 //带方向的步长
+	for _, v := range s {
+		rows[rowNum] += string(v) //同行字符串添加
+		if numRows-1 == 0 { //处理只有一行的问题
+			step = 0
+		} else if rowNum == numRows-1 {
+			step = -1
+		} else if rowNum == 0 {
+			step = 1
+		}
+		rowNum += step
+	}
+	//复原字符串
+	var res string
+	for _, row := range rows {
+		res += row
+	}
+	return res
+}
+```
+
+#### 小结
+
+二维数组类型题目，也可以根据逻辑原理进行一维简化。
 
 
 

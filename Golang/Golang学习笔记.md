@@ -14,6 +14,8 @@
 
 ```
 a := []int{x,y,z}
+//数组指定位置插入
+arr = append(arr[:index], append([]T{value}, arr[index:]...)...)
 ```
 
 #### 3.地址

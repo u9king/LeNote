@@ -31,3 +31,27 @@ func convert(s string, numRows int) string {
 	}
 	return string(res)
 }
+
+//convert_v1 Z字变换，理解step方向和数学原理用一维数组实现
+func convert_v1(s string, numRows int) string {
+	rows := make([]string, numRows)
+	rowNum := 0	//行编号
+	step := 1 //带方向的步长
+	for _, v := range s {
+		rows[rowNum] += string(v) //同行字符串添加
+		if numRows-1 == 0 { //处理只有一行的问题
+			step = 0
+		} else if rowNum == numRows-1 {
+			step = -1
+		} else if rowNum == 0 {
+			step = 1
+		}
+		rowNum += step
+	}
+	//复原字符串
+	var res string
+	for _, row := range rows {
+		res += row
+	}
+	return res
+}
