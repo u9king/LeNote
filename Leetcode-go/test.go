@@ -2,34 +2,34 @@ package main
 
 import "fmt"
 
-func convert(s string, numRows int) string {
-	rows := make([]string, numRows)
-	rowNum := 0
-	step := 1 //带方向
-	for _, v := range s {
-		rows[rowNum] += string(v)	//同行字符串添加
-
-		if numRows-1 == 0 {	//处理只有一行的问题
-			step = 0
-		} else if rowNum == numRows-1 {
-			step = -1
-		} else if rowNum == 0 {
-			step = 1
+func reverse(x int)  (rev int) {
+	for x != 0{
+		digit := x % 10
+		x /= 10
+		rev = rev * 10 + digit
+		if rev > 1<<31 - 1 || rev < -1<<31{  //1<<31-1就是2的31次方-1，位运算
+			return 0
 		}
-		rowNum += step
 	}
-	//复原字符串
-	var res string
-	for _, row := range rows {
-		res += row
+	return rev
+}
+
+func fibonacci(n int)int{
+	farr := make([]int, n)  //实现memo数组
+	farr[0], farr[1] = 1, 1	//设定初始状态
+
+	for i:= 2; i < n; i++ {
+		farr[i] = farr[i-1] + farr[i-2]	//状态转移方程
 	}
-	return res
+	return farr[n-1]	//返回最终解
 }
 
 func main() {
 	//输入数据
-	s := "AB"
+	x := 123
+	fmt.Println(fibonacci(5))
+	fmt.Println(-2^31)
 
 	//输出内容
-	fmt.Println(convert(s, 1))
+	fmt.Println(reverse(x))
 }
