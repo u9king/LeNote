@@ -500,9 +500,112 @@ func reverse(x int)  (rev int) {
 
 数字处理类题型，要对数位敏感，并且多训练一些位运算对后续有很大的帮助。
 
+### 8.String to Integer (atoi)
 
+#### 题目
 
+请你来实现一个 `myAtoi(string s)` 函数，使其能将字符串转换成一个 32 位有符号整数（类似 C/C++ 中的 `atoi` 函数）。
 
+函数 `myAtoi(string s)` 的算法如下：
+
+1. 读入字符串并丢弃无用的前导空格
+2. 检查下一个字符（假设还未到字符末尾）为正还是负号，读取该字符（如果有）。 确定最终结果是负数还是正数。 如果两者都不存在，则假定结果为正。
+3. 读入下一个字符，直到到达下一个非数字字符或到达输入的结尾。字符串的其余部分将被忽略。
+4. 将前面步骤读入的这些数字转换为整数（即，"123" -> 123， "0032" -> 32）。如果没有读入数字，则整数为 `0` 。必要时更改符号（从步骤 2 开始）。
+5. 如果整数数超过 32 位有符号整数范围 `[−231, 231 − 1]` ，需要截断这个整数，使其保持在这个范围内。具体来说，小于 `−231` 的整数应该被固定为 `−231` ，大于 `231 − 1` 的整数应该被固定为 `231 − 1` 。
+6. 返回整数作为最终结果。
+
+#### 示例
+
+```
+输入：s = "   -42"
+输出：-42
+解释：
+第 1 步："   -42"（读入前导空格，但忽视掉）
+            ^
+第 2 步："   -42"（读入 '-' 字符，所以结果应该是负数）
+             ^
+第 3 步："   -42"（读入 "42"）
+               ^
+解析得到整数 -42 。
+由于 "-42" 在范围 [-231, 231 - 1] 内，最终结果为 -42 。
+```
+
+#### 题目大意
+
+实现字符串转数字
+
+#### 解题思路
+
+- 单循环先排除跳过空格
+- 保存符号
+- 判断当前value是否在字符0到9之间
+- 判断相乘后的数字是否大于int32的边界
+- 数字与符号相乘返回结果
+
+#### 代码
+
+```
+func myAtoi(s string) int {
+	result := 0
+	sign := 1	//符号位
+	const MinInt32, MaxInt32 = -1 << 31, 1<<31 - 1
+	for _, value := range s {
+		if value == ' '{	//空就跳过
+			continue
+		}
+		if value == '-'{	//符号保存下来
+			sign = -1
+		}
+		if value >= '0' && value <= '9'{
+			result = result*10 + int(value - '0')	//进位并存储新数用ASCII码表示
+			if result * sign > MaxInt32{return MaxInt32}	//判断是否大于int32最大数
+			if result * sign < MinInt32{return MinInt32}	//判断是否小于int32最小数
+		} else{
+			break
+		}
+	}
+	return result * sign
+}
+
+//待解决问题在哪里？说不符合数据：s := "00000-42a1234" 要求为：“0”，结果为“-42”
+func myAtoi_waitTest(s string) int {
+	result := 0
+	sign := 1        //符号位
+	hasSign := false //出现例子：“+-12”
+	const MinInt32, MaxInt32 = -1 << 31, 1<<31 - 1
+	for _, value := range s {
+		if value == ' ' || value == '0' && result == 0{ //出现空或者左边的0就跳过
+			continue
+		}
+		if value == '-' && hasSign == false { //符号保存下来
+			sign = -1
+			hasSign = true
+			continue
+		} else if value == '+' && hasSign == false { //出现例子："+1"
+			hasSign = true
+			continue
+		}
+
+		if value >= '0' && value <= '9' {
+			result = result*10 + int(value-'0') //进位并存储新数用ASCII码表示
+			if result*sign > MaxInt32 {         //判断是否大于int32最大数
+				return MaxInt32
+			}
+			if result*sign < MinInt32 { //判断是否小于int32最小数
+				return MinInt32
+			}
+		} else {
+			break
+		}
+	}
+	return result * sign
+}
+```
+
+#### 小结
+
+标准库实现类题型，涉及较多编程原理的知识。
 
 
 

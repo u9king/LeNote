@@ -30,3 +30,38 @@ func myAtoi(s string) int {
 	}
 	return sign * result
 }
+
+func myAtoi_waitTest(s string) int {
+	//错在哪里？
+
+	result := 0
+	sign := 1        //符号位
+	hasSign := false //出现例子：“+-12”
+	const MinInt32, MaxInt32 = -1 << 31, 1<<31 - 1
+	for _, value := range s {
+		if value == ' ' || value == '0' && result == 0{ //出现空或者左边的0就跳过
+			continue
+		}
+		if value == '-' && hasSign == false { //符号保存下来
+			sign = -1
+			hasSign = true
+			continue
+		} else if value == '+' && hasSign == false { //出现例子："+1"
+			hasSign = true
+			continue
+		}
+
+		if value >= '0' && value <= '9' {
+			result = result*10 + int(value-'0') //进位并存储新数用ASCII码表示
+			if result*sign > MaxInt32 {         //判断是否大于int32最大数
+				return MaxInt32
+			}
+			if result*sign < MinInt32 { //判断是否小于int32最小数
+				return MinInt32
+			}
+		} else {
+			break
+		}
+	}
+	return result * sign
+}
