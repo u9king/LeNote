@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func isMatch(s string, p string) bool {
 	m, n := len(s), len(p)

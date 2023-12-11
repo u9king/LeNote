@@ -5,10 +5,10 @@ func isPalindrome(x int) bool {
 		return false
 	}
 	origin := x
-	redirect := 0
+	rev := 0
 	for x != 0 {
-		redirect = redirect*10 + x%10
+		rev = rev*10 + x%10
 		x /= 10
 	}
-	return origin == redirect
+	return origin == rev
 }

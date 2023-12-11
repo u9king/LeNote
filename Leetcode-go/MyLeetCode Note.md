@@ -85,9 +85,46 @@ func fibonacci(n int)int{
 }
 ```
 
+#### 4.双指针法
+
+核心：左右指针，提高双循环效率
+
+```
+func maxArea(height []int) int {
+	lk,rk := 0,len(height) - 1			//正向不行可以从两头缩小
+	var maxA int
+	for lk < rk{
+		//处理题目逻辑
+		if height[lk] < height[rk]{		//移动条件
+			lk++						
+		}else{
+			rk--
+		}
+	}
+	return maxA
+}
+疑问：滑动窗口和双指针法有什么区别？
+```
+
 
 
 ## 第三章	题型模板
+
+#### 1.整数反转
+
+适用于：数字反转，回文数字
+
+```
+func reverse(x int)  (rev int) {
+	for x != 0{
+    	rev = rev * 10 + x % 10
+		x /= 10
+	}
+	return rev
+}
+```
+
+
 
 ## 第四章	Leetcode题解
 
@@ -607,13 +644,190 @@ func myAtoi_waitTest(s string) int {
 
 标准库实现类题型，涉及较多编程原理的知识。
 
+### 9.Palindrome Number
+
+#### 题目
+
+给你一个整数 `x` ，如果 `x` 是一个回文整数，返回 `true` ；否则，返回 `false` 。
+
+回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
+
+#### 示例
+
+```
+输入：x = -121
+输出：false
+解释：从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数
+```
+
+#### 题目大意
+
+实现回文整数
+
+#### 解题思路
+
+联想到反转整数，回文数在整数中就是反转前和反转后数字相同。
+
+#### 代码
+
+```
+func isPalindrome(x int) bool {
+	if x < 0 {
+		return false
+	}
+	origin := x
+	var rev int
+	for x != 0 {
+		rev = rev*10 + x%10
+		x /= 10
+	}
+	return rev == origin
+}
+```
+
+#### 小结
+
+整数反转类题型的再应用。
+
+### 10.Regular Expression Matching
+
+#### 题目
+
+给你一个字符串`s`和一个字符规律`p`，请你来实现一个支持`.`和`*`的正则表达式匹配
+
+- `.`匹配任意单个字符
+- `*`匹配零个或多个面前的那一个元素
+
+所谓匹配，是要涵盖整个字符串`s`的，而不是部分字符串。
+
+#### 示例
+
+```
+
+```
+
+#### 题目大意
 
 
 
+#### 解题思路
 
 
 
+#### 代码
 
+```
+func isMatch_v2(s string, p string) bool {
+	m, n := len(s), len(p)
+	f := make([][]bool, m+1)
+	for i := 0; i < m+1; i++ {
+		f[i] = make([]bool, n+1)
+	}
+	f[0][0] = true
+
+	for i := 0; i < m+1; i++ {
+		for j := 1; j < n+1; j++ {
+			switch p[j-1] {
+			case '.':
+				if i > 0 {
+					f[i][j] = f[i-1][j-1]
+				}
+			case '*':
+				if i > 0 && (s[i-1] == p[j-2] || p[j-2] == '.') {
+					f[i][j] = f[i-1][j] || f[i][j-2]
+				} else {
+					f[i][j] = f[i][j-2]
+				}
+			default:
+				if i > 0 && (s[i-1] == p[j-1]) {
+					f[i][j] = f[i-1][j-1]
+				} else {
+					f[i][j] = false
+				}
+			}
+		}
+	}
+	return f[m][n]
+}
+```
+
+#### 小结
+
+动态规划类题型
+
+### 11.Container With Most Water
+
+#### 题目
+
+给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 `(i, 0)` 和 `(i, height[i])` 。
+
+找出其中的两条线，使得它们与 `x` 轴共同构成的容器可以容纳最多的水。
+
+返回容器可以储存的最大水量
+
+#### 示例
+
+```
+输入：[1,8,6,2,5,4,8,3,7]
+输出：49 
+解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49
+```
+
+#### 题目大意
+
+在数组中找到两个数组成的矩形体积最大，即底*高最大
+
+#### 解题思路
+
+我第一想到的双循环的方法，最直观也最好理解，但是执行效率上这道题通不过，所以之后改成了双指针法。
+
+双指针如果都是从左边开始的话，会有一个问题就是高度`min(height[lk],height[rk])`虽然可能增大，但是距离`rk-lk`是一定增大了的，所以并不能确定是高度的影响还是距离的影响让面积更大了。所以优化后，双指针改用两边向内的方式，这样距离只会越来越小，高度增大才有可能导致面积增大，才有可能成为最大的面积，排除了距离产生的影响
+
+#### 代码
+
+```
+//双指针法
+func maxArea(height []int) int {
+	lk,rk := 0,len(height) - 1
+	var maxA int
+	for lk < rk{
+		h := min(height[lk],height[rk])
+		area := (rk-lk) * h
+		if maxA < area {
+			maxA = area
+		}
+		if height[lk] < height[rk]{
+			lk++
+		}else{
+			rk--
+		}
+	}
+	return maxA
+}
+
+func min(a int, b int) int {
+	if a > b {
+		return b
+	} else {
+		return a
+	}
+}
+
+//双循环 超时代码
+func maxArea_Diuse(height []int) int {
+	maxA := 0
+	for lk := 0; lk < len(height); lk++ {  //左指针
+		for rk := lk; rk < len(height); rk++ {
+			if maxA < (rk - lk) * min(height[rk],height[lk]){
+				maxA = (rk - lk) * min(height[rk],height[lk])
+			}
+		}
+	}
+	return maxA
+}
+```
+
+#### 小结
 
 
 
