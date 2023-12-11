@@ -259,7 +259,7 @@ $$
 \end{Vmatrix}
 $$
 
-- 无限矩阵，斜点
+- 多项矩阵，斜点
   $$
   \begin{pmatrix}
   a_{11} & a_{12} & \dots & a_{1n} \\
