@@ -76,3 +76,19 @@ MaxInt32  = 1<<31 - 1
 //解释：（1<<31）表示1左移31位，使得符号位为1，其他位为0，再将左移后的结果减一就使得符号位为0，其他位都为1，即为int表示的有符号数的最大整数。
 ```
 
+#### 9.内置排序库
+
+```
+如果按升序对切片进行排序，可以使用sort.Ints()、sort.Float64()和sort.Strings()等方法。
+nums := []int{6, 4, 5, 2, 8, 1}
+sort.Ints(nums)
+fmt.Println(nums)
+
+自定义排序规则
+nums := []int{3, 7, 8, 1, 5, 4}
+sort.Slice(nums, func(i, j int) bool {
+  return nums[i] > nums[j]
+})
+fmt.Println(nums)
+```
+

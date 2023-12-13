@@ -964,8 +964,8 @@ func romanToInt(s string) int {
 	for i := 0; i < n; i++ {
 		if i < n-1 {
 			double := s[i : i+2]
-			if cur, ok := romanMap[double]; ok {
-				result += cur
+			if value, ok := romanMap[double]; ok {
+				result += value
 				i++
 				continue
 			}
@@ -975,20 +975,137 @@ func romanToInt(s string) int {
 	}
 	return result
 }
-
 ```
 
 #### 小结
 
 
 
+### 14.Longest Common Prefix
+
+#### 题目
+
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 `""`
+
+#### 示例
+
+```
+输入：strs = ["flower","flow","flight"]
+输出："fl"
+```
+
+#### 题目大意
+
+查找字符串数组中的最长公共前缀
+
+#### 解题思路
+
+- 用prefix前缀和每个字符串逐一比较就可以了
+
+#### 代码
+
+```
+func longestCommonPrefix(strs []string) string {
+	if len(strs) < 0{
+		return ""
+	}
+	prefix := strs[0]
+	for i := 1; i < len(strs); i++ {
+		index := 0
+		for index < min(len(prefix),len(strs[i])) && prefix[index] == strs[i][index] {
+			index++
+		}
+		prefix = prefix[:index]
+		if len(prefix) == 0 {
+			break
+		}
+	}
+	return prefix
+}
+
+func min(a int, b int) int {
+	if a > b {
+		return b
+	} else {
+		return a
+	}
+}
+```
+
+#### 小结
 
 
 
+### 15.3sum
+
+#### 题目
+
+给你一个整数数组 `nums` ，判断是否存在三元组 `[nums[i], nums[j], nums[k]]` 满足 `i != j`、`i != k` 且 `j != k` ，同时还满足 `nums[i] + nums[j] + nums[k] == 0` 。请
+
+你返回所有和为 `0` 且不重复的三元组。
+
+**注意：**答案中不可以包含重复的三元组。
+
+#### 示例
+
+```
+输入：nums = [-1,0,1,2,-1,-4]
+输出：[[-1,-1,2],[-1,0,1]]
+解释：
+nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。
+nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。
+nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
+不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。
+注意，输出的顺序和三元组的顺序并不重要。
+```
+
+#### 题目大意
 
 
 
+#### 解题思路
 
+
+
+#### 代码
+
+```
+func threeSum(nums []int) [][]int {
+	var ansArr [][]int
+	sort.Ints(nums)
+	for i := 0; i < len(nums); i++ { //i是从左到右的驱动器,lk从i+1开始,rk最右边
+		if i != 0 && nums[i] == nums[i-1] {
+			continue
+		}
+		lk := i + 1
+		rk := len(nums) - 1
+		for lk < rk {
+			if nums[i]+nums[lk]+nums[rk] > 0 {
+				rk--
+			} else if nums[i]+nums[lk]+nums[rk] < 0 {
+				lk++
+			} else if nums[i]+nums[lk]+nums[rk] == 0 {
+				ansArr = append(ansArr, []int{nums[i], nums[lk], nums[rk]})
+				lk++
+				rk--
+				for lk < rk && nums[lk] == nums[lk-1] {
+					lk++
+				}
+				for lk < rk && nums[rk] == nums[rk+1] {
+					rk--
+				}
+			}
+		}
+	}
+	return ansArr
+}
+```
+
+#### 小结
+
+双指针法
 
 
 
