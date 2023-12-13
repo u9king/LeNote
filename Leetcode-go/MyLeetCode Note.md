@@ -124,6 +124,35 @@ func reverse(x int)  (rev int) {
 }
 ```
 
+#### 2.特殊符号转换
+
+适用于：转换、编码
+
+```
+根据情况可以使用结构体，或者字典来实现
+type romanStruct struct {
+	value  int
+	symbol string
+}
+
+func intToRoman(num int) string {
+	romanMap := []romanStruct{{1000, "M"}, {900, "CM"}, {500, "D"}, {400, "CD"},
+		{100, "C"}, {90, "XC"}, {50, "L"}, {40, "XL"},
+		{10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"}, {1, "I"}}
+	result := ""
+	for _, v := range romanMap {
+		for num >= v.value {
+			result += v.symbol
+			num -= v.value
+		}
+		if num == 0 {
+			break
+		}
+	}
+	return result
+}
+```
+
 
 
 ## 第四章	Leetcode题解
@@ -979,7 +1008,7 @@ func romanToInt(s string) int {
 
 #### 小结
 
-
+字典查询取值题型，需要重点关注单双字符重叠的问题。
 
 ### 14.Longest Common Prefix
 
@@ -1036,7 +1065,7 @@ func min(a int, b int) int {
 
 #### 小结
 
-
+简单查询记录问题，用滑动窗口有点大材小用了，直接用指针和切片即可。
 
 ### 15.3sum
 
@@ -1063,11 +1092,16 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
 
 #### 题目大意
 
-
+整数数组 `nums`查找满足`nums[i] + nums[j] + nums[k] == 0`的三个数，并且ijk不相等。
 
 #### 解题思路
 
+首先想到的是三循环，但是明显超时，后想到用双指针法能够优化循环嵌套问题
 
+- 为了避免重复利用内置库sort对数组进行排序，因为只需要输出数组中的内容而不需要序号
+- i作为驱动器，从左到右，lk,rk两个指针分别从i+1和数组末尾开始
+- 重复问题需要特殊处理所以有三个类似i和i+1的比较都是为了去重
+- 如果lk走到rk就是所有都比较完整，如果还没有lk必须走完，比较多种不同的组合
 
 #### 代码
 
@@ -1105,7 +1139,7 @@ func threeSum(nums []int) [][]int {
 
 #### 小结
 
-双指针法
+基于i驱动的双指针法，更多类似解决三个变量运算的问题。
 
 
 

@@ -38,6 +38,8 @@ func threeSum(nums []int) [][]int {
 func main() {
 	//输入数据
 	strs := []int{-1, 0, 1, 2, -1, -4}
+	arr := []int{1,2,3}
 	//输出内容
+	fmt.Println(arr[1:3])
 	fmt.Println(threeSum(strs))
 }

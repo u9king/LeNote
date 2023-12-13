@@ -16,6 +16,8 @@
 a := []int{x,y,z}
 //数组指定位置插入
 arr = append(arr[:index], append([]T{value}, arr[index:]...)...)
+//切片因为前闭后开
+a[:3]  	//在0,1,2三个元素的时候是可以的
 ```
 
 #### 3.地址
