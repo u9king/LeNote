@@ -3,6 +3,36 @@ package main
 import "sort"
 
 func threeSum(nums []int) [][]int {
+	var ansArr [][]int
+	sort.Ints(nums)
+	for i := 0; i < len(nums); i++ { //i是从左到右的驱动器,lk从i+1开始,rk最右边
+		if i != 0 && nums[i] == nums[i-1] {
+			continue
+		}
+		lk := i + 1
+		rk := len(nums) - 1
+		for lk < rk {
+			if nums[i]+nums[lk]+nums[rk] > 0 {
+				rk--
+			} else if nums[i]+nums[lk]+nums[rk] < 0 {
+				lk++
+			} else if nums[i]+nums[lk]+nums[rk] == 0 {
+				ansArr = append(ansArr, []int{nums[i], nums[lk], nums[rk]})
+				lk++
+				rk--
+				for lk < rk && nums[lk] == nums[lk-1] {
+					lk++
+				}
+				for lk < rk && nums[rk] == nums[rk+1] {
+					rk--
+				}
+			}
+		}
+	}
+	return ansArr
+}
+
+func threeSum_v1(nums []int) [][]int {
 	n := len(nums)
 	sort.Ints(nums)
 	ans := make([][]int, 0)

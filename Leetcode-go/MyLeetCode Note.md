@@ -85,9 +85,9 @@ func fibonacci(n int)int{
 }
 ```
 
-#### 4.双指针法
+#### 4.对撞指针
 
-核心：左右指针，提高双循环效率
+核心：左右指针（双指针法的一种），提高双循环效率，
 
 ```
 func maxArea(height []int) int {
@@ -1141,11 +1141,115 @@ func threeSum(nums []int) [][]int {
 
 基于i驱动的双指针法，更多类似解决三个变量运算的问题。
 
+### 16.3sum Closest
+
+#### 题目
+
+给你一个长度为 `n` 的整数数组 `nums` 和 一个目标值 `target`。请你从 `nums` 中选出三个整数，使它们的和与 `target` 最接近。
+
+返回这三个数的和。
+
+假定每组输入只存在恰好一个解。
+
+#### 示例
+
+```
+输入：nums = [-1,2,1,-4], target = 1
+输出：2
+解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2) 。
+```
+
+#### 题目大意
+
+给一个整数数组 `nums`和 一个目标值 `target`，求target最接近的三个数的和返回和的值。
+
+#### 解题思路
+
+- 与上一题大致相同的框架，使用的是对撞指针的做法，定位i，再去研究合适的左指针lk和右指针rk
+- 这里有个额外的要求就是需要比较`result`和`total`哪个离target最近，这个最近可以是两个方向的所以要取绝对值-
+- 还有可以优化的地方就是对排序后数组中的重复数字可以进行跳过，这里对i,lk和rk都需要进行-
+- 还有一步优化就是找到和target直接相等的可以直接跳出返回target(要是抠逻辑细节的话应该返回total，因为这个数字是在数组中找到的)
+
+#### 代码
+
+```
+func threeSumClosest(nums []int, target int) int {
+	sort.Ints(nums)
+	n := len(nums)
+	result := nums[n-1] + nums[n-2] + nums[n-3] //取三个最大数
+	for i := 0; i < len(nums); i++ {
+		if i > 0 && nums[i] == nums[i-1] { //避免重复计算提高效率
+			continue
+		}
+		lk, rk := i+1, n-1
+		for lk < rk {
+			total := nums[i]+nums[lk]+nums[rk]
+			if abs(result-target) > abs(total-target) {
+				result = total
+			}
+			if total > target{
+				for rk > lk && nums[rk] == nums[rk-1]{  //重复数字就全部跳过因为rk-1在上一个循环已经算过了
+					rk--
+				}
+				rk--
+			} else if total < target{
+				for rk > lk && nums[lk] == nums[lk+1]{
+					lk++
+				}
+				lk++
+			} else if total == target{
+				return target
+			}
+		}
+	}
+	return result
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	} else {
+		return x
+	}
+}
+```
+
+#### 小结
+
+基于i驱动的双指针法，又名对撞指针法，是第15道题目的拓展运用。需要首先理解第15题，再来完成第16题会更好。
+
+### 17.Letter Combinations Of A Phone Number
+
+#### 题目
+
+给定一个仅包含数字 `2-9` 的字符串，返回所有它能表示的字母组合。答案可以按 **任意顺序** 返回。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母
+
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/11/09/200px-telephone-keypad2svg.png" align="left">
+
+#### 示例
+
+```
+输入：digits = "23"
+输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
+```
+
+#### 题目大意
 
 
 
+#### 解题思路
 
 
+
+#### 代码
+
+```
+
+```
+
+#### 小结
 
 
 
