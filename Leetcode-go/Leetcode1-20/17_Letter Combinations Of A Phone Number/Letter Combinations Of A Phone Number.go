@@ -22,7 +22,6 @@ func letterCombinations(digits string) []string {
 		return []string{}
 	}
 	backTracking(digits, 0)
-	//backTracking(digits, 0,"")
 	return results
 }
 
@@ -42,22 +41,33 @@ func backTracking(digits string, index int) {
 	}
 }
 
-func main() {
-	//输入数据
-	digits := "2"
-	//["ad","ae","af","bd","be","bf","cd","ce","cf"]
-	//输出内容
-	fmt.Println(letterCombinations(digits))
+//版本2将combination融合在backTracking函数中
+var results_v2 []string
+
+func letterCombinations_v2(digits string) []string {
+	if len(digits) == 0 {
+		return []string{}
+	}
+	backTracking_v2(digits, 0, "")
+	return results
 }
 
-//func backTracking(digits string, index int, combination string) {
-//	if index == len(digits) {
-//		results = append(results, combination)
-//		return
-//	}
-//	digit := digits[index]
-//	letters := letterMap[int(digit-'0')]
-//	for i := 0; i < len(letters); i++ {
-//		backTracking(digits, index+1, combination+string(letters[i]))
-//	}
-//}
+func backTracking_v2(digits string, index int, combination string) {
+	if index == len(digits) {
+		results_v2 = append(results_v2, combination)
+		return
+	}
+	digit := digits[index]
+	letters := letterMap[int(digit-'0')] //ASCII转int
+	for i := 0; i < len(letters); i++ {
+		backTracking_v2(digits, index+1, combination) //回溯
+	}
+}
+
+func main() {
+	//输入数据
+	digits := "23"
+	//输出内容
+	//["ad","ae","af","bd","be","bf","cd","ce","cf"]
+	fmt.Println(letterCombinations(digits))
+}

@@ -106,6 +106,27 @@ func maxArea(height []int) int {
 疑问：滑动窗口和双指针法有什么区别？
 ```
 
+#### 5.回溯算法
+
+核心：纯暴力搜索，解决嵌套循环层数的问题，四皇后问题，组合问题
+
+```
+func backTracking(参数) {  //常见参数：digits输入内容（找寻对应集合）, index递归次数
+    if (终止条件) {
+        存放结果;
+        return;
+    }
+    for (遍历集合中的元素) {
+        处理节点;
+        backtracking(路径，选择列表);
+        撤销
+    }
+}
+
+疑问：为什么不用遍历树结构呢？其实本质就是遍历树
+参考：第17题
+```
+
 
 
 ## 第三章	题型模板
@@ -152,6 +173,8 @@ func intToRoman(num int) string {
 	return result
 }
 ```
+
+
 
 
 
@@ -1226,7 +1249,7 @@ func abs(x int) int {
 
 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母
 
-<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/11/09/200px-telephone-keypad2svg.png" align="left">
+<img src="http://i2.wp.com/img-blog.csdnimg.cn/20200404104206556.png" align="left">
 
 #### 示例
 
@@ -1237,21 +1260,58 @@ func abs(x int) int {
 
 #### 题目大意
 
-
+手机键盘根据输入返回字母组合的所有可能性
 
 #### 解题思路
 
-
+- 所有可能性，考虑暴力破解，回溯算法。递归可以解决循环次数不确定问题
+- 建立对应字符字典`letterMap`
+- 编写回溯算法backTracking的标准格式(退出条件+回溯+撤销)，需要传入原始值`digits`和序数`index`
 
 #### 代码
 
 ```
+var results []string
 
+var letterMap = map[int]string{
+	2: "abc",
+	3: "def",
+	4: "ghi",
+	5: "jkl",
+	6: "mno",
+	7: "pqrs",
+	8: "tuv",
+	9: "wxyz",
+}
+
+func letterCombinations(digits string) []string {
+	if len(digits) == 0 {
+		return []string{}
+	}
+	backTracking(digits, 0)
+	return results
+}
+
+var combination string
+
+func backTracking(digits string, index int) {
+	if index == len(digits) {
+		results = append(results, combination)
+		return
+	}
+	digit := digits[index]
+	letters := letterMap[int(digit-'0')] //ASCII转int
+	for i := 0; i < len(letters); i++ {
+		combination += string(letters[i])
+		backTracking(digits, index+1)                  //回溯
+		combination = combination[:len(combination)-1] //撤销
+	}
+}
 ```
 
 #### 小结
 
-
+回溯算法题型。第一次遇见回溯算法，需要认真搞清回溯算法的每一步，回溯算法具有固定格式需要重点熟记。后续还会遇到很多类似的题目。
 
 
 
