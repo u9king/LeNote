@@ -1288,13 +1288,13 @@ func letterCombinations(digits string) []string {
 	if len(digits) == 0 {
 		return []string{}
 	}
-	backTracking(digits, 0)
+	results = []string{} //不加这句话本地对，力扣错；加上就都对了，为什么？
+	backTracking(digits, 0, "")
 	return results
 }
 
-var combination string
-
-func backTracking(digits string, index int) {
+func backTracking(digits string, index int, combination string) {
+	//combination作为局部变量避免全局变量的多次修改导致错误
 	if index == len(digits) {
 		results = append(results, combination)
 		return
@@ -1302,9 +1302,7 @@ func backTracking(digits string, index int) {
 	digit := digits[index]
 	letters := letterMap[int(digit-'0')] //ASCII转int
 	for i := 0; i < len(letters); i++ {
-		combination += string(letters[i])
-		backTracking(digits, index+1)                  //回溯
-		combination = combination[:len(combination)-1] //撤销
+		backTracking(digits, index+1, combination+string(letters[i])) //回溯
 	}
 }
 ```
@@ -1313,9 +1311,74 @@ func backTracking(digits string, index int) {
 
 回溯算法题型。第一次遇见回溯算法，需要认真搞清回溯算法的每一步，回溯算法具有固定格式需要重点熟记。后续还会遇到很多类似的题目。
 
+### 18.4sum
 
+#### 题目
 
+给你一个由 `n` 个整数组成的数组 `nums` ，和一个目标值 `target` 。请你找出并返回满足下述全部条件且**不重复**的四元组 `[nums[a], nums[b], nums[c], nums[d]]` （若两个四元组元素一一对应，则认为两个四元组重复）
 
+#### 示例
+
+```
+输入：nums = [1,0,-1,0,-2,2], target = 0
+输出：[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+```
+
+#### 题目大意
+
+给一个整数数组 `nums` ，和一个目标值 `target` 。找出不重复的四元组 `[nums[a], nums[b], nums[c], nums[d]]`的所有组合
+
+#### 解题思路
+
+- 类比三数之和，采用对撞指针加上双循环的方式
+- 首先需要对数组进行排序
+- 为了避免重复`i`取0,`j`取`i+1`,`lk`取`j+1`,`rk`取`len(nums)-1`也就是说在i,j不变的情况下找到合适的lk和rk
+- 最后加上优化部分，避免重复操作
+
+#### 代码
+
+```
+func fourSum(nums []int, target int) [][]int {
+	if len(nums) < 4 {
+		return [][]int{}
+	}
+	sort.Ints(nums)
+	var result [][]int
+	for i := 0; i < len(nums)-3; i++ {
+		if i != 0 && nums[i] == nums[i-1] {
+			continue
+		}
+		for j := i + 1; j < len(nums)-2; j++ {
+			if j != i+1 && nums[j] == nums[j-1] {
+				continue
+			}
+			lk, rk := j+1, len(nums)-1
+			for lk < rk {
+				if nums[i]+nums[j]+nums[lk]+nums[rk] > target {
+					rk--
+				} else if nums[i]+nums[j]+nums[lk]+nums[rk] < target {
+					lk++
+				} else if nums[i]+nums[j]+nums[lk]+nums[rk] == target {
+					result = append(result, []int{nums[i], nums[j], nums[lk], nums[rk]})
+					lk++
+					rk--
+					for lk < rk && nums[lk] == nums[lk-1] {
+						lk++
+					}
+					for lk < rk && nums[rk] == nums[rk+1] {
+						rk--
+					}
+				}
+			}
+		}
+	}
+	return result
+}
+```
+
+#### 小结
+
+基于i,j驱动的对撞指针方法，整体时间复杂度较高，需要考虑优化问题。
 
 
 

@@ -21,13 +21,13 @@ func letterCombinations(digits string) []string {
 	if len(digits) == 0 {
 		return []string{}
 	}
-	backTracking(digits, 0)
+	results = []string{} //不加这句话本地对，力扣错；加上就都对了，为什么？
+	backTracking(digits, 0, "")
 	return results
 }
 
-var combination string
-
-func backTracking(digits string, index int) {
+func backTracking(digits string, index int, combination string) {
+	//combination作为局部变量避免全局变量的多次修改导致错误
 	if index == len(digits) {
 		results = append(results, combination)
 		return
@@ -35,39 +35,13 @@ func backTracking(digits string, index int) {
 	digit := digits[index]
 	letters := letterMap[int(digit-'0')] //ASCII转int
 	for i := 0; i < len(letters); i++ {
-		combination += string(letters[i])
-		backTracking(digits, index+1)                  //回溯
-		combination = combination[:len(combination)-1] //撤销
-	}
-}
-
-//版本2将combination融合在backTracking函数中
-var results_v2 []string
-
-func letterCombinations_v2(digits string) []string {
-	if len(digits) == 0 {
-		return []string{}
-	}
-	backTracking_v2(digits, 0, "")
-	return results
-}
-
-func backTracking_v2(digits string, index int, combination string) {
-	if index == len(digits) {
-		results_v2 = append(results_v2, combination)
-		return
-	}
-	digit := digits[index]
-	letters := letterMap[int(digit-'0')] //ASCII转int
-	for i := 0; i < len(letters); i++ {
-		backTracking_v2(digits, index+1, combination) //回溯
+		backTracking(digits, index+1, combination+string(letters[i])) //回溯
 	}
 }
 
 func main() {
 	//输入数据
-	digits := "23"
+	digits := "2"
 	//输出内容
-	//["ad","ae","af","bd","be","bf","cd","ce","cf"]
 	fmt.Println(letterCombinations(digits))
 }

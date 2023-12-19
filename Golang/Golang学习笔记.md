@@ -94,3 +94,18 @@ sort.Slice(nums, func(i, j int) bool {
 fmt.Println(nums)
 ```
 
+#### 10.类型转换
+
+```
+//ASCII转int标准解法
+digit := '5'
+digitInt := int(digit - '0')
+
+//字符串转int标准解法
+str := "5"
+number, err := strconv.Atoi(str)
+
+//rune转string标准解法
+combination = string(letters[i])
+```
+
