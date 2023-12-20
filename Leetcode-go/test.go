@@ -2,50 +2,59 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func fourSum(nums []int, target int) [][]int {
-	if len(nums) < 4 {
-		return [][]int{}
-	}
-	sort.Ints(nums)
-	var result [][]int
-	for i := 0; i < len(nums)-3; i++ {
-		if i != 0 && nums[i] == nums[i-1] {
-			continue
-		}
-		for j := i + 1; j < len(nums)-2; j++ {
-			if j != i+1 && nums[j] == nums[j-1] {
-				continue
-			}
-			lk, rk := j+1, len(nums)-1
-			for lk < rk {
-				if nums[i]+nums[j]+nums[lk]+nums[rk] > target {
-					rk--
-				} else if nums[i]+nums[j]+nums[lk]+nums[rk] < target {
-					lk++
-				} else if nums[i]+nums[j]+nums[lk]+nums[rk] == target {
-					result = append(result, []int{nums[i], nums[j], nums[lk], nums[rk]})
-					lk++
-					rk--
-					for lk < rk && nums[lk] == nums[lk-1] {
-						lk++
-					}
-					for lk < rk && nums[rk] == nums[rk+1] {
-						rk--
-					}
-				}
-			}
-		}
-	}
-	return result
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
+
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	lk, rk := head, head       //建立左右指针(快慢指针)
+	for i := 0; i < n+1; i++ { //右指针先走n位
+		if rk == nil { //剔除删除第一个元素的问题
+			return head.Next
+		}
+		rk = rk.Next
+	}
+	for rk != nil { //左右指针同时走直到右指针到底，左指针就离右指针正好差n位
+		rk = rk.Next
+		lk = lk.Next
+	}
+	lk.Next = lk.Next.Next
+	return head
+}
+
+//ListDelete 删除指定位置的元素(无法删除首元节点)
+//func (l *LinkList) ListDelete(i int) {
+//	if i < 1 {
+//		fmt.Println("删除位置不合法")
+//		return
+//	}
+//	cur := l.Head
+//	j := 0
+//	for cur.Next != nil && j < i-1 {
+//		cur = cur.Next
+//		j++
+//	}
+//	if cur == nil || j > i-1 {
+//		fmt.Println("删除位置不合理")
+//		return
+//	}
+//	cur.Next = cur.Next.Next
+//	return
+//}
 
 func main() {
 	//输入数据
-	nums := []int{2, 2, 2, 2}
-	target := 8
+	head := &ListNode{1, &ListNode{2, &ListNode{3, &ListNode{4, &ListNode{5, nil}}}}}
+	n := 5
+
 	//输出内容
-	fmt.Println(fourSum(nums, target))
+	ans := removeNthFromEnd(head, n)
+	for ans != nil {
+		fmt.Println(ans.Val)
+		ans = ans.Next
+	}
+
 }

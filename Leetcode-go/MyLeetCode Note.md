@@ -38,7 +38,7 @@ func slidingWindow(nums []int){
 }
 ```
 
-<img src="https://img-blog.csdnimg.cn/20af5e0ee7cf4bdfb514822bb23ad062.gif#pic_center">
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/LeNotePic/Leetcode-goPic/Sliding%20Window.gif">
 
 #### 2.二分查找
 
@@ -85,9 +85,11 @@ func fibonacci(n int)int{
 }
 ```
 
-#### 4.对撞指针
+#### 4.双指针法
 
 核心：左右指针（双指针法的一种），提高双循环效率，
+
+变种：快慢指针，对撞指针
 
 ```
 func maxArea(height []int) int {
@@ -126,6 +128,10 @@ func backTracking(参数) {  //常见参数：digits输入内容（找寻对应�
 疑问：为什么不用遍历树结构呢？其实本质就是遍历树
 参考：第17题
 ```
+
+
+
+
 
 
 
@@ -180,7 +186,7 @@ func intToRoman(num int) string {
 
 ## 第四章	Leetcode题解
 
-<img src="https://img2.baidu.com/it/u=2643091948,2534409172&fm=253&fmt=auto&app=138&f=JPG?w=952&h=500" style="zoom:50%" align="left">
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/LeNotePic/Leetcode-goPic/GolangPic.jpg" style="zoom:50%" align="left">
 
 ### 1.twoSum
 
@@ -1249,7 +1255,7 @@ func abs(x int) int {
 
 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母
 
-<img src="http://i2.wp.com/img-blog.csdnimg.cn/20200404104206556.png" align="left">
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/LeNotePic/Leetcode-goPic/Phone.jpg" align="left">
 
 #### 示例
 
@@ -1379,6 +1385,63 @@ func fourSum(nums []int, target int) [][]int {
 #### 小结
 
 基于i,j驱动的对撞指针方法，整体时间复杂度较高，需要考虑优化问题。
+
+### 19.Remove Nth Node From End Of List
+
+#### 题目
+
+给你一个链表，删除链表的倒数第 `n` 个结点，并且返回链表的头结点。
+
+#### 示例
+
+```
+输入：head = [1,2,3,4,5], n = 2
+输出：[1,2,3,5]
+```
+
+#### 题目大意
+
+链表倒删结点。
+
+#### 解题思路
+
+- 双指针法中的变种快慢指针的思想，这里就统一用左右指针代替快慢指针来表达
+- 右指针先走n位后，左右指针同时走完，这样间距正好是n位
+- 操作左指针处理删除过程，返回head即可
+
+#### 代码
+
+```
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	lk, rk := head, head       //建立左右指针(快慢指针)
+	for i := 0; i < n+1; i++ { //右指针先走n位
+		if rk == nil { //剔除删除第一个元素的问题
+			return head.Next
+		}
+		rk = rk.Next
+	}
+	for rk != nil { //左右指针同时走直到右指针到底，左指针就离右指针正好差n位
+		rk = rk.Next
+		lk = lk.Next
+	}
+	lk.Next = lk.Next.Next
+	return head
+}
+```
+
+#### 小结
+
+双指针法在链表题型上的运用。
+
+
+
+
+
+
+
+
+
+
 
 
 
