@@ -13,6 +13,15 @@ type ListNode struct {
  }
 ```
 
+#### 2.栈结构
+
+```
+特点：FIFO先进先出
+var stack []byte 				//实现栈
+stack = append(stack, s[i]) 	//进栈
+stack = stack[:len(stack)-1] 	//出栈
+```
+
 ## 第二章	算法专题
 
 #### 1.滑动窗口
@@ -1433,9 +1442,55 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 
 双指针法在链表题型上的运用。
 
+### 20.Valid Parentheses
 
+#### 题目
 
+给定一个只包括 `'('`，`')'`，`'{'`，`'}'`，`'['`，`']'` 的字符串 `s` ，判断字符串是否有效。
 
+有效字符串需满足：
+
+1. 左括号必须用相同类型的右括号闭合。
+2. 左括号必须以正确的顺序闭合。
+3. 每个右括号都有一个对应的相同类型的左括号
+
+#### 示例
+
+```
+输入：s = "()[]{}"
+输出：true
+```
+
+#### 题目大意
+
+判断括号是否有效
+
+#### 解题思路
+
+- 经典思路使用栈的FIFO先进先出策略，必须有一对消除才能继续
+
+#### 代码
+
+```
+func isValid(s string) bool {
+	hashMap := map[byte]byte{')': '(', '}': '{', ']': '['}
+	var stack []byte	//生成栈
+	for i := 0; i < len(s); i++ {
+		if s[i] == '(' || s[i] == '[' || s[i] == '{' {
+			stack = append(stack, s[i])	//进栈
+		} else if len(stack) > 0 && stack[len(stack)-1] == hashMap[s[i]] {
+			stack = stack[:len(stack)-1]	//出栈
+		} else {
+			return false
+		}
+	}
+	return len(stack) == 0
+}
+```
+
+#### 小结
+
+有效性判断类型题目，对栈结构需要熟练掌握加以运用。
 
 
 

@@ -6,12 +6,12 @@ import (
 
 func isValid(s string) bool {
 	hashMap := map[byte]byte{')': '(', '}': '{', ']': '['}
-	var stack []byte	//生成栈
+	var stack []byte //实现栈
 	for i := 0; i < len(s); i++ {
 		if s[i] == '(' || s[i] == '[' || s[i] == '{' {
-			stack = append(stack, s[i])	//进栈
+			stack = append(stack, s[i]) //进栈
 		} else if len(stack) > 0 && stack[len(stack)-1] == hashMap[s[i]] {
-			stack = stack[:len(stack)-1]	//出栈
+			stack = stack[:len(stack)-1] //出栈
 		} else {
 			return false
 		}

@@ -4,57 +4,26 @@ import (
 	"fmt"
 )
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
-
-func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	lk, rk := head, head       //建立左右指针(快慢指针)
-	for i := 0; i < n+1; i++ { //右指针先走n位
-		if rk == nil { //剔除删除第一个元素的问题
-			return head.Next
+func isValid(s string) bool {
+	hashMap := map[byte]byte{')': '(', '}': '{', ']': '['}
+	var stack []byte
+	for i := 0; i < len(s); i++ {
+		if s[i] == '(' || s[i] == '[' || s[i] == '{' {
+			stack = append(stack, s[i])
+		} else if len(stack) > 0 && stack[len(stack)-1] == hashMap[s[i]] {
+			stack = stack[:len(stack)-1]
+		} else {
+			return false
 		}
-		rk = rk.Next
 	}
-	for rk != nil { //左右指针同时走直到右指针到底，左指针就离右指针正好差n位
-		rk = rk.Next
-		lk = lk.Next
-	}
-	lk.Next = lk.Next.Next
-	return head
+	return len(stack) == 0
 }
-
-//ListDelete 删除指定位置的元素(无法删除首元节点)
-//func (l *LinkList) ListDelete(i int) {
-//	if i < 1 {
-//		fmt.Println("删除位置不合法")
-//		return
-//	}
-//	cur := l.Head
-//	j := 0
-//	for cur.Next != nil && j < i-1 {
-//		cur = cur.Next
-//		j++
-//	}
-//	if cur == nil || j > i-1 {
-//		fmt.Println("删除位置不合理")
-//		return
-//	}
-//	cur.Next = cur.Next.Next
-//	return
-//}
 
 func main() {
 	//输入数据
-	head := &ListNode{1, &ListNode{2, &ListNode{3, &ListNode{4, &ListNode{5, nil}}}}}
-	n := 5
+	s := "()[]{}"
 
 	//输出内容
-	ans := removeNthFromEnd(head, n)
-	for ans != nil {
-		fmt.Println(ans.Val)
-		ans = ans.Next
-	}
+	fmt.Println(isValid(s))
 
 }
