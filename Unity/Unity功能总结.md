@@ -56,3 +56,9 @@ private void Update()
 }
 ```
 
+#### 5.获取当前物体名称
+
+```
+gameObject.name
+```
+
