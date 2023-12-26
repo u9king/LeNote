@@ -1492,11 +1492,58 @@ func isValid(s string) bool {
 
 有效性判断类型题目，对栈结构需要熟练掌握加以运用。
 
+### 21.Merge Two Sorted Lists
 
+#### 题目
 
+将两个升序链表合并为一个新的 **升序** 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
 
+#### 示例
 
+```
+输入：l1 = [1,2,4], l2 = [1,3,4]
+输出：[1,1,2,3,4,4]
+```
 
+#### 题目大意
+
+两个升序链表合并为一个新的升序链表
+
+#### 解题思路
+
+- 引入哨兵节点，避免头结点需要单独处理的问题
+- 循环读取链表直至有一个链表中没有节点
+- 拼接另一个链表
+- 返回哨兵节点后的第一个节点作为头结点
+
+#### 代码
+
+```
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	dummy := &ListNode{} //哨兵节点
+	cur := dummy
+	for list1 != nil && list2 != nil {
+		if list1.Val < list2.Val {
+			cur.Next = list1
+			list1 = list1.Next
+		} else {
+			cur.Next = list2
+			list2 = list2.Next
+		}
+		cur = cur.Next
+	}
+	if list1 != nil { //补充剩余节点
+		cur.Next = list1
+	} else if list2 != nil {
+		cur.Next = list2
+	}
+	return dummy.Next
+}
+```
+
+#### 小结
+
+链表类型题目，学习引入哨兵节点的技巧，着重掌握链表的添加，移动的代码实现。
 
 
 
