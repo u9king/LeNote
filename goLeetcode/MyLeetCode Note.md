@@ -19,7 +19,8 @@ type ListNode struct {
 特点：FIFO先进先出
 var stack []byte 				//实现栈
 stack = append(stack, s[i]) 	//进栈
-stack = stack[:len(stack)-1] 	//出栈
+var value byte	 				//出栈
+value,stack = stack[len(stack)-1],stack[:len(stack)-1] 	//出栈
 ```
 
 ## 第二章	算法专题
@@ -1545,7 +1546,125 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 
 链表类型题目，学习引入哨兵节点的技巧，着重掌握链表的添加，移动的代码实现。
 
+### 22.Generate Parentheses
 
+#### 题目
+
+数字 `n` 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 **有效的** 括号组合。
+
+#### 示例
+
+```
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+```
+
+#### 题目大意
+
+输入n返回n对括号的所有有效组合
+
+#### 解题思路
+
+- 非常有规律的二叉树，可以采用深度优先搜索树的方法来进行判断
+
+#### 代码
+
+```
+func generateParenthesis(n int) (ans []string) {
+	m := n*2  //全二叉树
+	path := make([]byte,m)  //生成树
+	var dfs func(int,int)  //深度优先搜索算法
+	dfs = func(i,open int){
+		if i == m{
+			ans = append(ans,string(path))
+			return
+		}
+		if open < n{  //可以填左括号
+			path[i] = '('
+			dfs(i+1,open+1)
+		}
+		if i-open < open{ //可以填右括号
+			path[i] = ')'
+			dfs(i+1,open)
+		}
+	}
+	dfs(0,0)
+	return
+}
+```
+
+#### 小结
+
+
+
+### 23.Merge K Sorted Lists
+
+#### 题目
+
+给你一个链表数组，每个链表都已经按升序排列。
+
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+#### 示例
+
+```
+输入：lists = [[1,4,5],[1,3,4],[2,6]]
+输出：[1,1,2,3,4,4,5,6]
+解释：链表数组如下：
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+将它们合并到一个有序链表中得到。
+1->1->2->3->4->4->5->6
+```
+
+#### 题目大意
+
+
+
+#### 解题思路
+
+
+
+#### 代码
+
+```
+func mergeKLists(lists []*ListNode) *ListNode {
+	h := hp{}
+	for _, head := range lists {
+		if head != nil {
+			h = append(h, head)
+		}
+	}
+	heap.Init(&h) // 堆化
+
+	dummy := &ListNode{} // 哨兵节点，作为合并后链表头节点的前一个节点
+	cur := dummy
+	for len(h) > 0 { // 循环直到堆为空
+		node := heap.Pop(&h).(*ListNode) // 剩余节点中的最小节点
+		if node.Next != nil {            // 下一个节点不为空
+			heap.Push(&h, node.Next) // 下一个节点有可能是最小节点，入堆
+		}
+		cur.Next = node // 合并到新链表中
+		cur = cur.Next  // 准备合并下一个节点
+	}
+	return dummy.Next // 哨兵节点的下一个节点就是新链表的头节点
+}
+
+//实现最小堆的定义
+type hp []*ListNode
+func (h hp) Len() int            { return len(h) }
+func (h hp) Less(i, j int) bool  { return h[i].Val < h[j].Val } // 最小堆
+func (h hp) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }
+func (h *hp) Push(v interface{}) { *h = append(*h, v.(*ListNode)) }
+func (h *hp) Pop() interface{}   { a := *h; v := a[len(a)-1]; *h = a[:len(a)-1]; return v }
+```
+
+#### 小结
+
+最小堆实现代码
 
 
 
