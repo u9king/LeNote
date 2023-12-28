@@ -2,7 +2,53 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d8e8a248-3034-458c-a564-028f475140b4" name="默认变更列表" comment="">
-      <change beforePath="$PROJECT_DIR$/C#/C#基础语法.md" beforeDir="false" afterPath="$PROJECT_DIR$/C#/C#基础语法.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/.idea/Leetcode-go.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/LeetCode Cookbook.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/.idea/Leetcode1-20.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/10_Regular Expression Matching/Regular Expression Matching.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/11_Container With Most Water/Container With Most Water.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/12_Integer To Roman/Integer To Roman.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/13_Roman To Integer/Roman To Integer.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/14_Longest Common Prefix/Longest Common Prefix.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/15_3sum/3sum.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/16_3sum Closest/3sum Closest.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/17_Letter Combinations Of A Phone Number/Letter Combinations Of A Phone Number.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/18_4sum/4sum.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/19_Remove Nth Node From End Of List/Remove Nth Node From End Of List.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/1_twoSum/twoSum.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/20_isValid/isValid.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/2_addTwoNumbers/addTwoNumbers.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/3_lengthOfLongestSubstring/lengthOfLongestSubstring.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/4_findMedianSortedArrays/findMedianSortedArrays.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/5_longestPalindrome/longestPalindrome.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/6_convert/convert.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/7_reverse/reverse.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/8_myAtoi/myAtoi.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode1-20/9_isPalindrome/isPalindrome.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode21-40/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode21-40/.idea/Leetcode21-40.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode21-40/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode21-40/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode21-40/21_Merge Two Sorted Lists/Merge Two Sorted Lists.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode21-40/26_removeDuplicates/removeDuplicates.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode21-40/27_removeElement/removeElement.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode61-80/80_removeDuplicates/removeDuplicates.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode81-100/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode81-100/.idea/Leetcode81-100.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode81-100/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode81-100/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/Leetcode81-100/88_merge/merge.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/MyLeetCode Note.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Leetcode-go/test.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +70,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Leetcode-go/Leetcode1-20" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/goAlgorithm" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
