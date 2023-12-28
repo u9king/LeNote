@@ -66,6 +66,10 @@ func InsertSort(arr []int) {
 }
 ```
 
+演示图片：
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/InsertSort.gif" style="zoom:75%"  align="left">
+
 ### 2.遍历
 
 #### 2.1 深度优先搜索(Depth_First Search——DFS)
