@@ -1,11 +1,13 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
+
+//BiSearchTree二叉搜索树，也叫dfs回溯算法
+//顺序存储结构的实现方法
+//?应该分类到树还是分类到回溯算法
 
 func generateParenthesis(n int) []string {
-	var res []string	//结果集
+	var res []string    //结果集
 	dfs(n, n, "", &res) //三个左括号三个右括号
 	return res
 }
@@ -26,6 +28,7 @@ func dfs(lindex int, rindex int, path string, res *[]string) {
 
 func main() {
 	//输入数据
+	//list := []int{3,5,10,16,7,32,83,23,54,29,96}
 
 	//输出内容
 	fmt.Println(generateParenthesis(3))

@@ -139,7 +139,28 @@ func backTracking(参数) {  //常见参数：digits输入内容（找寻对应�
 参考：第17题
 ```
 
+#### 6.dfs回溯算法
 
+核心：暴力搜索，解决组合问题
+
+区别：回溯算法，存在剪枝问题，需要通过左右index来判断不同的条件，其余部分与回溯算法一致
+
+```
+//dfs回溯法，二叉搜索树
+func dfs(lindex int, rindex int, path string, res *[]string) {
+	if lindex == 0 && rindex == 0 { //递归跳出条件.左右括号全部用完
+		*res = append(*res, path) //收集结果
+		return
+	}
+	if lindex > 0 {
+		dfs(lindex-1, rindex, path+"(", res)	//走左枝
+	}
+	if rindex > 0 && lindex < rindex {
+		dfs(lindex, rindex-1, path+")", res)	//走右枝
+	}
+}
+疑问：如何区别二叉搜索树
+```
 
 
 
@@ -1565,37 +1586,37 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 
 #### 解题思路
 
-- 非常有规律的二叉树，可以采用深度优先搜索树的方法来进行判断
+- 每个选项只有左右括号两种选择情况，可以采用深度优先二叉搜索树的方式
+- 用dfs回溯算法构建二叉搜索树`lindex`,`rindex`为树的左右枝
+- `path`为符合条件的字符串，`res`为结果集
 
 #### 代码
 
 ```
-func generateParenthesis(n int) (ans []string) {
-	m := n*2  //全二叉树
-	path := make([]byte,m)  //生成树
-	var dfs func(int,int)  //深度优先搜索算法
-	dfs = func(i,open int){
-		if i == m{
-			ans = append(ans,string(path))
-			return
-		}
-		if open < n{  //可以填左括号
-			path[i] = '('
-			dfs(i+1,open+1)
-		}
-		if i-open < open{ //可以填右括号
-			path[i] = ')'
-			dfs(i+1,open)
-		}
+func generateParenthesis(n int) []string {
+	var res []string	//结果集
+	dfs(n, n, "", &res) //三个左括号三个右括号
+	return res
+}
+
+//dfs回溯法，二叉搜索树
+func dfs(lindex int, rindex int, path string, res *[]string) {
+	if lindex == 0 && rindex == 0 { //递归跳出条件.左右括号全部用完
+		*res = append(*res, path) //收集结果path中包含符合条件的字符串结果
+		return
 	}
-	dfs(0,0)
-	return
+	if lindex > 0 {
+		dfs(lindex-1, rindex, path+"(", res)
+	}
+	if rindex > 0 && lindex < rindex {
+		dfs(lindex, rindex-1, path+")", res)
+	}
 }
 ```
 
 #### 小结
 
-
+求所有潜在组合的类型，可以采用回溯算法来实现，也可以借此机会深入了解顺序结构下的二叉搜索树。
 
 ### 23.Merge K Sorted Lists
 
@@ -1664,7 +1685,7 @@ func (h *hp) Pop() interface{}   { a := *h; v := a[len(a)-1]; *h = a[:len(a)-1];
 
 #### 小结
 
-最小堆实现代码
+最小堆实现代码，也可以参考在21题中已经实现的两个链表合并的方法使用分治的方法，递归解决k个的问题。
 
 
 

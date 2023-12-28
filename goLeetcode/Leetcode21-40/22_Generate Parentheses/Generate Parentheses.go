@@ -4,34 +4,28 @@ import (
 	"fmt"
 )
 
-func generateParenthesis(n int) (ans []string) {
-	m := n*2  //全二叉树
-	path := make([]byte,m)  //生成树
-	var dfs func(int,int)  //深度优先搜索算法
-	dfs = func(i,open int){
-		if i == m{
-			ans = append(ans,string(path))
-			return
-		}
-		if open < n{  //可以填左括号
-			path[i] = '('
-			dfs(i+1,open+1)
-		}
-		if i-open < open{ //可以填右括号
-			path[i] = ')'
-			dfs(i+1,open)
-		}
-	}
-	dfs(0,0)
-	return
+func generateParenthesis(n int) []string {
+	var res []string	//结果集
+	dfs(n, n, "", &res) //三个左括号三个右括号
+	return res
 }
 
-
+//dfs回溯法，二叉搜索树
+func dfs(lindex int, rindex int, path string, res *[]string) {
+	if lindex == 0 && rindex == 0 { //递归跳出条件.左右括号全部用完
+		*res = append(*res, path) //收集结果path中包含符合条件的字符串结果
+		return
+	}
+	if lindex > 0 {
+		dfs(lindex-1, rindex, path+"(", res)
+	}
+	if rindex > 0 && lindex < rindex {
+		dfs(lindex, rindex-1, path+")", res)
+	}
+}
 
 func main() {
 	//输入数据
-	//list1 := &ListNode{1, &ListNode{2, &ListNode{4, nil}}}
-	//list2 := &ListNode{1, &ListNode{3, &ListNode{4, nil}}}
 
 	//输出内容
 	fmt.Println(generateParenthesis(3))
