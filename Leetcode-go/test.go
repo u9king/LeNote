@@ -1,41 +1,36 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
-
-func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-	dummy := &ListNode{} //哨兵节点
-	cur := dummy
-	for list1 != nil && list2 != nil {
-		if list1.Val < list2.Val {
-			cur.Next = list1
-			list1 = list1.Next
-		} else {
-			cur.Next = list2
-			list2 = list2.Next
-		}
-		cur = cur.Next
-	}
-	if list1 != nil { //补充剩余节点
-		cur.Next = list1
-	} else if list2 != nil {
-		cur.Next = list2
-	}
-	return dummy.Next
-}
+//func isValid(s string) bool {
+//	hashMap := map[byte]byte{')': '(', '}': '{', ']': '['}
+//	var stack []byte
+//	var value string
+//	value,stack = string(stack[len(stack)-1]),stack[:len(stack)-1]
+//
+//
+//	for i := 0; i < len(s); i++ {
+//		if s[i] == '(' || s[i] == '[' || s[i] == '{' {
+//			stack = append(stack, s[i])
+//		} else if len(stack) > 0 && stack[len(stack)-1] == hashMap[s[i]] {
+//			value,stack = string(stack[len(stack)-1]),stack[:len(stack)-1]
+//		} else {
+//			return false
+//		}
+//	}
+//	return len(stack) == 0
+//}
 
 func main() {
 	//输入数据
-	list1 := &ListNode{1, &ListNode{2, &ListNode{4, nil}}}
-	list2 := &ListNode{1, &ListNode{3, &ListNode{4, nil}}}
+	//s := "abc"
+	var stack []byte
+	var value byte
+	stack = append(stack, []byte("abcd")...)
+	value,stack = stack[len(stack)-1],stack[:len(stack)-1]
+	fmt.Println(value)
+	fmt.Println(stack)
 
 	//输出内容
-	fmt.Println(mergeTwoLists(list1, list2))
-
+	//fmt.Println(isValid(s))
 }
