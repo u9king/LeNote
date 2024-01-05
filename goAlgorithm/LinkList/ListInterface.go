@@ -1,12 +1,10 @@
 package LinkList
 
-
-
 type AllLinkList interface {
 	Length() int
-	GetElem(i int) Element
-	LocateELem(e Element) *ListNode
-	ListInsert(i int, e Element)
+	GetElem(i int) int
+	LocateELem(e int) *ListNode
+	ListInsert(i int, e int)
 	ListDelete(i int)
 }
 

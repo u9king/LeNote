@@ -1,14 +1,13 @@
-package main
+package LinkList
 
 import "fmt"
 
-type ElemType int
 
-//DuLNode 双向链表节点
+//DuLNode 双链表节点
 type DuLNode struct {
+	Data  int
 	Prior *DuLNode
-	Data ElemType
-	Next *DuLNode
+	Next  *DuLNode
 }
 
 //DuLinkList 双向链表头
@@ -33,7 +32,7 @@ func (l *DuLinkList) GetDuListNode(i int) *DuLNode {
 }
 
 //DuListInsert 在指定节点之前插入新节点
-func (l *DuLinkList) DuListInsert(i int, data ElemType) {
+func (l *DuLinkList) DuListInsert(i int, data int) {
 	cur := l.GetDuListNode(i)
 	if cur == nil {
 		fmt.Println("没这个结点")

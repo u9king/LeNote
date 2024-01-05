@@ -4,30 +4,57 @@ import (
 	"fmt"
 )
 
-func generateParenthesis(n int) []string {
-	var res []string	//结果集
-	dfs(n, n, "", &res) //三个左括号三个右括号
-	return res
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 
-//dfs回溯法，二叉搜索树
-func dfs(lindex int, rindex int, path string, res *[]string) {
-	if lindex == 0 && rindex == 0 { //递归跳出条件.左右括号全部用完
-		*res = append(*res, path) //收集结果path中包含符合条件的字符串结果
-		return
+func reverse2Group(head *ListNode) *ListNode {
+	cur := head
+	for cur != nil && cur.Next != nil { //有两个点
+		value := cur.Val       //暂存奇数点的值
+		cur.Val = cur.Next.Val //值变为偶数点
+		cur.Next.Val = value   //交换值
+		cur = cur.Next.Next //移动两格
 	}
-	if lindex > 0 {
-		dfs(lindex-1, rindex, path+"(", res)
+	return head
+}
+
+
+//分治
+func reverseKGroup(lists []*ListNode) *ListNode {
+	length := len(lists)
+	if length < 1 {
+		return nil
 	}
-	if rindex > 0 && lindex < rindex {
-		dfs(lindex, rindex-1, path+")", res)
+	if length == 2 {
+		cur := lists[0]
+		for cur != nil && cur.Next != nil { //有两个点
+			value := cur.Val       //暂存奇数点的值
+			cur.Val = cur.Next.Val //值变为偶数点
+			cur.Next.Val = value   //交换值
+			cur = cur.Next.Next //移动两格
+		}
+		return head
 	}
+	num := length / 2
+	left := reverseKGroup(lists[:num])
+	right := reverseKGroup(lists[num:])
+	return reverseKGroup(left, right)
 }
 
 func main() {
 	//输入数据
+	list1 := &ListNode{1, &ListNode{2, &ListNode{3, &ListNode{4, nil}}}}
 
 	//输出内容
-	fmt.Println(generateParenthesis(3))
+	ans := reverseKGroup(list1,2)
+	for ans != nil {
+		fmt.Print(ans.Val)
+		if ans.Next != nil {
+			fmt.Print("->")
+		}
+		ans = ans.Next
+	}
 
 }

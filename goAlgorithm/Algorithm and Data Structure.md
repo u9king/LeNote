@@ -4,7 +4,7 @@
 
 ## 数据结构
 
-### 1.树
+### 1.树(Tree)
 
 分类：
 
@@ -25,9 +25,25 @@
 
 
 
+### 2.堆(Heap)
 
+定义：若n个元素的序列{a~1~	a~2~	... 	a~n~}满足
 
+$$\begin{cases}
+a_{i}&\leqslant a_{2i}&左孩子\\
+a_{i}&\leqslant a_{2i+1}&右孩子\\
+\end{cases}
+\qquad
+或
+\qquad
+\begin{cases}
+a_{i}&\leqslant a_{2i}\\
+a_{i}&\leqslant a_{2i+1}\\
+\end{cases}$$
 
+则分别称该序列{a~1~	a~2~	... 	a~n~}为小根堆和大根堆。
+
+表示：树形结构，一种特殊的完全二叉树
 
 
 
@@ -70,6 +86,14 @@ func InsertSort(arr []int) {
 
 <img src="https://gitee.com/u9king/ImageHostingService/raw/master/InsertSort.gif" style="zoom:75%"  align="left">
 
+#### 1.6 堆排序
+
+思想：小根堆，堆顶为最小值，输出后重新排序生成，则得到n个元素的次小值，循环往复得到一个有序序列
+
+
+
+
+
 ### 2.遍历
 
 #### 2.1 深度优先搜索(Depth_First Search——DFS)
@@ -111,6 +135,8 @@ func generateParenthesis(n int) (ans []string) {
 
 
 
+
+## Old
 
 #### 1.线性表
 
@@ -167,3 +193,12 @@ func generateParenthesis(n int) (ans []string) {
 
 3.倒序法
 
+
+
+
+
+## 提问：
+
+1.什么是线形表？
+
+2.什么叫“由于堆实质上是个线形表，可以用顺序存储一个堆”？
