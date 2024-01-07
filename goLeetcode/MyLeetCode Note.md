@@ -211,7 +211,26 @@ func intToRoman(num int) string {
 }
 ```
 
+#### 3.链表交换
 
+适用于：
+
+```
+//标准解法，需要牵扯到四个结点来完成交换
+func swapPairs(head *ListNode) *ListNode {
+	dummy := &ListNode{Next: head}
+	cur := dummy
+	for cur.Next != nil && cur.Next.Next != nil { //奇数偶数退出条件，前后顺序不能颠倒
+		node1 := cur.Next
+		node3 := cur.Next.Next.Next
+		cur.Next = cur.Next.Next  //链接node2
+		cur.Next.Next = node1
+		node1.Next = node3
+		cur = cur.Next.Next
+	}
+	return dummy.Next
+}
+```
 
 
 
@@ -247,7 +266,7 @@ func intToRoman(num int) string {
 
 #### 代码
 
-```
+```go
 func twoSum(nums []int, target int) []int {
 	resMap := map[int]int{}
 	for k, v := range nums {
@@ -293,7 +312,7 @@ func twoSum(nums []int, target int) []int {
 
 #### 代码
 
-```
+```go
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	head := &ListNode{Val: l1.Val + l2.Val}
 	cur := head
@@ -348,7 +367,7 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 
 #### 代码
 
-```
+```go
 func lengthOfLongestSubstring(s string) int {
 	hashMap := map[byte]bool{}
 	lk := 0
@@ -399,7 +418,7 @@ func lengthOfLongestSubstring(s string) int {
 
 #### 代码
 
-```
+```go
 func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	totalLength := len(nums1) + len(nums2)
 	if totalLength%2 == 1 {
@@ -478,7 +497,7 @@ func min(x, y int) int {
 
 #### 代码
 
-```
+```go
 //滑动窗口法
 func longestPalindrome(s string) string {
 	lk, rk := 0, 0
@@ -553,7 +572,7 @@ P     I
 
 #### 代码
 
-```
+```go
 func convert(s string, numRows int) string {
 	rows := make([]string, numRows)
 	rowNum := 0	//行编号
@@ -608,7 +627,7 @@ func convert(s string, numRows int) string {
 
 #### 代码
 
-```
+```go
 func reverse(x int)  (rev int) {
 	for x != 0{
 		digit := x % 10
@@ -671,7 +690,7 @@ func reverse(x int)  (rev int) {
 
 #### 代码
 
-```
+```go
 func myAtoi(s string) int {
 	result := 0
 	sign := 1	//符号位
@@ -759,7 +778,7 @@ func myAtoi_waitTest(s string) int {
 
 #### 代码
 
-```
+```go
 func isPalindrome(x int) bool {
 	if x < 0 {
 		return false
@@ -807,7 +826,7 @@ func isPalindrome(x int) bool {
 
 #### 代码
 
-```
+```go
 func isMatch_v2(s string, p string) bool {
 	m, n := len(s), len(p)
 	f := make([][]bool, m+1)
@@ -876,7 +895,7 @@ func isMatch_v2(s string, p string) bool {
 
 #### 代码
 
-```
+```go
 //双指针法
 func maxArea(height []int) int {
 	lk,rk := 0,len(height) - 1
@@ -970,7 +989,7 @@ M             1000
 
 #### 代码
 
-```
+```go
 type romanStruct struct {
 	value  int
 	symbol string
@@ -1043,7 +1062,7 @@ M             1000
 
 #### 代码
 
-```
+```go
 func romanToInt(s string) int {
 	romanMap := map[string]int{"M": 1000, "CM": 900, "D": 500, "CD": 400,
 		"C": 100, "XC": 90, "L": 50, "XL": 40,
@@ -1095,7 +1114,7 @@ func romanToInt(s string) int {
 
 #### 代码
 
-```
+```go
 func longestCommonPrefix(strs []string) string {
 	if len(strs) < 0{
 		return ""
@@ -1165,7 +1184,7 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
 
 #### 代码
 
-```
+```go
 func threeSum(nums []int) [][]int {
 	var ansArr [][]int
 	sort.Ints(nums)
@@ -1232,7 +1251,7 @@ func threeSum(nums []int) [][]int {
 
 #### 代码
 
-```
+```go
 func threeSumClosest(nums []int, target int) int {
 	sort.Ints(nums)
 	n := len(nums)
@@ -1307,7 +1326,7 @@ func abs(x int) int {
 
 #### 代码
 
-```
+```go
 var results []string
 
 var letterMap = map[int]string{
@@ -1374,7 +1393,7 @@ func backTracking(digits string, index int, combination string) {
 
 #### 代码
 
-```
+```go
 func fourSum(nums []int, target int) [][]int {
 	if len(nums) < 4 {
 		return [][]int{}
@@ -1442,7 +1461,7 @@ func fourSum(nums []int, target int) [][]int {
 
 #### 代码
 
-```
+```go
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	lk, rk := head, head       //建立左右指针(快慢指针)
 	for i := 0; i < n+1; i++ { //右指针先走n位
@@ -1493,7 +1512,7 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 
 #### 代码
 
-```
+```go
 func isValid(s string) bool {
 	hashMap := map[byte]byte{')': '(', '}': '{', ']': '['}
 	var stack []byte	//生成栈
@@ -1540,7 +1559,7 @@ func isValid(s string) bool {
 
 #### 代码
 
-```
+```go
 func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 	dummy := &ListNode{} //哨兵节点
 	cur := dummy
@@ -1592,7 +1611,7 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 
 #### 代码
 
-```
+```go
 func generateParenthesis(n int) []string {
 	var res []string	//结果集
 	dfs(n, n, "", &res) //三个左括号三个右括号
@@ -1651,7 +1670,7 @@ func dfs(lindex int, rindex int, path string, res *[]string) {
 
 #### 代码
 
-```
+```go
 func mergeKLists(lists []*ListNode) *ListNode {
 	h := hp{}
 	for _, head := range lists {
@@ -1707,23 +1726,43 @@ func (h *hp) Pop() interface{}   { a := *h; v := a[len(a)-1]; *h = a[:len(a)-1];
 #### 解题思路
 
 - 本质上考察的是链表交换的基本技巧
-- 这里思路打开可以理解为交换结点上的值，但是不动链表本身（也就是不动结点的Next），不满足条件
-- 把奇数`cur.Val`结点的值给偶数结点`cur.Next.Val`，把偶数的值`cur.Next.Val`给奇数的值`cur.Val`即可
-- 但是要注意修改奇数值前，要先取出来，否则会被覆盖掉
+- 标准解法需要用到四个结点（0,1,2,3）和两个临时变量来保存node1和node3
+- 将0连接到2实现交换的第一步
+- 将2连接到1实现交换的第二步
+- 将1连接到3实现交换的第三步
+- 记得cur要往后走两格，走到下一个4节点的起点也就是2这里
+
+
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/goAlgorithm/%E9%93%BE%E8%A1%A8%E4%BA%A4%E6%8D%A2.png" style="zoom:50%">
 
 #### 代码
 
-```
+```go
+//标准解法，需要牵扯到四个结点来完成交换
 func swapPairs(head *ListNode) *ListNode {
-	cur := head
-	for cur != nil && cur.Next != nil { //有两个点
-		value := cur.Val       //暂存奇数点的值
-		cur.Val = cur.Next.Val //值变为偶数点
-		cur.Next.Val = value   //交换值
-		cur = cur.Next.Next //移动两格
+	dummy := &ListNode{Next: head}
+	cur := dummy
+	for cur.Next != nil && cur.Next.Next != nil { //奇数偶数退出条件，前后顺序不能颠倒
+		node1 := cur.Next
+		node3 := cur.Next.Next.Next
+		cur.Next = cur.Next.Next  //链接node2
+		cur.Next.Next = node1
+		node1.Next = node3
+		cur = cur.Next.Next
 	}
-	return head
+	return dummy.Next
 }
+
+//由于golang多变量赋值的原因，直接交换按第一题的逻辑修改即可
+func swapPairs(head *ListNode) *ListNode {
+	dummy := &ListNode{Next: head}
+	for cur := dummy; cur.Next != nil && cur.Next.Next != nil;{
+		cur,cur.Next,cur.Next.Next,cur.Next.Next.Next = cur.Next,cur.Next.Next,cur.Next.Next.Next,cur.Next
+	}
+	return dummy.Next
+}
+
 
 ```
 
@@ -1750,21 +1789,47 @@ func swapPairs(head *ListNode) *ListNode {
 
 #### 题目大意
 
-
+链表k个为一组，进行组内交换
 
 #### 解题思路
 
-
+- 统计链表长度，计算k的有几段
+- 建立哨兵节点
+- p0为表头，pre为反转链表的表头，cur为当前链表指向，nxt为断开链表连接线时保存的内容
+- 外层循环执行n%k次反转，内层循环对k个节点内的节点进行依次反转
+- 重新连接链表，执行外层循环
 
 #### 代码
 
 ```
-
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	n := 0
+	for cur := head ; cur != nil;cur = cur.Next{
+		n++
+	}
+	dummy := &ListNode{Next: head}
+	p0 := dummy
+	var pre *ListNode
+	cur := p0.Next
+	for ; n >= k;n -= k{
+		for i := 0; i < k; i++ {
+			nxt := cur.Next
+			cur.Next = pre
+			pre = cur
+			cur = nxt
+		}
+		nxt := p0.Next
+		p0.Next.Next = cur
+		p0.Next = pre
+		p0 = nxt
+	}
+	return dummy.Next
+}
 ```
 
 #### 小结
 
-
+链表反转类题型，属于较难的，要非常明确在图中线的变化，以及重连后的链表，反复思考加深印象。
 
 
 
@@ -1800,7 +1865,7 @@ func swapPairs(head *ListNode) *ListNode {
 
 #### 代码
 
-```
+```go
 
 ```
 

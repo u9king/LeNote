@@ -155,6 +155,24 @@ func (l *LinkList) ListDelete(i int) {
 	return
 }
 
+//SwapPairs //todo 尚未判断是否可行
+func (l *LinkList) SwapPairs() {
+	dummy := &ListNode{Next: l.Head}
+	cur := dummy
+	for cur.Next != nil && cur.Next.Next != nil { //奇数偶数退出条件，前后顺序不能颠倒
+		node1 := cur.Next
+		node3 := cur.Next.Next.Next
+		cur.Next = cur.Next.Next  //链接node2
+		cur.Next.Next = node1
+		node1.Next = node3
+		cur = cur.Next.Next
+	}
+	l.Head = dummy.Next
+	return
+}
+
+
+
 func main() {
 	l := InitList() // 初始化单链表
 
