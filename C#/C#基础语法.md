@@ -4,7 +4,7 @@
 
 Console
 
-```
+```c#
 namespace ConsoleHelloWorld
 {
     internal class Program
@@ -41,7 +41,7 @@ namespace ConsoleHelloWorld
 
 函数名称的首字母大写，取名用动词短语
 
-```
+```c#
 //方法头
 class Calculator
 {
@@ -53,9 +53,10 @@ class Calculator
 }
 ```
 
-#### 9.for循环
+#### 9.循环
 
-```
+```c#
+//for循环
 class Calculator
 {
     public void Print1ToX(int x)
@@ -70,7 +71,7 @@ class Calculator
 
 #### 10.递归
 
-```
+```c#
 class Calculator
 {
     public void PrintXTo1(int x)
@@ -88,7 +89,7 @@ class Calculator
 }
 ```
 
-#### 11.数据类型
+#### 11.数据类型（Data Type）
 
 | C#类型关键字 | Range                                       | 字节 |
 | ------------ | ------------------------------------------- | ---- |
@@ -104,25 +105,43 @@ class Calculator
 | float        | ±1.5e-45 to ± 3.4e38                        | 4    |
 | double       | ±5.0e-324 to 1.7e308                        | 8    |
 
+区别：JavaScript为弱类型语言，C#为强类型语言。比较方法C语言示例：if条件。C#语言可以使用dynamic对弱类型进行模仿。
+
 #### 12.C#五大数据类型
 
-类Classes，如Windows，Form，Console
+类（Classes），如Windows，Form，Console
 
-结构体Structures：如Int32，Int64，single,double
+结构体（Structures）：如Int32，Int64，single,double
 
-枚举Enumerations：如HorizontalAlignment Visibility
+枚举（Enumerations）：如HorizontalAlignment Visibility
 
-接口Interfaces
+接口（Interfaces）
 
-委托Delegates
+委托（Delegates）
 
 #### 13.C#类型的派生谱系
 
 ![image-20230925111816132](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925111816132.png)
 
-#### 14.内存存储（补码反码）
+引用类型：object，string，class等
 
-```
+值类型：bool，byte，char，struct等
+
+#### 14.值类型变量与引用类型变量的区别
+
+值类型变量：
+
+- 根据值类型申请字节长度（最高位可能为符号位）
+
+引用类型变量：
+
+- 申请占用四个字节
+- 创建实例后将实例的首个内存地址编号存入四个字节中
+- 创建实例按照内部要求请求地址
+
+#### 15.内存存储（补码反码）
+
+```c#
 internal class Program
 {
     static void Main(string[] args)
@@ -141,13 +160,7 @@ internal class Program
 
 ![image-20230925125315698](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925125315698.png)
 
-#### 15.引用类型
-
-首先占用四个字节
-
-创建实例后将实例的首个内存地址编号存入四个字节中
-
-创建实例按照内部要求请求地址
+注：左侧$\large\textcolor{orange}{橙色}$区域为内存保留地址，$\large\textcolor{yellow}{黄色}$区域表示已经被占的区域
 
 #### 16.自顶向下算法
 
@@ -157,7 +170,7 @@ internal class Program
 
 快捷键:ctor+tab+tab
 
-```
+```c#
 namespace ConstructorExample
 {
     class Program
@@ -185,11 +198,101 @@ namespace ConstructorExample
 
 方法签名：由方法的名称，类型参数的个数和它的每一个形参（从左到右）的类型和种类（值、引用或输出）组成。方法签名不包括返回类型。
 
+#### 19.程序调用过程（内存中的栈和堆）
+
+程序存储在硬盘中，运行程序后，装载到内存中，内存会被分为两个空间（Stack和Heap）。
+
+栈（Stack）：用来函数调用（占用较小），会有栈爆的风险（栈溢出Stackoveflow）
+
+```C#
+//栈溢出实现
+namespace StackOverflow
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            BadGuy bg = new BadGuy();
+            bg.BadMethod();
+        }
+    }
+
+    class BadGuy
+    {
+        public void BadMethod()
+        {
+            int x;
+            this.BadMethod();
+        }
+    }
+}
+
+```
+
+堆（Heap）：用来存储对象（占用较大），不会爆，但是不回收会有内存泄漏的风险，使用Performance Mointor查看进程的堆内存使用情况
+
+win+r输入perfmon打开性能监视器,需要调整。
+
+```
+
+```
+
+<img src="E:\ImageHostingService\C#\性能监视器.jpg">
+
+#### 20.变量
+
+在C#中，变量一共有7种。
+
+​		静态变量，实例变量，数组元素，值参数，引用参数，输出形参，局部变量
+
+静态变量是隶属于类而不是类的实例的
+
+```c#
+namespace TypeInCSharp
+{ 
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Student.Amount = 1;		//静态变量
+        }
+    }
+
+    class Student
+    {
+        public static int Amount;
+        public double Add(ref double a, double b)  //引用参数变量
+        {
+            return a+b;
+        }
+        
+        public double Addd(out double a, double b)  //输出参数变量
+        {
+            return 2a+b;
+        }
+    }
+
+}
+```
+
+#### 21.数组
+
+```C#
+//数组申请
+int[] array = new int[100];
+```
+
+
+
+
+
+
+
 
 
 #### 100.快捷键
 
-ctrl+alt+L 打开资源管理器
+截图快捷键 fn+R
 
 #### 问题 
 
@@ -206,3 +309,11 @@ ctrl+alt+L 打开资源管理器
 6.函数重载
 
 7.类型形参
+
+8.如何在Microsoft Visual Studio 2022中将Solution Explorer调用出来？
+
+9.为什么会产生命名空间这个概念？
+
+10.public,private等的意思
+
+11.WPF没法用，C语言没法用，C#中生成这么多文件是为什么？每个是什么意思

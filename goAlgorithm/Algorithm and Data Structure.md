@@ -1,6 +1,6 @@
 # Algorithm and Data Structure
 
-导言：**程序= 数据+结构算法**————尼古拉斯•威茨（Niklaus Wirth）瑞士计算机科学家
+导言：**程序= 数据+算法**————尼古拉斯•威茨（Niklaus Wirth）瑞士计算机科学家
 
 ## 数据结构
 
