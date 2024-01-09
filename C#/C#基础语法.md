@@ -231,7 +231,7 @@ namespace StackOverflow
 
 堆（Heap）：用来存储对象（占用较大），不会爆，但是不回收会有内存泄漏的风险，使用Performance Mointor查看进程的堆内存使用情况
 
-win+r输入perfmon打开性能监视器,需要调整。
+控制台输入perfmon打开性能监视器,需要调整。
 
 ```
 
@@ -310,10 +310,8 @@ int[] array = new int[100];
 
 7.类型形参
 
-8.如何在Microsoft Visual Studio 2022中将Solution Explorer调用出来？
-
 9.为什么会产生命名空间这个概念？
 
-10.public,private等的意思
-
 11.WPF没法用，C语言没法用，C#中生成这么多文件是为什么？每个是什么意思
+
+12.离线文档如何实现

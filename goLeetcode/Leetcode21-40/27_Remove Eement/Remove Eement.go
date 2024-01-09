@@ -4,15 +4,16 @@ import (
 	"fmt"
 )
 
+//单指针法（双指针法变种
 func removeElement(nums []int, val int) int {
-	left := 0
+	lk := 0
 	for _,v := range nums{
-		if v != val{
-			nums[left] = v
-			left++
+		if v != val{		//左指针移动条件
+			nums[lk] = v	//处理题目逻辑
+			lk++			//移动指针
 		}
 	}
-	return left
+	return lk
 }
 
 
