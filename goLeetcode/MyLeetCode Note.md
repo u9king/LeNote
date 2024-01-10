@@ -189,7 +189,7 @@ func dfs(lindex int, rindex int, path string, res *[]string) {
 
 适用于：数字反转，回文数字，数位问题等
 
-```
+```go
 func reverse(x int)  (rev int) {
 	for x != 0{
     	rev = rev * 10 + x % 10
@@ -203,8 +203,8 @@ func reverse(x int)  (rev int) {
 
 适用于：转换、编码
 
-```
-根据情况可以使用结构体，或者字典来实现
+```go
+//根据情况可以使用结构体，或者字典来实现
 type romanStruct struct {
 	value  int
 	symbol string
@@ -228,24 +228,22 @@ func intToRoman(num int) string {
 }
 ```
 
-#### 3.链表交换
+#### 3.链表反转
 
 适用于：
 
-```
-//标准解法，需要牵扯到四个结点来完成交换
-func swapPairs(head *ListNode) *ListNode {
-	dummy := &ListNode{Next: head}
-	cur := dummy
-	for cur.Next != nil && cur.Next.Next != nil { //奇数偶数退出条件，前后顺序不能颠倒
-		node1 := cur.Next
-		node3 := cur.Next.Next.Next
-		cur.Next = cur.Next.Next  //链接node2
-		cur.Next.Next = node1
-		node1.Next = node3
-		cur = cur.Next.Next
+```go
+//需要三个变量来实现反转pre,cur,nxt分别代表反转后当前节点需要指向的节点，当前节点，反转前当前节点的Next结点
+func reverseList(head *ListNode) *ListNode {
+	var pre *ListNode
+	cur := head
+	for cur != nil {
+		nxt := cur.Next //nxt保存反转前下一个节点
+		cur.Next = pre  //反转cur节点的方向
+		pre = cur       //向下一个节点移动
+		cur = nxt       //向下一个节点移动
 	}
-	return dummy.Next
+	return pre
 }
 ```
 
@@ -1944,9 +1942,50 @@ func removeElement(nums []int, val int) int {
 
 双指针类型题目，与26题很类似，着重注意修改循环体的题目逻辑即可，双指针法直接套用结构就行。
 
+### 28.Find The Index Of The First Occurrence In A String
 
+#### 题目
 
+给你两个字符串 `haystack` 和 `needle` ，请你在 `haystack` 字符串中找出 `needle` 字符串的第一个匹配项的下标（下标从 0 开始）。如果 `needle` 不是 `haystack` 的一部分，则返回 `-1` 。
 
+#### 示例
+
+```
+输入：haystack = "sadbutsad", needle = "sad"
+输出：0
+解释："sad" 在下标 0 和 6 处匹配。
+第一个匹配项的下标是 0 ，所以返回 0 。
+```
+
+#### 题目大意
+
+给你两个字符串 `haystack` 和 `needle` ，请你在 `haystack` 字符串中找出 `needle` 字符串的第一个匹配项的下标（下标从 0 开始）。如果 `needle` 不是 `haystack` 的一部分，则返回 `-1` 。
+
+#### 解题思路
+
+- 很经典的KMP算法的实际运用，如果用暴力破解需要用到双循环，但是每次循环遍历读到的内容没有被充分复用导致，一段内容多次读取识别的问题，KMP算法就能很好的解决这个问题。
+
+#### 代码
+
+```go
+//暴力破解版
+func strStr(haystack string, needle string) int {
+	l1,l2 := len(haystack),len(needle)
+	if l2 == 0 {
+		return 0
+	}
+	for i := 0; i <= l1-l2; i++ {
+		if haystack[i:i+l2] == needle {
+			return i
+		}
+	}
+	return -1
+}
+```
+
+#### 小结
+
+本题虽然是个简单题，但是可以借用这个机会学习KMP这个经典算法。暂时不会写也不要紧，只要能理解学会引用KMP模板即可。
 
 
 

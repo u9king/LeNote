@@ -121,7 +121,7 @@ class Calculator
 
 #### 13.C#类型的派生谱系
 
-![image-20230925111816132](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925111816132.png)
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/C%23/%E6%B4%BE%E7%94%9F%E8%B0%B1%E7%B3%BB.png">
 
 引用类型：object，string，class等
 
@@ -139,7 +139,7 @@ class Calculator
 - 创建实例后将实例的首个内存地址编号存入四个字节中
 - 创建实例按照内部要求请求地址
 
-#### 15.内存存储（补码反码）
+#### 15.内存存储
 
 ```c#
 internal class Program
@@ -148,17 +148,22 @@ internal class Program
     {
         short s;
         s = -1000;
-        string str = Convert.ToString(s, 2);
+        string str = Convert.ToString(s, 2);	//这里的2表示以2进制进行转化
         Console.WriteLine(str);
     }
 }
 ```
 
-注意：存入时为反码，补码，注意高高低低原则，高位存高处
+计算步骤：
 
-![image-20230925125247350](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925125247350.png)
+- 第一步1000的二进制数是0000 0011 1110 1000（正负数在计算机中都是以补码形式存储，只不过正数的补码与自身相同）
+- 第二步-1000的二进制数补码是将上面这个数按位取反再加1，也就是1111 1100 0001 1000
 
-![image-20230925125315698](C:\Users\u9king\AppData\Roaming\Typora\typora-user-images\image-20230925125315698.png)
+注意：注意高高低低原则，高位存高处，存入时为反码，补码
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/C%23/%E5%86%85%E5%AD%982%E8%BF%9B%E5%88%B6%E6%98%BE%E7%A4%BA.png">
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/C%23/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D.png">
 
 注：左侧$\large\textcolor{orange}{橙色}$区域为内存保留地址，$\large\textcolor{yellow}{黄色}$区域表示已经被占的区域
 
@@ -233,11 +238,38 @@ namespace StackOverflow
 
 控制台输入perfmon打开性能监视器,需要调整。
 
+```c#
+namespace HeapSample
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+        List<Window> winList;
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            winList = new List<Window>();
+            for(int i = 0; i < 15000; i++)
+            {
+                Window w = new Window();
+                winList.Add(w);
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            winList.Clear();
+        }
+    }
+}
 ```
 
-```
-
-<img src="E:\ImageHostingService\C#\性能监视器.jpg">
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/C%23/%E6%80%A7%E8%83%BD%E7%9B%91%E8%A7%86%E5%99%A8.png">
 
 #### 20.变量
 
@@ -282,11 +314,30 @@ namespace TypeInCSharp
 int[] array = new int[100];
 ```
 
+#### 22.装箱与拆箱（Boxing&UnBoxing）
 
+步骤
 
+- 会先在栈中开辟一个object的空间（蓝色）
+- 然后将x的值复制到内存的堆上（蓝色）
+- 再将地址存入object的空间，完成整个装箱过程
 
+```C#
+namespace TypeInCSharp
+{ 
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int x = 100;
+            object obj;	
+            obj = x;	//装箱拆箱
+        }
+    }
+}
+```
 
-
+<img src="">
 
 
 

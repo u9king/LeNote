@@ -36,7 +36,7 @@ func main() {
 	list1 := CreateList([]int{1,4,5})
 	list2 := CreateList([]int{1,3,4})
 	list3 := CreateList([]int{2,6})
-	lists := []*ListNode{list1.Head, list2.Head, list3.Head}
+	lists := []*ListNode{list1, list2, list3}
 
 	//输出内容
 	ans := mergeKLists(lists)
