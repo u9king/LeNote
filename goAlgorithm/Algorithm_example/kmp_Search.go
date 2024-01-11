@@ -4,19 +4,19 @@ import (
 	"fmt"
 )
 
-//kmp算法实现
-func strStr(text string, patten string) int {
+//KmpSearch kmp算法实现
+func KmpSearch(text string, patten string) int {
 	next := computeNext(patten) //计算next数组
 	j := 0
 	for i := 0; i < len(text); i++ {
 		for j > 0 && text[i] != patten[j] {
-			j = next[j-1]	//回退
+			j = next[j-1] //回退
 		}
 		if text[i] == patten[j] {
-			j++	//扩大文本串和模式串的公共匹配长度
+			j++ //扩大文本串和模式串的公共匹配长度
 		}
-		if j == len(patten) {	//匹配到底
-			return i - j + 1	//返回文本串符合条件的初始位置
+		if j == len(patten) { //匹配到底
+			return i - j + 1 //返回文本串符合条件的初始位置
 		}
 	}
 	return -1
@@ -44,6 +44,6 @@ func main() {
 	needle := "leeto"
 
 	//输出内容
-	ans := strStr(haystack, needle)
+	ans := KmpSearch(haystack, needle)
 	fmt.Println(ans)
 }

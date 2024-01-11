@@ -23,6 +23,13 @@ var value byte	 				//出栈
 value,stack = stack[len(stack)-1],stack[:len(stack)-1] 	//出栈
 ```
 
+#### N.常用表
+
+| 表     |      |      |
+| ------ | ---- | ---- |
+| 哈希表 |      |      |
+| 前缀表 |      |      |
+
 ## 第二章	算法专题
 
 #### 1.滑动窗口
@@ -179,7 +186,46 @@ func dfs(lindex int, rindex int, path string, res *[]string) {
 疑问：如何区别二叉搜索树
 ```
 
+#### 7.KMP算法
 
+核心：next数组（类滑动窗口），回退操作
+
+适用于：字符串匹配
+
+```go
+func KmpSearch(haystack string, needle string) int {
+	next := computeNext(needle)
+	j := 0
+	for i := 0; i < len(haystack); i++ {
+		for j > 0 && haystack[i] != needle[j] {
+			j = next[j-1]
+		}
+		if haystack[i] == needle[j] {
+			j++
+		}
+		if j == len(needle) {
+			return i - j + 1
+		}
+	}
+	return -1
+}
+
+func computeNext(patten string) []int {
+	next := make([]int, len(patten))
+	j := 0 // j表示 最长相等前后缀长度
+	next[0] = j
+	for i := 1; i < len(patten); i++ {
+		for j > 0 && patten[i] != patten[j] {
+			j = next[j-1] // 回退前一位
+		}
+		if patten[i] == patten[j] {
+			j++
+		}
+		next[i] = j // next[i]是i（包括i）之前的最长相等前后缀长度
+	}
+	return next
+}
+```
 
 
 
@@ -1895,7 +1941,7 @@ func removeDuplicates(nums []int) int {
 
 双指针类型题目，注意题目要求的原地修改条件。
 
-### 27.Remove Eement
+### 27.Remove Element
 
 #### 题目
 
@@ -1964,10 +2010,50 @@ func removeElement(nums []int, val int) int {
 #### 解题思路
 
 - 很经典的KMP算法的实际运用，如果用暴力破解需要用到双循环，但是每次循环遍历读到的内容没有被充分复用导致，一段内容多次读取识别的问题，KMP算法就能很好的解决这个问题。
+- 首先需要编写计算Next数组`computeNext`，具体原理可以参考算法中对KMP算法的解释
+- 利用Next数组对文本串`haystack`和模式串`needle`进行处理
+- 编写回退条件，扩大条件，退出条件和完成条件即可
 
 #### 代码
 
 ```go
+//kmp算法实现
+func strStr(haystack string, needle string) int {
+	if len(needle) == 0 {
+		return 0
+	}
+	next := computeNext(needle) //计算next数组
+	j := 0
+	for i := 0; i < len(haystack); i++ {
+		for j > 0 && haystack[i] != needle[j] {
+			j = next[j-1]	//回退
+		}
+		if haystack[i] == needle[j] {
+			j++	//扩大文本串和模式串的公共匹配长度
+		}
+		if j == len(needle) {	//匹配到底
+			return i - j + 1	//返回文本串符合条件的初始位置
+		}
+	}
+	return -1
+}
+
+func computeNext(patten string) []int {
+	next := make([]int, len(patten))   //创建next数组
+	j := 0                             // j表示后缀末尾
+	next[0] = j                        //初始化
+	for i := 1; i < len(patten); i++ { //i表示前缀末尾
+		for j > 0 && patten[i] != patten[j] {
+			j = next[j-1] // 回退前一位
+		}
+		if patten[i] == patten[j] {
+			j++ //扩大最大公共前后缀长度
+		}
+		next[i] = j // next[i]是i之前的最长相等前后缀长度
+	}
+	return next
+}
+
 //暴力破解版
 func strStr(haystack string, needle string) int {
 	l1,l2 := len(haystack),len(needle)
@@ -1986,6 +2072,97 @@ func strStr(haystack string, needle string) int {
 #### 小结
 
 本题虽然是个简单题，但是可以借用这个机会学习KMP这个经典算法。暂时不会写也不要紧，只要能理解学会引用KMP模板即可。
+
+### 29.Divide Two Integers
+
+#### 题目
+
+给你两个整数，被除数 `dividend` 和除数 `divisor`。将两数相除，要求 **不使用** 乘法、除法和取余运算。
+
+整数除法应该向零截断，也就是截去（`truncate`）其小数部分。例如，`8.345` 将被截断为 `8` ，`-2.7335` 将被截断至 `-2` 。
+
+返回被除数 `dividend` 除以除数 `divisor` 得到的 **商** 
+
+#### 示例
+
+```
+输入: dividend = 10, divisor = 3
+输出: 3
+解释: 10/3 = 3.33333.. ，向零截断后得到 3 
+```
+
+#### 题目大意
+
+
+
+#### 解题思路
+
+
+
+#### 代码
+
+```go
+//二分搜索
+func divide(dividend int, divisor int) int {
+	if dividend == math.MinInt32 && divisor == -1 {
+		return math.MaxInt32
+	}
+	result := 0
+	sign := -1
+	if dividend > 0 && divisor > 0 || dividend < 0 && divisor < 0 {
+		sign = 1
+	}
+	dvd, dvs := abs(dividend), abs(divisor)
+	for dvd >= dvs {
+		temp := dvs
+		m := 1
+		for temp<<1 <= dvd {
+			temp <<= 1
+			m <<= 1
+		}
+		dvd -= temp
+		result += m
+	}
+	return sign * result
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return -a
+	}
+	return a
+}
+```
+
+#### 小结
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

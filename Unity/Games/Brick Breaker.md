@@ -1,3 +1,16 @@
+---
+title: Brick Breaker
+date: 2024-01-10 19:40:56
+sticky: 10
+pic: /images/thumb/Brick Breaker.png
+comments: true
+toc: true
+categories:
+- Games
+tags:
+- Unity
+---
+
 # Brick Breaker
 
 ### 1. **介绍**
@@ -12,9 +25,9 @@
 
 - **实机画面**：展示游戏界面和实际游戏过程。视频可以包括游戏玩法示例或者你在开发过程中的一些关键步骤。
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/Brick%20Breaker1.png">
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/Brick%20Breaker/1.png">
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/Brick%20Breaker2.png">
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/Brick%20Breaker/2.png">
 
 - **演示视频**
 
