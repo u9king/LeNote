@@ -2093,39 +2093,45 @@ func strStr(haystack string, needle string) int {
 
 #### 题目大意
 
-
+被除数 `dividend` 和除数 `divisor`。将两数相除，要求 **不使用** 乘法、除法和取余运算，向上取整。
 
 #### 解题思路
 
-
+- 不让乘除取余，那就只能加减了，而且始终记得乘除的底层本质就是加减法
+- 问题是如果用for循环，面对10这样的小数可以，但是如果10000除以2就需要循环5000次
+- 所以就想到了扩大除数的方法，核心`减2作为1次的话，减4就可以作为2次，减8就可以作为4次`以此类推
+- 将divisor作为基数将其左移`divisor<<1`就扩大两倍
 
 #### 代码
 
 ```go
-//二分搜索
+//倍增除数
 func divide(dividend int, divisor int) int {
-	if dividend == math.MinInt32 && divisor == -1 {
+	if dividend == math.MinInt32 && divisor == -1 { //-2^31没有成对的相反数，单独处理这个数就可以
 		return math.MaxInt32
 	}
-	result := 0
-	sign := -1
-	if dividend > 0 && divisor > 0 || dividend < 0 && divisor < 0 {
+	result := 0  //记录被除次数，也就是无符号的商
+	var sign int //记录符号
+	if dividend*divisor > 0 {
 		sign = 1
+	} else {
+		sign = -1
 	}
-	dvd, dvs := abs(dividend), abs(divisor)
-	for dvd >= dvs {
-		temp := dvs
-		m := 1
-		for temp<<1 <= dvd {
-			temp <<= 1
-			m <<= 1
+	dvd, div := abs(dividend), abs(divisor)
+	for dvd >= div {
+		tmp := div          //初始化除数
+		power := 1          //初始化权重
+		for tmp<<1 <= dvd { //找寻最大权重的除数，也就是div左移到最大
+			tmp <<= 1   //这里不用<<位计算用2*tmp效果是一样的
+			power <<= 1 //提升权重
 		}
-		dvd -= temp
-		result += m
+		dvd -= tmp      //减掉计算出的最大数
+		result += power //累计权重
 	}
 	return sign * result
 }
 
+//abs 求绝对值函数
 func abs(a int) int {
 	if a < 0 {
 		return -a
@@ -2136,7 +2142,42 @@ func abs(a int) int {
 
 #### 小结
 
+本体更像是数字处理类题型，考察的是编程中对于数学问题的优化，遇见相同题型积累即可。
 
+### 30.Substring With Concatenation Of All Words
+
+#### 题目
+
+给定一个字符串 `s` 和一个字符串数组 `words`**。** `words` 中所有字符串 **长度相同**。
+
+ `s` 中的 **串联子串** 是指一个包含 `words` 中所有字符串以任意顺序排列连接起来的子串。
+
+#### 示例
+
+```
+输入：s = "barfoothefoobarman", words = ["foo","bar"]
+输出：[0,9]
+解释：因为 words.length == 2 同时 words[i].length == 3，连接的子字符串的长度必须为 6。
+子串 "barfoo" 开始位置是 0。它是 words 中以 ["bar","foo"] 顺序排列的连接。
+子串 "foobar" 开始位置是 9。它是 words 中以 ["foo","bar"] 顺序排列的连接。
+输出顺序无关紧要。返回 [9,0] 也是可以的。
+```
+
+#### 题目大意
+
+
+
+#### 解题思路
+
+
+
+#### 代码
+
+```go
+
+```
+
+#### 小结
 
 
 

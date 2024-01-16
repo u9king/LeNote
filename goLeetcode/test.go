@@ -2,48 +2,51 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
-//kmp算法实现
-func strStr(text string, patten string) int {
-	next := computeNext(patten) //计算next数组
-	j := 0
-	for i := 0; i < len(text); i++ {
-		for j > 0 && text[i] != patten[j] {
-			j = next[j-1]	//回退
-		}
-		if text[i] == patten[j] {
-			j++	//扩大文本串和模式串的公共匹配长度
-		}
-		if j == len(patten) {	//匹配到底
-			return i - j + 1	//返回文本串符合条件的初始位置
-		}
+//二分搜索
+func divide(dividend int, divisor int) int {
+	if dividend == math.MinInt32 && divisor == -1 { //-2^31没有成对的相反数，单独处理这个数就可以
+		return math.MaxInt32
 	}
-	return -1
+	result := 0  //记录被除次数，也就是无符号的商
+	var sign int //记录符号
+	if dividend*divisor > 0 {
+		sign = 1
+	} else {
+		sign = -1
+	}
+	dvd, div := abs(dividend), abs(divisor)
+	for dvd >= div {
+		tmp := div          //初始化除数
+		power := 1          //初始化权重
+		for tmp<<1 <= dvd { //找寻最大权重的除数，也就是div左移到最大
+			tmp <<= 1   //这里不用<<位计算用2*tmp效果是一样的
+			power <<= 1 //提升权重
+		}
+		dvd -= tmp      //减掉计算出的最大数
+		result += power //累计权重
+	}
+	return sign * result
 }
 
-func computeNext(patten string) []int {
-	next := make([]int, len(patten))   //创建next数组
-	j := 0                             // j表示后缀末尾
-	next[0] = j                        //初始化
-	for i := 1; i < len(patten); i++ { //i表示前缀末尾
-		for j > 0 && patten[i] != patten[j] {
-			j = next[j-1] // 回退前一位
-		}
-		if patten[i] == patten[j] {
-			j++ //扩大最大公共前后缀长度
-		}
-		next[i] = j // next[i]是i之前的最长相等前后缀长度
+func abs(a int) int {
+	if a < 0 {
+		return -a
 	}
-	return next
+	return a
 }
 
 func main() {
 	//输入数据
-	haystack := "leetcode"
-	needle := "leeto"
+	dividend := 10
+	divisor := 3       //0....0011
+	//divisor2 := 3 << 1 //0....00110
+	//fmt.Println(divisor2)
 
 	//输出内容
-	ans := strStr(haystack, needle)
+	ans := divide(dividend, divisor)
 	fmt.Println(ans)
+
 }
