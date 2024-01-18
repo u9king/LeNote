@@ -4,8 +4,14 @@
 
 Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Heroku上。因为Hexo的创建者是台湾人，对中文的支持很友好，可以选择中文进行查看。
 
+#### 2.Hexo一句提交
 
-#### 2.基本指令介绍
+```bash
+hexo clean && hexo g -d
+```
+
+
+#### 3.基本指令介绍
 
 |        指令         |     作用     |       简写       |                             参数                             |
 | :-----------------: | :----------: | :--------------: | :----------------------------------------------------------: |
@@ -17,8 +23,16 @@ Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，
 | hexo new "我的博客" |   新建文章   | hexo n "我的博客 |                                                              |
 | npm update hexo -g  |     升级     |                  |                                                              |
 
+#### 4.HTTP提交失败
 
-#### 3.创建Hexo博客步骤
+可以改用ssh来提交
+
+```bash
+hexo config deploy.type git
+hexo config deploy.repo git@github.com:u9king/u9king.github.io.git
+```
+
+#### 5.创建Hexo博客步骤
 
 - 在github上创建仓库`github用户名.http://github.io`
 
@@ -72,7 +86,7 @@ Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，
   hexo deploy #部署
   ```
 
-#### 4.目录
+#### 6.目录
 
 在项目的`._config.yml`文件中Directory对应参数的解释
 
@@ -87,7 +101,7 @@ Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，
 | `i18n_dir`     | 国际化（i18n）文件夹                                         | `:lang`          |
 | `skip_render`  | 跳过指定文件的渲染。匹配到的文件将会被不做改动地复制到 `public` 目录中。您可使用 [glob 表达式](https://github.com/micromatch/micromatch#extended-globbing)来匹配路径。 |                  |
 
-#### 5.国际化（i18n）
+#### 7.国际化（i18n）
 
 若要让您的网站以不同语言呈现，您可使用国际化（internationalization）功能。请先在 `_config.yml` 中调整 `language` 设定，这代表的是预设语言，您也可设定多个语言来调整预设语言的顺位。
 
