@@ -354,3 +354,72 @@ public class CameraController : MonoBehaviour
 }
 ```
 
+#### 14.角色受伤闪烁
+
+```c#
+public class PlayerHealth : MonoBehaviour
+{
+    public int health;  //血量
+    public int Blinks = 2;  //闪烁次数
+    public float blinkTime = 0.1f;  //闪烁时间
+    private Renderer myRender;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        myRender = GetComponent<Renderer>();
+    }
+
+    public void DamagePlayer(int damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
+        BlinkPlayer(Blinks,blinkTime);
+    }
+
+    public void BlinkPlayer(int numBlinks, float seconds)
+    {
+        StartCoroutine(DoBlinks(numBlinks, seconds));
+    }
+
+    IEnumerator DoBlinks(int numBlinks, float seconds)
+    {
+        for (int i = 0; i < numBlinks * 2; i++)
+        {
+            myRender.enabled = !myRender.enabled;
+            yield return new WaitForSeconds(seconds);
+        }
+        myRender.enabled = true;
+    }
+}
+
+```
+
+#### 15.角色血条
+
+```c#
+//需要将Image的图像类型替换成填充
+public class HealthBar : MonoBehaviour
+{
+    public Text healthText;
+    public static int HealthCurrent;
+    public static int HealthMax=5;
+    private Image healthBar;
+    void Start()
+    {
+        healthBar = GetComponent<Image>();
+        HealthCurrent = HealthMax;
+    }
+
+    void Update()
+    {
+        healthBar.fillAmount = (float)HealthCurrent / (float)HealthMax;
+        healthText.text = HealthCurrent.ToString() + "/" + HealthMax.ToString();
+    }
+}
+
+```
+
