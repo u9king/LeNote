@@ -19,3 +19,12 @@ ssh -T git@github.com
 eval "$(ssh-agent -s)"
 ```
 
+#### 3.ssh连接失败
+
+```
+//在~/.ssh下创建config输入以下内容
+Host github.com
+  Hostname ssh.github.com
+  Port 443
+```
+
