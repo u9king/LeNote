@@ -28,3 +28,9 @@ Host github.com
   Port 443
 ```
 
+#### 4.查询config是否正确
+
+```
+git config --global --list
+```
+
