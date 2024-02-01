@@ -3,12 +3,11 @@
 #### 1.实现接口
 
 ```C#
-目的???
 public interface IState //状态类型接口
 {
     void OnEnter(); //状态进入
 
-    void OnUpdate();    //状态执行
+    void OnUpdate(); //状态执行
 
     void OnExit();  //状态退出
 }
