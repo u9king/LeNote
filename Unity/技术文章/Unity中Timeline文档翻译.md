@@ -84,9 +84,45 @@
 
 ​		曲线视图——Curves View
 
+​				隐藏和展示曲线——Hiding and Showing Curves
+
+​				导航曲线视图——Navigating the Curves View
+
+​				选择关键帧——Selecting Keys
+
+​				增加关键帧——Adding Keys
+
+​				编辑关键帧——Editing Keys
+
+​				改变差值和形状——Changing Interpolation and Shape
+
+​				删除关键帧——Deleting Keys
+
 ​		时间线设置——Timeline Settings
 
 时间线检视器——Timeline Inspector
+
+​		设置时间线属性——Setting Timeline Properties
+
+​		设置轨道属性——Setting Track Properties
+
+​				激活轨道属性——Activation Track Properties
+
+​				动画轨道属性——Animation Track Properties
+
+​		设置片段属性——Setting Clip Properties
+
+​				激活片段属性——Activation Clip Properties
+
+​				激活轨道属性——Activation Track Properties
+
+​				激活轨道属性——Activation Track Properties
+
+​				激活轨道属性——Activation Track Properties
+
+​				激活轨道属性——Activation Track Properties
+
+​				激活轨道属性——Activation Track Properties
 
 可播放导演组件——Playable Director Component
 
