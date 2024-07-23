@@ -261,3 +261,20 @@ void RestorePlayerLayer()
 }
 ```
 
+#### 2.AI模型参数
+
+模型:高像素 像素画
+
+关键词1:((Side view)),pixel,pixel art,pixelart,xiangsu,xiang su,8bit,16bit,32bit,64bit,128bit,256bit,1girl,full body,Solid background,masterpiece,best,quality,purple hat,witch,cute,full body,with staff,attack,muti-player
+
+关键词2:((Side view)),pixel,pixel art,pixelart,xiangsu,xiang su,8bit,16bit,32bit,64bit,128bit,256bit,1girl,full body,Solid background,masterpiece,best,quality,warrior,cute,full body,muti-player,yellow hair,
+
+采样方法:Euler a
+
+迭代步数:20
+
+高清修复:
+
+宽高1024*1024
+
+Lora:2D pixel Toolkit
