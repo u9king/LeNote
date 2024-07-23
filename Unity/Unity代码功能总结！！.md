@@ -423,3 +423,40 @@ public class HealthBar : MonoBehaviour
 
 ```
 
+#### 16.动画播放完成
+
+方法一：异步
+
+```c#
+//需要将Image的图像类型替换成填充
+public class HealthBar : MonoBehaviour
+{
+    private bool isRunning;
+    private Animator animator;
+    
+    void Update()
+    {
+        if (!isRunning)
+        {
+            AnimationPlay();
+        }
+    }
+    
+    private async void AnimationPlay()
+    {
+        isRunning = true;
+        await AnimationFinish("Attack");
+        await Task.Delay(1000);
+        isRunning = false;
+    }
+
+    public async Task AnimationFinish(string stateName,float extreTime = 0f)
+    {
+        await DOTween.Sequence()
+            .AppendCallback(() => animator.Play(stateName))
+            .AppendInterval(animator.GetCurrentAnimatorStateInfo(0).length + extreTime)
+            .AsyncWaitForCompletion();
+    }
+}
+
+```
