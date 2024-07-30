@@ -63,5 +63,9 @@ int i = 1;
 s = (short)i
 方法2:Parse法
 int i4 = int.Parse("123");
+方法3:Convert法
+int a = Convert.ToInt32("12");
+方法4:ToString法
+string str6 = 1.ToString();
 ```
 
