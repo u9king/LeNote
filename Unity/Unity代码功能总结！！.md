@@ -460,3 +460,15 @@ public class HealthBar : MonoBehaviour
 }
 
 ```
+
+#### 17.总是执行
+
+```
+无论是在编辑器模式还是运行模式都会执行代码，适用于绘制Gxios
+[ExecuteAlways]   //总是执行
+public class Player:MonoBehaviour
+{
+
+}
+```
+

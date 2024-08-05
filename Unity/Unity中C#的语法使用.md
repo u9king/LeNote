@@ -69,3 +69,59 @@ int a = Convert.ToInt32("12");
 string str6 = 1.ToString();
 ```
 
+#### 8.异常捕获
+
+```C#
+//必备部分
+try
+{
+
+}
+catch(Exception e)	//e是具体错误信息
+{
+	//出错执行
+}
+//可选部分
+finally
+{
+	//不管出错与否都会执行
+}
+```
+
+#### 9.自增运算符
+
+```
+int a = 1;
+a++;	先用再加
+++a;	先加再用
+```
+
+#### 10.字符串拼接
+
+```
+string str = string.Format("a:{0},b:{1}","A","B");
+```
+
+#### 11.三目运算符
+
+```
+bool ? 真:假;
+```
+
+#### 12.do while语句
+
+```
+do
+{
+	//先执行后判断
+}while(bool);	//使用较少
+```
+
+#### 13.委托,事件,Action,Func的关系
+
+```
+1.Action是delegate的简写
+2.event约束是限制功能的delegate
+3.Func是带返回值(最后一个参数)的delegate——注多播情况下返回最后挂的一个委托的返回值
+```
+
