@@ -125,3 +125,119 @@ do
 3.Func是带返回值(最后一个参数)的delegate——注多播情况下返回最后挂的一个委托的返回值
 ```
 
+#### 14.字符串转枚举
+
+```
+playerType = (E_PlayerType)Enum.Parse(typeof(E_PlayerType),"Other");
+```
+
+#### 15.数组
+
+```
+变量类型[] 数组名 = new 变量类型[]{内容1，内容2，内容3，......};
+int[] arr = new int[]{ 1, 2, 3, ......};
+简化写法：
+int[] arr = { 1, 2, 3, ......};
+//建立定长空数组
+int[] arr = new int[5];
+注释：
+数组初始化后是不能添加新的元素的！！！
+所以需要开新数组用循环进行搬家
+搬家代码：
+int[] array2 = new int[6];	//建新房
+for (int i = 0; i < array.Length; i++)
+{
+	array2[i] = array[i];	//搬数值
+}
+array = array2;//搬地址
+```
+
+#### 16.二维数组
+
+```
+变量类型[,] 数组名 = new 变量类型[,]{{内容1，内容2，内容3},{},{}......};
+int[] arr = new int[,]{{1,2,3},
+					   {4,5,6},
+					   {7,8,9}};
+简化写法：
+int[] arr = {{1,2,3},
+			 {4,5,6},
+			 {7,8,9}};
+```
+
+#### 17.交错数组
+
+```
+变量类型[][] 数组名 = new 变量类型[][]{new 类型[]{},new 类型[]{},......};
+int[][] arr = new int[][]{new int[]{1,2,3},
+					   	  new int[]{1,2},
+					      new int[]{1}};
+简化写法：
+int[] arr = {new int[]{1,2,3},
+			 new int[]{1,2},
+			 new int[]{1}};
+```
+
+#### 18.引用类型
+
+```
+应用类型：数组，class，string
+表现：会随引用的变化而变化
+	 值类型它变我不变，引用类型它变我也变
+	 值类型存储在栈空间上	—— 系统分配，自动回收，小而快
+	 引用类型存储在堆空间上，用栈存地址  —— 手动申请和释放，大而慢
+int[] arr =new int[]{1}
+int[] arr2 = arr
+arr2[0] = 2;
+此时如果打印 arr[0]的值为 2;
+```
+
+#### 19.ref和out
+
+```
+函数参数修饰符
+ref:当传入的值类型参数在内部修改（引用类型参数在内部声明）时，外部的值产生变化
+static void ChangeValueRef(ref int value)
+{
+	value = 3;
+}
+使用: ChangeValueRef(ref a);
+out:
+static void ChangeValueOut(out int value)
+{
+	value = 3;
+}
+使用: ChangeValueOut(out a);
+
+ref和out的区别
+1.ref传入的变量必须初始化 out不用
+2.out传入的变量必须在内部赋值  ref不用
+说白了就是，ref是引用，你得先有；out是输出，我帮你留了位置，你自己定
+```
+
+#### 20.变长参数
+
+```
+params关键字 一个函数只有一个
+static int Sum(string name, params int[] arr)
+{
+	int sum = 0;
+	for (int i = 0; i < arr.Length; i++)
+	{
+		sum += arr[i];
+	}
+	return sum;
+}
+```
+
+#### 21.结构体
+
+```
+struct Student
+{
+	//结果提中申明变量不能直接初始化
+	int age;
+	bool sex;
+}
+```
+
