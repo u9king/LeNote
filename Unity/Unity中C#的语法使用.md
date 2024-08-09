@@ -241,3 +241,115 @@ struct Student
 }
 ```
 
+#### 22.类型默认值
+
+```
+default(int);  //值类型的都能查看，引用类型出来是空
+```
+
+#### 23.构造函数
+
+```
+class Person
+{
+	public Person()
+	{
+	
+	}
+}
+
+特殊继承:
+class Person
+{
+	private int a;
+    private int b;
+	public Person()
+	{
+		a = 1;
+	}
+	public Person(int b):this()	特殊继承，类似贯穿:
+	{
+		b = 2;
+		Debug.Log(a,b);  //a = 1 b = 2
+	}
+}
+```
+
+#### 24.析构函数
+
+```
+class Person
+{
+	//作为垃圾回收的时候触发
+	~ Person()
+	{
+	
+	}
+}
+```
+
+#### 25.垃圾回收GC
+
+```
+Garbage Collector
+垃圾回收有很多种算法，比如
+//代级回收（0代，1代，2代）  新来的进入0代
+//引用计数(Reference Counting）
+//标记清除(Mark Sweep)
+//标记整理(Mark Compact)
+//复制集合(Copy Collection)
+
+GC只负责堆内存的垃圾回收，栈有自己的生命周期GC管不着
+System.GC.Collect();
+```
+
+#### 26.成员属性(get,set)
+
+```
+class Person
+{
+	private string name;
+	public string Name
+	{
+		get
+		{
+			return name;
+		}
+		set
+		{
+			name = value;  //其中value只在set中有用
+		}
+	}
+}
+
+//简写
+public float Height
+{
+	get;
+	private set;
+}
+```
+
+#### 27.索引器
+
+```
+class Person
+{
+	private string name;
+	private int age;
+	private Person[] friends;
+	
+	public Person this[int index]	//索引器,this[]
+	{
+		get
+		{
+			return friends[index];
+		}
+		set
+		{
+			friends[index] = value;
+		}
+	}
+}
+```
+
