@@ -353,3 +353,155 @@ class Person
 }
 ```
 
+#### 28.静态类
+
+```
+public static class Tools
+{
+	//静态成员变量
+	public static int a = 0;
+	public static void TestFun()
+	{
+	
+	}
+}
+```
+
+#### 29.静态类拓展方法
+
+```
+慎用！！！  可能会破坏原本类的封装
+格式：
+//访问修饰符 static 返回值(this 拓展类名 参数名，参数类型 参数名 ...)
+static class Tools{
+	public static void SpeakValue(this int value){}；
+	这就是给int这个类拓展SpeakValue的方法
+}
+
+示例：
+static class Tools
+{
+	public static void SpeakValue(this int a)
+	{
+		Console.WriteLine("1:" + a);
+	}
+}
+class Main
+{
+	int i = 10;
+	Debug.Log(i.SpeakValue);
+}
+```
+
+#### 30.运算符重载
+
+```
+关键字：operator
+可重载符号：+ - * / % ++ -- ！(> <:成对出现) (>= <=) == !=
+格式：public static 返回值 operator 运算符(参数列表)
+class Point
+{
+	public int x;
+	public int y
+	public static Point operator +(Point p1, Point p2)
+	{
+		Point p = new Point();
+		p.x = p1.x + p2.x;
+		p.y = p1.y + p2.y
+	}
+}
+class Main
+{
+	Point p1 = new Point(1, 1);
+	Point p2 = new Point(2, 2);
+	Point p3 = p1 + p2;
+}
+```
+
+#### 31.分部类
+
+```
+关键词：partial
+partial class Student
+{
+	public bool sex;
+	public string name;
+}
+partial class Student
+{
+	public int number;
+}
+```
+
+#### 32.里氏替换原则(is/as)
+
+```
+重要性：面向对象七大原则中最重要的原则
+基本概念：任何父类出现的地方，子类都可以替代
+class GameObject{}
+Class Player : GameObject
+{
+ 	public void PlayAtk()
+ 	{
+ 		Console.WriteLine("玩家攻击");
+	 }
+}
+Class Monster : GameObject
+{
+ 	public void MonsterAtk()
+ 	{
+ 		Console.WriteLine("怪物攻击");
+	 }
+}
+class Main
+{
+	//里氏替换原则  用父类容器  装载子类对象
+	GameObject player = new Player();
+    GameObject monster = new Monster();
+    GameObject[] objects = new GameObject[]{new Player(),new Monster()}
+    
+    #region is和as
+    //is：判断一个对象是否是指定类对象
+    //返回值 bool 是为真 不是为假
+    if(player is Player)
+    {
+    
+    }
+    //as: 将一个对象转换为指定类对象
+    //返回值：指定类型对象 失败返回null
+    #endregion
+}
+```
+
+#### 33.继承中的构造
+
+```
+1.默认子类会自动执行父类的构造函数一次
+2.父类的无参构造很重要（会影响子类继承）/可以用base找到某个构造函数
+Class Father
+{
+	public Father(int i)
+	{
+		Console.WriteLine("父类构造");
+	}
+}
+class Son : Father
+{
+	public Son(int i): base(i)
+	{	
+	}
+}
+class Main
+{
+	Son s = new Son();
+}
+```
+
+#### 34.装箱拆箱
+
+```
+装箱：值类型用引用类型存储，栈内存迁移到堆内存中
+例：object o = 1f;
+使用时 float f = (float)o; (强转)
+```
+
