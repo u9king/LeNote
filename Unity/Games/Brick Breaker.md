@@ -19,9 +19,9 @@ tags:
 
 #### 2. 游戏内容
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/Brick%20Breaker/1.png">
+<img src="/images/Unity/Games/Brick%20Breaker/1.png">
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/Brick%20Breaker/2.png">
+<img src="/images/Unity/Games/Brick%20Breaker/2.png">
 
 #### 3. 核心机制
 
@@ -35,7 +35,7 @@ tags:
 
 #### 4. **基本组件**
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/Brick%20Breaker/Basic%20Components.png" style="zoom:40%">
+<img src="/images/Unity/Games/Brick%20Breaker/Basic%20Components.png" style="zoom:40%">
 
 | Physics | 物理材质     |
 | ------- | ------------ |

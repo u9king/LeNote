@@ -1,7 +1,6 @@
 ---
 title: PlaneWars1942
 date: 2024-01-10 19:40:56
-sticky: 10
 pic: /images/thumb/PlaneWars1942.png
 comments: true
 toc: true
@@ -21,7 +20,7 @@ tags:
 
 #### 2. 游戏内容
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/PlaneWars1942/1.png">
+<img src="/images/Unity/Games/PlaneWars1942/1.png">
 
 #### 3. 核心机制
 

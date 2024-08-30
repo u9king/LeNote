@@ -1,7 +1,6 @@
 ---
 title: AngryBird
 date: 2024-01-10 19:40:56
-sticky: 10
 pic: /images/thumb/AngryBird.png
 comments: true
 toc: true
@@ -21,9 +20,9 @@ tags:
 
 #### 2. 游戏内容
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/AngryBird/1.png">
+<img src="/images/Unity/Games/AngryBird/1.png">
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/AngryBird/2.png">
+<img src="/images/Unity/Games/AngryBird/2.png">
 
 #### 3. 核心机制
 
@@ -34,7 +33,7 @@ tags:
 ​	游戏采用了简单直观的物理学原理，让玩家通过拉动弹弓并释放小鸟，以精准的角度和力度来摧毁猪群所在的各种结构，从而解救被偷走的蛋。
 #### 4. **基本组件**
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/AngryBird/Basic%20Components.png" style="zoom:60%">
+<img src="/images/Unity/Games/AngryBird/Basic%20Components.png" style="zoom:60%">
 
 
 

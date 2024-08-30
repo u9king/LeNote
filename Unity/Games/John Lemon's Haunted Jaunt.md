@@ -25,9 +25,9 @@ tags:
 
 #### 2. 游戏内容
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/John%20Lemon's%20Haunted%20Jaunt/1.png">
+<img src="/images/Unity/Games/John%20Lemon's%20Haunted%20Jaunt/1.png">
 
-<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Games/John%20Lemon's%20Haunted%20Jaunt/2.png">
+<img src="/images/Unity/Games/John%20Lemon's%20Haunted%20Jaunt/2.png">
 
 #### 3. 核心机制
 
