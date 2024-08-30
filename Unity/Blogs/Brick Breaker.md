@@ -1,7 +1,6 @@
 ---
 title: Brick Breaker
 date: 2024-01-10 19:40:56
-sticky: 10
 pic: /images/thumb/Brick Breaker.png
 comments: true
 toc: true

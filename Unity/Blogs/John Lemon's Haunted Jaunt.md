@@ -1,7 +1,6 @@
 ---
 title: John Lemon's Haunted Jaunt
 date: 2024-01-10 19:40:56
-sticky: 10
 pic: /images/thumb/John Lemon's Haunted Jaunt.png
 comments: true
 toc: true

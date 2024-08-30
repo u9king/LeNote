@@ -1,7 +1,6 @@
 ---
 title: BoingCooking
 date: 2024-07-17 9:10:56
-sticky: 11
 pic: /images/thumb/BoingCooking.png
 comments: true
 toc: true

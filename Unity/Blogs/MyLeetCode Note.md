@@ -1,6 +1,7 @@
 ---
 title: MyLeetCode Note
 date: 2024-01-10 19:40:56
+sticky: 10
 pic: /images/thumb/MyLeetCode Note.webp
 comments: true
 toc: true
