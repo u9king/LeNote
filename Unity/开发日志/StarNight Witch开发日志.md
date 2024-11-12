@@ -1,4 +1,4 @@
-# World Redo 开发日志
+# StarNight Witch开发日志
 
 #### 1.游戏类型
 
@@ -159,10 +159,10 @@ boss战更加侧重艺术表达，画面一定要华丽
 |       |      |                                                              |
 |       |      |                                                              |
 |       |      |                                                              |
-|       |      |                                                              |
-|       |      |                                                              |
-|       |      |                                                              |
-| 11/7  |      |                                                              |
+| 11/12 |      | 背包系统<br />导入小地图系统<br />导入HUD血量内容<br />更正LevelCenter为StarNightWitch项目 |
+| 11/11 |      | 学习DialogueSystem内容<br />学习部分Timeline内容<br />阅读游戏机制—高级游戏设计技术 5% |
+| 11/8  |      | C#核心课程学习完毕<br />阅读游戏机制—高级游戏设计技术<br />学习DialogueSystem内容 |
+| 11/7  |      | 游戏剧本编写阅读结束<br />学习自定义DialogueSystemUI界面<br />学习部分C#核心课程 |
 | 11/6  |      | 学习游戏剧本编写，<br />学习视频中DialogueSystem的内容<br />翻译部分DialogueSystem文档 |
 | 11/5  |      |                     羊，学习游戏剧本编写                     |
 | 11/4  |      |                       制作场景PetShop                        |
