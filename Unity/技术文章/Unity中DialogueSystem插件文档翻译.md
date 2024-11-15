@@ -503,3 +503,137 @@ Dialogue System: Referee says 'Tails!'
 第3—4行表示链接到正面被阻止，因为x==1为假，但它添加了到反面的链接（因为x==2为真）。
 
 注意：如果你不想处理这个问题，可以勾选对话管理器的其他设置>在字幕后面重新评估链接。这将在显示字幕后重新进行评估，因此您无需像上面呢样创建中间节点，但代价是会对子节点进行二次评估。
+
+**模拟仿真(SimStatus)**
+
+如果你想要追踪哪些对话已经被使用(访问过)，例如为了有条件地阻止他们被使用，可以使用模拟仿真。检查对话管理器并勾选包括模拟仿真。这将为每个对话条目添加一个运行时字符串值Dialog[#].SimStatus，其中#是对话条目的ID号。你可以通过检查对话条目来找到ID号。它还会设置一个内部的Lua变量"thisID"，你可以从"..."下拉菜单中选择它来引用当前节点。模拟仿真每个对话条目大约使用20字节的内存，因此如果你有成千上万行对话，除非必要，否则尽量不要勾选这个选项。相反，在需要条件的特定区域使用变量。
+
+模拟仿真可能的值:
+
+- 未涉及Untouched：条目从未被说出或显示在玩家回应菜单中。
+- 提供过WasOffered：在玩家回应菜单中显示过，但未被玩家选择。
+- 已经展示过WasDisplayed：已经被说出由玩家或者NPC。
+
+你可以像这段对话一样使用它（为了简洁，下面用大纲显示）:
+
+```
+[1] 舞者: "侦探，我能为你做什么？"
+     [2] 玩家: "你星期六晚上在哪儿？"
+         条件: Dialog[3].SimStatus == "Untouched"
+          [3] 舞者: "我一直在这里，直到黎明。" [结束]
+     [4] 玩家: "你说你一直待在这里直到黎明。那么是谁在晚上9点从你家打的电话？"
+         条件: Dialog[3].SimStatus == "WasDisplayed"
+          [5] 舞者: "我表弟这周住在我这儿。关你什么事？" [结束]
+```
+
+你也可以使用特殊变量值thisID来引用当前节点的ID。例如：
+
+```
+Dialog[thisID].SimStatus ~= "WasDisplayed"
+```
+
+要访问另一个对话的模拟仿真
+
+```
+Conversation[#].Dialog[#].SimStatus == "WasDisplayed"
+```
+
+第一个#是对话的ID，第二个#是对话节点的ID。（单独使用 Dialog[#]只是当前对话的快捷方式。）
+
+对于勾选了组框的对话条目，仿真模拟始终是未涉及Untouched。
+
+**在回应菜单中以不同格式呈现旧回答(Formatting Old Responses Differently In Response Menu)**
+
+如果你使用仿真模拟，对话管理器输入设置中有一个下拉菜单"Em Tag"用于旧的回答。你可以将其从“None”更改为应用强调标签，以标记玩家已经选择过的回答条目。有些游戏使用这个功能来提醒玩家已经尝试过那些回答。
+
+OnExecute() UnityEvents
+
+事件折叠框中包含一个名为OnExecute()的Unity事件。你还可以点击添加场景事件来添加第二个OnExecute()事件。这些Unity事件类似于将事件处理程序添加到UnityUI按钮的OnClick事件中。
+
+**默认OnExecute() UnityEvent**
+
+你不能将场景对象分配给默认的OnExecute()事件。这是因为对话数据库独立于场景存在。相反，如果你必须分配一个资产文件，如预制体或者脚本化对象。
+
+在下面的示例中，我们将创建一个脚本化对象资产，该资产提供一个方法来播放音频剪辑。然后，我们把这个方法分配给对话条目的OnExecute()事件。
+
+首先，用下面的代码创建一个新的C#脚本叫做测试脚本化对象(TestScriptableObject)。为了让例子足够简洁，代码没有做任何错误检查。
+
+TestScriptableObject.cs
+
+```C#
+using UnityEngine;
+[CreateAssetMenu(fileName = "TestScriptableObject")]
+public class TestScriptableObject : ScriptableObject
+{
+    public AudioClip[] audioClips;
+    public void PlayAudioClip(int i)
+    {
+        AudioSource.PlayClipAtPoint(audioClips[i], Vector3.zero);
+    }
+}
+```
+
+接着，在项目中选择创建→测试脚本化对象TestScriptableObject。这将会创建如下文件：
+
+你可能需要将你的资源移动到一个名为"Resources"的文件夹中。这样它将被包含在构建中。在某些Unity版本中，一些平台会剔除它认为不需要的资源，最常见的情况是未在任何场景中引用的脚本化对象资源会被剔除。
+
+检查你的新资产文件。你将能够将音频剪辑分配给它：
+
+最终，检查对话条目节点的OnExecute()事件，点击"+"按钮，来分配TestScriptableObject。选择你想要执行的方法(播放音乐PlayAudioClip)并指定你想播放的音频剪辑的索引:
+
+提示：默认的OnExecute()不支持数据库导出功能或第三方格式导入器。
+
+**基于场景的OnExecute()Unity事件  (Scene-Based OnExecute() UnityEvent)**
+
+如果你点击添加场景事件，它将会添加第二个OnExecute()事件，你可以分配场景对象给这个事件。实际的UnityEvent存在于当前场景中，因此它与数据库导出功能兼容。
+
+**大纲编辑器Outline Editor**
+
+你还可以像上面所示那样在大纲模式下编辑对话，这对使用过类似Bioware的Aurora工具集。要切换到大纲模式，请选择菜单→大纲。
+
+#### 模板(Templates)
+
+使用模板页签来更改添加新演员、任务、对话条目等中的默认字段。你还可以更改对话选项卡中使用的颜色。右上角的菜单允许你保存和加载模板设置，将模板填充为数据库中已存在的自定义字段，并将模板应用于数据库中的所有内容。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
