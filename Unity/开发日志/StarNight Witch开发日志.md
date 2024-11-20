@@ -161,8 +161,8 @@ boss战更加侧重艺术表达，画面一定要华丽
 |       |      |                                                              |
 |       |      |                                                              |
 |       |      |                                                              |
-|       |      |                                                              |
-| 11/18 |      | 阅读游戏机制—高级游戏设计技术 5%(35%)<br />学习DialogueSystem内容 |
+| 11/19 |      | 阅读游戏机制—高级游戏设计技术 5%(40%)<br />学习DialogueSystem内容Trigger<br />制作商店UI界面 |
+| 11/18 |      | 阅读游戏机制—高级游戏设计技术 5%(35%)<br />学习DialogueSystem内容<br />研究TimeLine内容 |
 | 11/17 |      |                       参加Weplay游戏展                       |
 | 11/15 |      |                    学习DialogueSystem内容                    |
 | 11/14 |      | 完成StarNightWitch的对话外观自定义<br />阅读游戏机制—高级游戏设计技术 5%<br />学习使用Quest来管理对话任务 |
