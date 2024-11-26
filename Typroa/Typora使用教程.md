@@ -99,9 +99,15 @@ $$
 $$
 重要极限2:	$$\lim_{x \to \infty}({1+\frac{1}{x}})^x = e$$
 
+#### 9.Emoji 表情的语法
 
+:smile::smiling_imp::raising_hand::sunny::earth_asia::santa::blue_book::bicyclist::house::arrows_counterclockwise::pisces:
 
+```
+:单词:
+```
 
+详细参见:https://doc.fly2you.cn/en-US/study/markdown/mdemoji.html
 
 
 

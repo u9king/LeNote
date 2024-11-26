@@ -945,6 +945,158 @@ public class TestScriptableObject : ScriptableObject
 - 它将寻找一个有用对话角色DialogueActor组件且其角色下拉菜单匹配对话发起者的游戏对象。
 - 如果找不到，它将使用对话系统触发器的游戏对象。
 
+*其他参与者*
+
+如果一个对话条目节点被分配给的角色不是对话的主要参与者或者对话者，它会寻找一个具有对话角色组件的游戏物体，并且该组件的角色的下拉菜单与节点的角色匹配。
+
+**日志记录&调试(Logging & Debugging)**
+
+看录像:日志记录&调试提示，获取关于设置对话管理器的其他设置Other Settings>调试等级Debug Level为Info的知道，以便查看对话使用的主要参与者和对话者的游戏对象信息。
+
+### 其他触发组件(Ohter Trigger Component)
+
+**空闲时喊叫Bark On Idle**
+
+![](https://www.pixelcrushers.com/dialogue_system/manual2x/html/barkOnIdle.png)
+
+使用空闲时喊叫可以在在游戏物体上以随机频率在最小秒数和最大秒数之间播放喊叫。有关喊叫的更多信息，请参阅喊叫部分。
+
+**范围触发Range Trigger**
+
+![](https://www.pixelcrushers.com/dialogue_system/manual2x/html/rangeTrigger.png)
+
+使用范围触发可以在满足指定条件时，在触发进入时间中激活游戏对象并启用组件。当离开触发范围发生的时候，游戏对象将被停止，组件也会被禁用。此组件非常适合在玩家接近喊叫者barker的触发碰撞体时，启用诸如在空闲时喊叫BarkOnIdle的组件。你还可以配置UnityEvents，以便在进入和退出触发区域时运行特定事件。
+
+**触发事件，碰撞事件和定时事件Trigger Event, Collision Event, Timed Event**
+
+触发事件，碰撞事件和定时事件组件是通用组件，分别用于在触发碰撞、常规物理碰撞以及经过指定时间后运行Unity事件。
+
+#### 对话系统事件(Dialogue System Events)
+
+对话系统事件组件当对话系统激活时触发运行Unity事件。每个折叠项有一个事件区域，用于处理当其游戏对象接收到相应信息例如对话开始信息时组件可以执行的事件。请注意，许多事件如对话开始，仅会在两个主要参与者和对话管理器上触发。如果你希望事件不受参与者限制而始终运行，可以将对话管理器事件组件添加到对话管理器上。
+
+你也可以处理事件在你自己的脚本中通过添加特定的方法，具体描述在脚本Scripting部分中。
+
+### **选择器和可交互(Selectors&Usable)**
+
+对话系统提供一个可选择交互系统，可以触发拥有可交互Usable组件的物体例如NPC。你可以在玩家上添加以下两种组件之一：
+
+#### **选择器(Selector)**
+
+![](https://www.pixelcrushers.com/dialogue_system/manual2x/html/selectorInUse.png)
+
+选择器组件通过从指定位置发射的射线检测可交互组件，例如鼠标点击位置或者屏幕中心。当玩家按下使用按钮，它将发射一个交互OnUse信息给可交互Usable组件。提示：在2D模式中，相机必须是正交的。
+
+#### **接近选择器(Proximity Selector)**
+
+![](https://www.pixelcrushers.com/dialogue_system/manual2x/html/proximitySelectorInUse.png)
+
+接近选择器组件在进入触发碰撞体的时候检测可交互组件。当用户按下按钮时，它将发送交互OnUse信息给可交互组件Usable。
+
+#### **选择器/接近选择器UI元素(Selector/Proximity Selector UI Elements)**
+
+当你添加一个选择器或者接近选择器，对话系统会询问是否添加一个选择器使用基本UI元素组件。此组件使选择器和接近选择器能够分配给对话管理者的实例化预制体组件的UnityUI。如果未分配，则会使用场景中找到的标准UI选择元素游戏物体。如果你想要自定义标准UI选择器元素，可以找到对应的预制体例如（分配给实例化预制体Instantiate Prefabs组件的预制体），复制它，然后将副本替换原始预制体分配给实例化预制体Instantiate Prefabs组件，并对副本进行自定义。或者，如果你愿意，可以从实例化预制体列表中移除预制体，并将一个标准UI选择器元素预制体的实例直接添加到场景中。
+
+#### **可交互信息(OnUse Message)**
+
+当玩家瞄准一个可交互组件并且按下使用按键或者使用按钮，选择器会向该可交互游戏对象发送一个交互OnUse(Transform为player)的信息。对话系统的触发器，例如对话系统触发器Dialogue System Trigger回复这条信息。你自己的脚本也可以回复这条信息通过添加OnUse方法例如：
+
+```
+void OnUse(Transform player) {
+    Debug.Log("我正在使用被" + player);
+}
+```
+
+可交互组件还具有Unity事件，当它们被选中，取消选中或使用时，分别会触发不同的事件。你可以在检查器中配置这些事件。
+
+#### **典型配置(Typical Configuration)**
+
+在典型配置中，NPC将会有1-2个组件：
+
+1. 可交互组件Usable component
+2. 可选择的，标准可交互UI组件
+
+玩家一般会有2个组件：
+
+1. 接近选择器组件
+2. 选择器使用标准UI元素：告诉标准UI选择器元素什么要显示，什么要隐藏。
+
+对话管理器的继承一般配置如下：
+
+1. 标准UI选择器元素：这将位于一个选择器UI预制体上，该预制体可能会在运行时由实例化预制体组件进行实例化。
+
+标准UI选择器元素可以使用动画组件。当选择器或者接近选择器取消选择一个可交互对象Usable(例如，玩家走开),其选择器使用标准UI元素组件会通知标准UI选择器元素播放动画控制器的隐藏动画触发器。根据你的视觉目标，你可能需要调整动画控制器的行为，或者干脆移除动画，让标准UI选择元素组件直接激活或停用UI，而不使用动画。
+
+如果你使用的是标准可交互UI，选择器交互标准UI元素将会指示标准交互UI的动画器来播放器显示Show和隐藏Hide动画触发器。在这种情况下，你可能需要调整标准可用UI的动画控制器行为，或者直接移除动画，让标准交互UI组件立即激活或停用UI，而不使用动画。
+
+### 喊叫(Barks)
+
+互动对话通常有一个来回的交流过程，其中演员说一行，接着对话者回应一行，如此反复。而喊叫则是一次性的台词，不涉及玩家选择菜单或任何来回的对话。喊叫通常是由NPC说出来，用来增强氛围（例如“今天天气真好”）或表达NPC的内心状态（例如“重新装弹，掩护我”）。这些台词的内容可以来自文本字符串或对话。
+
+#### **喊叫对话(Bark Conversations)**
+
+![](https://www.pixelcrushers.com/dialogue_system/manual2x/html/barkConversation.png)
+
+要创建一个喊叫对话，添加所有对话条目作为开始节点的子节点。换句话说，对话树将会只有一层深度。当角色喊叫时，对话系统将会评估所有开始节点的子节点来生成当前有效的条目列表。然后，它将会从列表中选择一个条目并且播放。通过在喊叫对话条目上设置条件，喊叫可以根据当前游戏状态进行调整。例如，NPC可以根据其生命值的不同，播放不同的喊叫条目。
+
+**喊叫优先级Bark Priority**
+
+你可以指定喊叫条目的优先级来防止低优先级的条目打断高优先级的条目。为此，添加一个名为优先级Priority的自定义字段。数值越高，优先级越高。如果你不想再每个条目上单独添加这个字段，你可以在对话编辑器的模板标签中将其添加到模板中。如果对话条目没有名为优先级Priority的自定义字段，它将默认使用0。当一个喊叫被触发时，如果NPC已经在进行对话，只有当新对话的优先级大于或等于当前对话的优先级时，对话系统才会中断当前对话来播放新的对话。
+
+**喊叫显示Bark Display**
+
+喊叫不会使用对话界面DialogueUI。相反，喊叫会通过喊叫界面BarkUI在喊叫对象上播放，通常以NPC头部的文字或NPC音频源播放的形式出现。提示界面的详细信息可在对话界面部分找到。
+
+**喊叫组Bark Groups**
+
+如果你希望在一个组中只有一个喊叫对象显示喊叫文本，可以通过为每个对象添加喊叫组成员Bark Group Member组件，将它们配置为喊叫组成员。当组中一个成员喊叫时，其他成员将隐藏所有激活的喊叫来减少屏幕上的杂乱。
+
+如果你勾选了喊叫组成员Bark Group Member的排队喊叫Queue Barks复选框，那么当其他成员正在喊叫的过程中，该成员将会等待其他成员结束后再播放，而不是立即播放并隐藏其他成员喊叫。
+
+### 启用物理2D支持(Enable Physics2D Support)
+
+对话系统支持2D物理和3D物理。在Unity中，2D物理包(Physics2D)可以启用或禁用，因此对话系统的代码不会假设你的项目是物理2D的。要告诉对话系统启动物理2D，打开欢迎窗口（工具Tools→像素破碎者Pixel Crushers→对话系统 Dialogue System→欢迎窗口Welcome Window）并且勾选启用2D物理或选择菜单项目工具Tools→像素破碎者Pixel Crushers→通用Common→杂项Misc→启用物理2D支持Enable Physics2D Support...提示：如果你正在使用Unity2017或者之前的版本，该菜单项将不可见。
+
+如果你想要手动地启用物理2D支持，选择菜单项目编辑Edit→设置Settings→玩家Player然后添加脚本符号USE_PHYSICS2D，如下所示：
+
+![](https://www.pixelcrushers.com/dialogue_system/manual2x/html/usePhysics2D.png)
+
+如果你正在使用选择器Selector组件检测2D可交互对象Usable时遇到问题，请参阅为什么2D检测不起作用?
+
+## 对话用户交互界面 — Dialogue UIs
+
+本章介绍如何设置对话用户交互界面和喊话交互界面。对话系统使用对话UIs来展示交互对话内容和屏幕上的警告信息，用喊话UIs来显示喊话内容。你可以自定义每个角色如何显示在UI上通过添加对话角色组件。
+
+### 教学视频(Tutorial Videos)
+
+- 视频教学1：[对话UI基础](https://youtu.be/rFWF_eyvH-U)
+- 视频教学2：[自定义对话UIs](https://youtu.be/-E4n_Yj6Rbk)
+- 视频教学3：[动画肖像](https://youtu.be/8jNQXnyJiBU)
+
+### 对话UI(Dialogue UI)
+
+![](https://www.pixelcrushers.com/dialogue_system/manual2x/html/dialogueUIParts.png)
+
+推荐设置对话UI的方式是使用对话系统的标准对话UI。或者，对话系统还可以使用UnityUI、TextMesh Pro或NGUI以及其他多个第三方GUI系统，或者通过一个简单的C#接口添加您的自定义UI实现。
+
+#### 标准对话UI(Standard Dialogue UI)
+
+标准对话UI是一系列组件，用于管理上方截图中显示的UI元素。这些元素包括：
+
+- 警告面板Alert Panel：显示警告信息。
+- 字幕面板Subtitle Panels：显示玩家对话文本。
+- 回复面板Response Menu：展示可供玩家选择的回复选项。
+- 计时器Timer：如果对话管理器配置了限时响应菜单，则会显示倒计时。
+- 文本输入框Text Input：从玩家处读取文本输入。
+
+所有UI元素都可以重新定位和更换外观。
+
+
+
+
+
+
+
 
 
 
