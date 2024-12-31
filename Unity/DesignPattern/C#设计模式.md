@@ -21,11 +21,12 @@ namespace DesignPattern1
         private Singleton() { }  //私有化构造函数
     }
 }
+
 ```
 
 #### 第二种 静态语句块单例
 
-缺点：本质和第一种，区别只有在第一次访问时才创建
+缺点：与第一种类似，只有在调用GetInstance的时候才会创建instance
 
 ```C#
 namespace DesignPattern2
@@ -33,7 +34,7 @@ namespace DesignPattern2
     public class Singleton
     {
         private static readonly Singleton instance;
-        static Singleton()
+       static Singleton()
         {
             instance = new Singleton();
         }
@@ -57,6 +58,7 @@ namespace DesignPattern3
     public class Singleton : MonoBehaviour
     {
         private static Singleton instance;
+
         public static Singleton Instance
         {
             get
@@ -83,7 +85,9 @@ namespace DesignPattern4
     public class Singleton
     {
         private static Singleton instance;
+
         private static readonly object lockObj = new object();  //多线程锁
+
         public static Singleton Instance
         {
             get
