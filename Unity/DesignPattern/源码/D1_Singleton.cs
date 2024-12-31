@@ -6,7 +6,10 @@ namespace DesignPattern1
     public class Singleton
     {
         private static readonly Singleton instance = new Singleton();
-        public static Singleton Instance => instance;
+        public static Singleton GetInstance()
+        {
+            return instance;
+        }
         private Singleton() { }  //私有化构造函数
     }
 }

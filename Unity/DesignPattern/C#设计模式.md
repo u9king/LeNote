@@ -14,33 +14,61 @@ namespace DesignPattern1
     public class Singleton
     {
         private static readonly Singleton instance = new Singleton();
-        public static Singleton Instance => instance;
+        public static Singleton GetInstance()
+        {
+            return instance;
+        }
         private Singleton() { }  //私有化构造函数
     }
 }
 ```
 
-#### 第二种 懒加载单例
+#### 第二种 静态语句块单例
+
+缺点：本质和第一种，区别只有在第一次访问时才创建
+
+```C#
+namespace DesignPattern2
+{
+    public class Singleton
+    {
+        private static readonly Singleton instance;
+        static Singleton()
+        {
+            instance = new Singleton();
+        }
+
+        public static Singleton GetInstance()
+        {
+            return instance;
+        }
+        private Singleton() { }
+    }
+}
+```
+
+#### 第三种 懒加载单例
 
 问题： <span style="color:red;">多线程</span>时会存在，多次创建的问题
 
 ```C#
-namespace DesignPattern
+namespace DesignPattern3
 {
     public class Singleton : MonoBehaviour
     {
-        private static Singleton instance = new Singleton();
+        private static Singleton instance;
         public static Singleton Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new GameObject(nameof(Singleton)).AddComponent<Singleton>();
+                    instance = new Singleton();
                 }
                 return instance;
             }
         }
+        private Singleton() { }
     }
 }
 ```
@@ -55,9 +83,7 @@ namespace DesignPattern4
     public class Singleton
     {
         private static Singleton instance;
-
         private static readonly object lockObj = new object();  //多线程锁
-
         public static Singleton Instance
         {
             get
