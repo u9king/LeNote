@@ -135,6 +135,117 @@ i18n_dir: :lang
 
 捕获到的字符串唯有在语言文件存在的情况下，才会被当作是语言，因此例二 `/archives/index.html` 中的 `archives` 就不被当成是语言。
 
+#### 8.Github Pages
+
+```
+参考视频：https://www.bilibili.com/video/BV1xTgTemEDU
+参考网站：https://xiamu-ssr.github.io/Hexo
+
+1. 初始化Hexo
+安装脚手架，初始化hexo，这会新建blog文件夹，进入后安装依赖。
+npm install -g hexo-cli
+hexo init blog
+cd blog
+npm install
+
+2. 初始化仓库
+git init
+git remote add origin https://github.com/yourusername/your-repo.git
+git add .
+git commit -m "Initial commit"
+git push -u origin main
+
+3. 创建Token
+在个人设置中新增一个Personal access tokens。至少要包含repo权限，然后记住token。
+这个token是给Github Action用的，Github Action会把Hexo编译部署到gh-pages分支。
+随后在存放Hexo代码的仓库里把这个Token新增进去，名称为GH_TOKEN(随意，后面需要一致)。
+
+4. 修改_config.yml
+在_config.yml中修改deploy字段。指示Hexo在deploy时的推送地址。
+deploy:
+  type: git
+  repo: https://github.com/yourusername/your-repo.git
+  branch: gh-pages
+5. 配置Github Action工作流
+在.github文件夹下新增workflows文件夹，然后新增deploy.yml文件，内容如下。里面有个node-version要和你本地的node一致。步骤大致意思就是使用ubuntu-latest作为基础环境，然后安装各种依赖，随后hexo generate生成博客网站静态文件夹，把这个文件夹推送到同一仓库的gh-pages分支。
+name: Deploy Hexo to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # 当推送到 main 分支时触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: false  # 禁用子模块检查
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Backup config
+        run: |
+             cp _config.kratos-rebirth.yml _config_backup.kratos-rebirth.yml
+
+      - name: Install Hexo Git Deployer
+        run: |
+          npm install hexo-deployer-git --save
+          npm install hexo-cli -g
+          # npm install --save hexo-theme-kratos-rebirth
+
+      - name: Audit Dependencies
+        run: npm audit fix
+
+      - name: Restore config
+        run: |
+             mv  _config_backup.kratos-rebirth.yml _config.kratos-rebirth.yml
+
+      - name: Clean and Generate Static Files
+        run: |
+          hexo clean
+          hexo generate
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Deploy to GitHub Pages
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          cd public/
+          git init
+          git add -A
+          git commit -m "Create by workflows"
+          git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/u9king/blog.git
+          # 删除敏感文件的提交记录
+          git filter-branch --force --index-filter \
+          'git rm --cached --ignore-unmatch vendors/twikoo@1.5.11/dist/twikoo.all.min.js vendors/twikoo@1.5.11/dist/twikoo.min.js' \
+          --prune-empty --tag-name-filter cat -- --all
+          # 强制推送到远程仓库
+          git push origin --force --all
+          git push origin HEAD:gh-pages -f
+6. 推送验证
+把刚才更新的所有文件都推送一遍，github就会触发工作流，然后去网站看工作流运转的如何。
+等一切运转完毕，就会发现仓库多出一个gh-pages分支。
+
+7. 配置Github Pages
+在仓库settings中配置page来源为gh-pages分支即可。等待网站部署完毕，就可以看了。网站链接可以在settings的GitHub Pages看到，也可以去action里看到。
+```
+
+
+
 
 
 #### 疑问：
