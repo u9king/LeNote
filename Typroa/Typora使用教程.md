@@ -83,7 +83,11 @@ $\textcolor{颜色}{内容}$	字体颜色
 
 #### 7.图片改变大小，位置
 
-<img src="xxx" style="zoom:50%" align="left">
+<img src="xxx" style="zoom:50%" align="left">  或者直接右键就能缩放
+
+<img src="xxx" style="width:100vw; height: 20vw;">
+
+其中vw是Viewport Width的缩写，100vw让图片宽度等于整个视口宽度，这样图片就能够根据视窗调整大小
 
 参考:https://www.typora.net/460.html
 
