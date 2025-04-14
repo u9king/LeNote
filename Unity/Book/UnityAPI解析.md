@@ -1093,7 +1093,7 @@ v3的各个分量值为：
 
 代码：
 
-```
+```C#
 using UnityEngine;
 using System.Collections;
 public class ScreenToViewportPoint_ts : MonoBehaviour
@@ -1112,7 +1112,264 @@ public class ScreenToViewportPoint_ts : MonoBehaviour
 }
 ```
 
-#### 
+#### 2.2.6 SetTargetBuffers方法:重设摄像机到TargetTexture的渲染
+
+```
+基本语法(1)public void SetTargetBuffers(RenderBuffer colorBuffer,RenderBuffer depth Buffer);
+		其中参数colorBuffer为纹理的颜色缓存,depthBuffer为纹理的深度缓存
+	   (2)public void SetTargetBuffers(RenderBuffer[] colorBuffer,RenderBuffer depth Buffer);
+	    其中参数colorBuffer为纹理的颜色缓存,depthBuffer为纹理的深度缓存。此重载方法可以将摄像机的渲染一次赋给多个colorBuffer
+```
+
+功能说明：此方法用于将camera的渲染赋给RenderTexture的colorBuffer和depthBuffer
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SetTargetBuffers_ts : MonoBehaviour
+{
+    //声明两个RendererTexture变量
+    public RenderTexture RT_1, RT_2;
+    public Camera c;//指定Camera
+    void OnGUI()
+    {
+        //设置RT_1的buffer为摄像机c的渲染
+        if (GUI.Button(new Rect(10.0f, 10.0f, 180.0f, 45.0f), "set target buffers"))
+        {
+            c.SetTargetBuffers(RT_1.colorBuffer, RT_1.depthBuffer);
+        }
+        //设置RT_2的buffer为摄像机c的渲染，此时RT_1的buffer变为场景中Camera1的渲染
+        if (GUI.Button(new Rect(10.0f, 60.0f, 180.0f, 45.0f), "Reset target buffers"))
+        {
+            c.SetTargetBuffers(RT_2.colorBuffer, RT_2.depthBuffer);
+        }
+    }
+}
+```
+
+#### 2.2.7 ViewportPointToRay方法：近视口到屏幕的射线
+
+```
+基本语法 public Ray ViewportPointToRay(Vector3 position);
+		其中参数position为单位化坐标中的参考点
+```
+
+功能说明：从Camera的近视口nearclip向前发射一条射线到屏幕上的position点。position用单位化的方式来决定Ray到屏幕的位置。position的x轴或y轴从0到1增长时，Ray从屏幕一边移动到另一边。当Ray未能碰撞到物体时，hit.point的返回值为Vector3(0.0.0)。position的z轴值无效。
+
+代码：
+
+```
+using UnityEngine;
+using System.Collections;
+public class ViewportPointToRay_ts : MonoBehaviour
+{
+    Ray ray;//射线
+    RaycastHit hit;
+    Vector3 v3 = new Vector3(0.5f, 0.5f, 0.0f);
+    Vector3 hitpoint = Vector3.zero;
+    void Update()
+    {
+        //射线沿着屏幕x轴从左向右循环扫描
+        v3.x = v3.x >= 1.0f ? 0.0f : v3.x + 0.002f;
+        //生成射线
+        ray = camera.ViewportPointToRay(v3);
+        if (Physics.Raycast(ray, out hit, 100.0f))
+        {
+            //绘制线，在Scene视图中可见
+            Debug.DrawLine(ray.origin, hit.point, Color.green);
+            //输出射线探测到的物体的名称
+            Debug.Log("射线探测到的物体名称：" + hit.transform.name);
+        }
+    }
+}
+```
+
+#### 2.2.8 ViewportToWorldPoint方法：坐标点的坐标系转换
+
+```
+基本语法 public Vector3 ViewportToWorldPoint(Vector3 position);
+		其中参数position为单位化坐标中的参考点
+```
+
+功能说明：从Camera视口坐标点向世界坐标点转换，此方法与WorldToViewportPoint正好相反。方法的返回值大小受当前camera在世界坐标系中的位置Camera的fieldofView值以及参考点position的共同影响。其中position的x和y的有效范围为[0.0.1.0]为比例值。而z值为实际单位值，非比例值。对此方法的算法说明如下
+
+​	设o为摄像机坐标点，asp为摄像机的视口宽高比例值aspect，e为摄像机的视口夹角fieldofView值，oA的模长为position的z值，position的y值为y~0~，则此方法执行后的返回值的z值大小为:o点的z轴分量值加上oA的长度;返回值的y分量值为o点的y轴分量值加上K~1~，其中K~1~的计算方法为:
+
+$$
+K_1 = |oA| \times \left( \frac{y_0 - 0.5}{0.5} \right) \times \tan\left( \frac{e}{2} \right)
+$$
+返回值的x分量值为o点的x轴分量值加上K2，其中K2的计算方法为：
+
+
+$$
+K_2 = |oA| \times asp \times \left( \frac{y_0 - 0.5}{0.5} \right) \times \tan\left( \frac{e}{2} \right)
+$$
+例如执行如下代码后，
+
+Vector v3= camera.ViewportToWorldPoint(ps);//ps为已知参考点
+
+v3的各个分量值为：
+
+v3.x= camera.transform.position.x+ ps.z * asp * (( ps.x-0.5)/0.5)* tan(e/2);
+v3.y= camera.transform.position.y+ ps.z * (( ps.y-0.5)/0.5)* tan(e/2);
+v3.z= camera.transform.position.z +ps.z;
+
+其中ps为已知参考值，e为摄像机的视口夹角fieldOfView的值，asp为摄像机视口的宽
+高比例值aspect。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ViewportToWorldPoint_ts : MonoBehaviour
+{
+    void Start()
+    {
+        transform.position = new Vector3(1.0f, 0.0f, 1.0f);
+        camera.fieldOfView = 60.0f;
+        camera.aspect = 16.0f / 10.0f;
+        //屏幕左下角
+        Debug.Log("1:" + camera.ViewportToWorldPoint(new Vector3(0.0f, 0.0f, 100.0f)));
+        //屏幕中间
+        Debug.Log("2:" + camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 100.0f)));
+        //屏幕右上角
+        Debug.Log("3:" + camera.ViewportToWorldPoint(new Vector3(1.0f, 1.0f, 100.0f)));
+    }
+}
+```
+
+#### 2.2.9 WorldToScreenPoint方法：坐标点的坐标系转换
+
+```
+基本语法 public Vector3 WorldToScreenPoint(Vector3 position);
+		其中参数position为单位化坐标中的参考点
+```
+
+功能说明：从世界坐标点向屏幕坐标点转换，即position投射到屏幕上的坐标值。返回值的x和y分量是以屏幕左下角为(0,0)点，以向上为y轴、向右为x轴来计算的。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class WorldToScreenPoint_ts : MonoBehaviour
+{
+    public Transform cb, sp;
+    public Texture2D t2;
+    Vector3 v3 = Vector3.zero;
+    float sg;
+    void Start()
+    {
+        //记录屏幕高度
+        sg = Screen.height;
+    }
+    void Update()
+    {
+        //sp绕着cb的y轴旋转
+        sp.RotateAround(cb.position, cb.up, 30.0f * Time.deltaTime);
+        //获取sp在屏幕上的坐标点
+        v3 = camera.WorldToScreenPoint(sp.position);
+    }
+    void OnGUI()
+    {
+        //绘制纹理
+        GUI.DrawTexture(new Rect(0.0f, sg - v3.y, v3.x, sg), t2);
+    }
+}
+```
+
+#### 2.2.10 WorldToViewportPoint方法：坐标点的坐标系转换
+
+```
+基本语法 public Vector3 WorldToViewportPoint(Vector3 position);
+		其中参数position为待转换的世界坐标系中的坐标点
+```
+
+功能说明：把三维坐标点position从世界坐标系转换到屏幕的单位化坐标系中即世界坐标点position投射到屏幕上的坐标点的x、y分量所占屏幕宽高的比例大小。此方法与WorldToScreenPoint功能类似,不同的是其返回值的x和y分量是比例值以屏幕的总宽度和总高度分别为x和y分量的最大值1。返回值的x和y分量是以屏幕左下角为(0.0)点，以向上为y轴、向右为x轴来计算的。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class WorldToViewportPoint_ts : MonoBehaviour
+{
+    public Transform cb, sp;
+    public Texture2D t2;
+    Vector3 v3 = Vector3.zero;
+    float sw, sh;
+    void Start()
+    {
+        //记录屏幕的宽度和高度
+        sw = Screen.width;
+        sh = Screen.height;
+    }
+    void Update()
+    {
+        //物体sp始终绕cb的y轴旋转
+        sp.RotateAround(cb.position, cb.up, 30.0f * Time.deltaTime);
+        //记录sp映射到屏幕上的比例值
+        v3 = camera.WorldToViewportPoint(sp.position);
+    }
+    void OnGUI()
+    {
+        //绘制纹理，由于方法WorldToViewportPoint的返回值的y分量是从屏幕下方向上方递增的,
+        //所以需要先计算1.0f - v3.y的值，然后再和sh相乘
+        GUI.DrawTexture(new Rect(0.0f, sh * (1.0f - v3.y), sw * v3.x, sh), t2);
+    }
+}
+```
+
+### 2.3 关于Camera视口、aspect、pixelRect及rect的关系注解
+
+搞清楚摄像机的视口与aspect、pixelRect及rect之间的关系有助于对camera类的理解和使用，下面对它们之间的关系进行说明。
+
+- Camera视口用来记录当前摄像机能看到场景中的哪些内容，其大小及位置是可以改变的。而屏幕视口是指当前硬件的屏幕,对于一个固定的硬件(如手机),它的屏幕视口大小(即分辨率)是固定的。Camera视口的内容不一定可以完全显示在屏幕上，屏幕可能只显示了一部分视口内容，也可能对视口内容进行了放缩。可以简单理解为，camera视口是一张二维图片，而屏幕是用来显示这张图片的，图片可能被剪切，也可能被压缩。Camera视口的内容显示到屏幕上的方式由很多因素决定。
+- Unity的Game面板中的aspect选项(如图2-19所示)是用来模拟硬件屏幕的，可分为3类:全屏显示、固定比例显示和固定分辨率显示。全屏方式即以当前Game屏幕的大小来模拟硬件屏幕分辨率，其camera视口即为当前摄像机的默认状态。而在固定比例方式则会改变amera视口的宽高比例，其大小不固定。而在固定分辨率方式下，视口的最大宽度和高度是固定的，当Game视口的宽度和高度大于固定分辨率时，其有效显示区间将保持固定分辨率的大小(如图2-20所示)。
+- 在Camera.aspect固定的情况下，无论选择Game视图中哪种屏幕模拟方式，它们的显示内容都是相同的(请查看实例演示)。不同的屏幕模拟方式只会对显示的内容进行放缩。决定屏幕视口显示内容的是Camera.aspect的值和Camera的Transform，至于屏幕要如何显示amera视口的内容，那就是硬件显示屏要处理的事情了。
+- PixelRect和Rect功能类似,都是决定硬件显示屏如何显示camera视口提供的内容的。不同的是，PixelRect以实际像素来展示显示内容，而Rect以单位化形式来展示显示内容(请查看PixelRect和Rect的相关实例演示)。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Compare_ts : MonoBehaviour
+{
+    Vector3 v1;
+    void Start()
+    {
+        v1 = transform.position;
+    }
+    void OnGUI()
+    {
+        //设置Camera视口宽高比例为2∶1，点击此按钮后更改Game视图中不同的aspect值
+        //尽管Scene视图中Camera视口的宽高比会跟着改变
+        //但实际Camera视口的内容依然是按照2∶1的比例获取的
+        //不同的屏幕显示相同的内容会发生变形
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "Camera视口宽高比例2∶1"))
+        {
+            camera.aspect = 2.0f;
+            transform.position = v1;
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "Camera视口宽高比例1∶2"))
+        {
+            camera.aspect = 0.5f;
+            //更改Camera坐标，使被拉伸后的物体显示出来
+            transform.position = new Vector3(v1.x, v1.y, 333.2f);
+        }
+        //恢复aspect的默认设置，即屏幕比例和Camera视口比例保持一致
+        if (GUI.Button(new Rect(10.0f, 110.0f, 200.0f, 45.0f), "使用Game面板中aspect的选择"))
+        {
+            camera.ResetAspect();
+            transform.position = v1;
+        }
+    }
+}
+```
+
+​	在这段代码中,用3个Button来设置3种不同的camera视口比例,在实例工程中设置Game视图的aspect值为16:10。如图2-21所示，按钮“使用Game面板中aspect的选择”的作用即为使视口的宽高比为Game视图中的设置，在这种状态下，场景中物体不会变形。
+
+​	当设置Camera视口宽高比例为2:1时，相当于将camera的视口变宽(2:1>16:10)Camera的x轴方向上的视野将相对更大，要将更大的视野放到相同大小的屏幕上，物体自然会被压缩，如图2-22所示。同理，当设置camera视口宽高比例为1:2时，相当于将Camera的视口变窄(1:2<16:10)，要将更小的视野放到相同大小的屏幕上，物体自然会被拉伸，如图2-23所示。
 
 
 
@@ -1122,55 +1379,29 @@ public class ScreenToViewportPoint_ts : MonoBehaviour
 
 
 
+## 3.GameObject类
 
+## 4.HideFlags类
 
+## 5.Mathf类
 
+## 6.Matrix4X4类
 
+## 7.Object类
 
+## 8.Quaternaion类
 
+## 9.Random类
 
+## 10.RigidBody类
 
+## 11.Time类
 
+## 12.Transform类
 
+## 13.Vector2类
 
+## 14.Vector3类
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 3.GameObject类
-
-### 4.HideFlags类
-
-### 5.Mathf类
-
-### 6.Matrix4X4类
-
-### 7.Object类
-
-### 8.Quaternaion类
-
-### 9.Random类
-
-### 10.RigidBody类
-
-### 11.Time类
-
-### 12.Transform类
-
-### 13.Vector2类
-
-### 14.Vector3类
-
-### 15.游戏实例——坚守阵地
+## 15.游戏实例——坚守阵地
 
