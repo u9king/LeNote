@@ -1371,15 +1371,233 @@ public class Compare_ts : MonoBehaviour
 
 ​	当设置Camera视口宽高比例为2:1时，相当于将camera的视口变宽(2:1>16:10)Camera的x轴方向上的视野将相对更大，要将更大的视野放到相同大小的屏幕上，物体自然会被压缩，如图2-22所示。同理，当设置camera视口宽高比例为1:2时，相当于将Camera的视口变窄(1:2<16:10)，要将更小的视野放到相同大小的屏幕上，物体自然会被拉伸，如图2-23所示。
 
-
-
-
-
-
-
-
-
 ## 3.GameObject类
+
+GameObject类是Unity场景中所有实体的基类。一个GameObject对象通常由多个组件组成，且至少含有一个Transform组件。本章主要介绍GameObject类的一些实例属性、构造方法、实例方法和静态方法，并在最后对GameObject和Component这两个类之间的关系及其涉及的GetComponent相关方法的使用区别进行了注解。
+
+### 3.1 GameObject类实例属性
+
+在GameObject类中，涉及的实例属性有activeSelf和activeInHierarchy。由于这两个属性功能相似，因此将属性activeInHierarchy作为activeSelf属性的提示内容介绍，下面主要介绍activeSelf属性。
+
+activeSelf属性：GameObject的Active标识
+
+```
+基本语法 public bool activeSelf { get; }
+```
+
+功能说明：此属性用来返回GameObject对象的Active标识状态。
+
+---
+
+提示：注意此属性与属性activeInHierarchy的区别。activeInHierarchy属性的功能是返回GameObject实例在程序运行时的激活状态，它只有当GameObject实例的状态被激活时才会返回true。而且它会受其父类对象激活状态的影响，如果其父类至最顶层的对象中有一个对象未被激活，activeInHierarchy就会返回false。
+
+---
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ActiveSelf_ts : MonoBehaviour 
+{
+    public GameObject cube1, cube2, cube3;
+    
+    void Start () 
+    {
+        //对cube2设置为false，其他设置为true
+        cube1.SetActive(true);
+        cube2.SetActive(false);
+        cube3.SetActive(true);
+        Debug.Log("activeSelf:");
+        //尽管cube2被设置为false，但其子类cube3的activeSelf返回值仍然为true
+        Debug.Log("cube1.activeSelf:" + cube1.activeSelf);
+        Debug.Log("cube2.activeSelf:" + cube2.activeSelf);
+        Debug.Log("cube3.activeSelf:" + cube3.activeSelf);
+        Debug.Log("\nactiveInHierarchy:");
+        //cube2和cube3的activeInHierarchy返回值都为false
+        Debug.Log("cube1.activeInHierarchy:" + cube1.activeInHierarchy);
+        Debug.Log("cube2.activeInHierarchy:" + cube2.activeInHierarchy);
+        Debug.Log("cube3.activeInHierarchy:" + cube3.activeInHierarchy);
+    }
+}
+```
+
+### 3.2 GameObject构造方法
+
+activeSelf属性：GameObject的Active标识
+
+```
+基本语法 (1) public GameObject();
+        (2) public GameObject(string name);
+        	其中参数name为构造GameObject对象的名字。
+        (3) public GameObject(string name, params Type[] components);
+        	其中参数name为构造GameObject对象的名字，components为构造对象要添加的组件类型集合，多个组件之间用逗号隔开。
+```
+
+功能说明：创建一个GameObject对象。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Constructors_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        //使用构造函数GameObject (name : String)
+        GameObject g1 = new GameObject("G1");
+        g1.AddComponent<Rigidbody>();
+        //使用构造函数GameObject ()
+        GameObject g2 = new GameObject();
+        g2.AddComponent<FixedJoint>();
+        //使用构造函数GameObject (name : String, params components : Type[])
+        GameObject g3 = new GameObject("G3",typeof(MeshRenderer),typeof(Rigidbody),typeof(SpringJoint));
+        Debug.Log("g1 name:" + g1.name + "\nPosition:" + g1.transform.position);
+        Debug.Log("g2 name:" + g2.name + "\nPosition:" + g2.transform.position);
+        Debug.Log("g3 name:" + g3.name + "\nPosition:" + g3.transform.position);
+    }
+}
+```
+
+### 3.3 GameObject类实例方法
+
+在GameObject类中，涉及的实例方法有GetComponent、GetComponentInChildren、GetComponents、GetComponentsInChildren 、SendMessage 、BroadcastMessage 和SendMessageUpwards 。
+
+#### 3.3.1 GetComponent方法：获取组件
+
+```
+基本语法 (1) public T GetComponent<T>() where T : Component;
+	    (2) public Component GetComponent(string type);
+			其中参数type为组件名。
+		(3) public Component GetComponent(Type type);
+			其中参数type为组件类型。
+```
+
+功能说明：获取<span style="color:red;">第一个</span>符合Type类型的Component。
+
+---
+
+提示：与此方法功能相似的方法有GetComponentInChildren、GetComponents和GetComponents
+InChildren，它们的具体使用请参考实例演示。需要注意以下两点。
+
+- 在使用GetComponents (type : Type))方法时，`Component[] cjs= GetComponents(typeof(ConfigurableJoint)) as Component[];`
+
+    注意不可以这样写：`ConfigurableJoint[] cjs = GetComponents(typeof(ConfigurableJoint)) as Configurable Joint[]`;因为ConfigurableJoint不是Component，而是其子类，建议使用其泛型方式。
+
+- 在使用GetComponentsInChildren (type : Type, includeInactive : boolean = false)方法时，`Component[] cjs = GetComponentsInChildren(typeof(ConfigurableJoint), false) as Component[];`
+
+    注意不可以这样写：`ConfigurableJoint[] cjs =GetComponentsInChildren(typeof(ConfigurableJoint), false) as ConfigurableJoint[];`因为ConfigurableJoint不是Component，而是其子类，建议使用其泛型方式。
+
+---
+
+代码：下面通过实例演示方法GetComponent、GetComponentInChildren、GetComponents和GetComponentsInChildren的使用。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class GetComponent_ts : MonoBehaviour 
+{
+	void Start () 
+    {
+        //以下是GetComponent方法的相关使用代码
+        //1.GetComponent (type : Type) | GetComponent.<T>() | GetComponent (type : String)
+        Rigidbody rb = GetComponent(typeof(Rigidbody)) as Rigidbody;
+        rb = GetComponent<Rigidbody>();
+        rb = GetComponent("Rigidbody") as Rigidbody;
+        
+        //以下是GetComponentInChildren方法的相关使用代码
+		//GetComponentInChildren (type : Type) | GetComponentInChildren.<T>()
+        rb = GetComponentInChildren(typeof(Rigidbody)) as Rigidbody;
+        rb = GetComponentInChildren<Rigidbody>();
+        
+        //以下是GetComponents方法的相关使用代码
+        //GetComponents (type : Type) | GetComponents.<T> ()
+        Component[] cjs = GetComponents(typeof(ConfigurableJoint)) as Component[];      
+        cjs = GetComponents<ConfigurableJoint>();
+        
+        //以下是GetComponentsInChildren方法的相关使用代码
+        //GetComponentsInChildren(type: Type, includeInactive(包含未激活): boolean = false)  
+        // |GetComponentsInChildren.<T> (includeInactive : boolean)
+        // |GetComponentsInChildren.<T> ()
+        cjs = GetComponentsInChildren(typeof(ConfigurableJoint), false) as Component[];
+        cjs = GetComponentsInChildren(typeof(ConfigurableJoint), true) as Component[];      
+        cjs = GetComponentsInChildren<ConfigurableJoint>(true);
+		cjs = GetComponentsInChildren<ConfigurableJoint>();
+	}
+}
+```
+
+#### 3.3.2 SendMessage方法：发送消息
+
+```
+基本语法 (1) public void SendMessage(string methodName);
+        (2) public void SendMessage(string methodName, object value);
+        (3) public void SendMessage(string methodName, SendMessageOptions options);
+        (4) public void SendMessage(string methodName, object value, SendMessageOptions options);
+        参数methodName为接受信息的方法名字，参数value为信息的内容，参数options为信息接收的方式，默认为SendMessageOptions.RequireReceiver。
+```
+
+功能说明：向GameObject自身发送消息，其作用范围如下。
+
+- 和自身同级的物体不会收到消息，例如cube1和cube2的上一级父类都是cube0，则cube2不会收到cube1发送的消息。
+- SendMessageOptions有两个可选方式：SendMessageOptions.RequireReceiver和SendMessageOptions.DontRequireReceiver。前者要求信息的接收方必须有接受信息的方法，否则程序会报错，后者则无此要求。
+
+---
+
+提示：BroadcastMessage和SendMessageUpwards与之类似，如下对其说明。
+
+- BroadcastMessage是向自身及其所有子类发送消息。和自身同级的物体不会收到消息，例如cube1和cube2的上一级父类都是cube0，则cube2不会收到cube1发送的消息。
+- SendMessageUpwards是向GameObject 自身及其所有父类发送消息。和自身同级的物体不会收到消息，例如cube1和cube2 的上一级父类都是cube0，则cube2不会收到cube1发送的消息。
+
+---
+
+代码：在Cube1、Cube2和Cube3中分别绑定有脚本BroadcastMessage_ts.cs、SendMessage_ts.cs和SendMessageUpward_ts.cs此处以SendMessage_ts.cs脚本为例说明。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SendMessage_ts : MonoBehaviour 
+{
+    void Start () 
+	{
+        //向子类及自己发送信息
+        //gameObject.BroadcastMessage("GetParentMessage",gameObject.name+":use BroadcastMessage send!");
+        //向自己发送信息
+        gameObject.SendMessage("GetSelfMessage",gameObject.name+":use SendMessage send!");
+        ////向父类及自己发送信息
+        //gameObject.SendMessageUpwards("GetChildrenMessage",gameObject.name+":use SendMessageUpwards send!");
+    }
+    
+    //一个接受父类发送信息的方法
+    private void GetParentMessage(string str)
+    {
+    	Debug.Log(gameObject.name + "收到父类发送的消息：" + str);
+    }
+    
+    //一个接受自身发送信息的方法
+    private void GetSelfMessage(string str)
+    {
+    	Debug.Log(gameObject.name + "收到自身发送的消息：" + str);
+    }
+    
+    //一个接受子类发送信息的方法
+    private void GetChildrenMessage(string str)
+    {
+    	Debug.Log(gameObject.name + "收到子类发送的消息：" + str);
+    }
+}
+```
+
+### 3.4 GameObject 类静态方法
+
+
+
+
+
+
+
+
+
+
 
 ## 4.HideFlags类
 
