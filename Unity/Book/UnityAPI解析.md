@@ -1,6 +1,5 @@
----
 typora-default-code-lang: csharp
----
+
 # UnityAPI解析
 
 ## 1.Application类
@@ -1589,19 +1588,541 @@ public class SendMessage_ts : MonoBehaviour
 
 ### 3.4 GameObject 类静态方法
 
+静态方法主要有CreatePrimitive。在使用CreatePrimitive创建GameObject对象时，会涉及添加组件（AddComponent）和查找对象（Find）。
 
+#### **3.4.1 CreatePrimitive：创建GameObject对象**
 
+```
+基本语法 public static GameObject CreatePrimitive(PrimitiveType type);
+		其中参数type为PrimitiveType的类型值。
+```
 
+功能说明：创建GameObject对象。
 
+代码：CreatePrimitive方法以及Find方法的使用。
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class CreatePrimitive_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //使用GameObject.CreatePrimitive方法创建GameObject
+        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        g1.name = "G1";
+        g1.tag = "sphere_Tag";
+        
+        //使用 AddComponent (className : String)方法添加组件
+        g1.AddComponent("SpringJoint");
+        
+        //使用AddComponent (componentType : Type)方法添加组件
+        g1.AddComponent(typeof(GUITexture));
+        
+        g1.transform.position = Vector3.zero;
+        
+        GameObject g2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        g2.name = "G2";
+        g2.tag = "sphere_Tag";
+        
+        //使用AddComponent.<T>()方法添加组件
+        g2.AddComponent<Rigidbody>();
+        
+        g2.transform.position = 2.0f * Vector3.right;
+        g2.GetComponent<Rigidbody>().useGravity = false;
+        
+        GameObject g3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        g3.name = "G1";
+        g3.tag = "sphere_Tag";
+        g3.transform.position = 4.0f * Vector3.right;
+        
+        //使用GameObject.Find类方法获取GameObject，返回符合条件的第一个对象
+        Debug.Log("use Find:" + GameObject.Find("G1").transform.position);
+        
+        //使用GameObject.FindGameObjectWithTag类方法获取GameObject，返回符合条件的第一个对象
+        Debug.Log("use FindGameObjectWithTag:" + GameObject.FindGameObjectWithTag("sphere_
+        Tag").transform.position);
+                                                                                  
+        //使用GameObject.FindGameObjectsWithTag类方法获取GameObject，返回符合条件的所有对象
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("sphere_Tag");
+        foreach (GameObject go in gos)
+        {
+            Debug.Log("use FindGameObjectsWithTag:" + go.name + ":" + go.transform.position);
+        }
+        //更改g1、g2和g3的层级关系
+        g3.transform.parent = g2.transform;
+        g2.transform.parent = g1.transform;
+        Debug.Log("use Find again1:" + GameObject.Find("G1").transform.position);
+        //使用带"/"限定条件的方式查找GameObject
+        //此处返回的对象需其父类为G2，且G2的父类名为G1
+        //注意与上面不带"/"限定条件返回的对象的区别
+        Debug.Log("use Find again2:" + GameObject.Find("/G1/G2/G1").transform.position);
+    }
+}
+```
 
+### 3.5 关于GameObject类和Component类的使用注解
 
+GameObject和Component是Unity中常用且非常重要的两个类，二者的实例属性和实例方法相似，
+只是在使用方法上稍有区别，所以本书不再对Component类作单独介绍，下面对这两个类之间的
+关系及其实例方法的使用进行简要说明。
 
+- 通常一个GameObject对象由多个Component组成，而且至少有一个Transform组件。GameObject用来管理工程中的各个物体，而Component用来扩展这些物体自身的功能。
+- GameObject类和Component类的属性名称和方法名称基本相同，各个属性和方法的用法也很相近，但它们仍有一些差别，以下以GetComponent方法为例说明。
 
+若要获取当前脚本所在GameObject对象中的某个组件，直接使用GetComponent方法即可，如
+`Rigidbody rb = GetComponent<Rigidbody>()`。
+
+代码:
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class GameObjectAndComponent_ts : MonoBehaviour {
+    public GameObject sp;
+    void Start () {
+        //以下3种表达方式功能一样，都返回当前脚本所在GameObject对象中的Rigidbody组件
+        Rigidbody rb1 = rigidbody;	//这是个什么写法？内置？
+        Rigidbody rb2 = GetComponent<Rigidbody>();
+        Rigidbody rb3 = rigidbody.GetComponent<Rigidbody>();
+        Debug.Log("rb1的InstanceID：" + rb1.GetInstanceID());
+        Debug.Log("rb2的InstanceID：" + rb2.GetInstanceID());
+        Debug.Log("rb3的InstanceID：" + rb3.GetInstanceID());
+        //使用前置引用获取引用对象的Rigidbody组件
+        Debug.Log("前置引用sp对象中Rigidbody的InstanceID："+sp.GetComponent<Rigidbody>().GetInstanceID());
+    }
+}
+```
+
+在这段代码中，首先声明了一个GameObject变量sp，用来指向外部GameObject对象，然后在Start方法中用3种不同的方法来获取当前脚本所在GameObject对象中的Rigidbody组件，并打印出它们的InstanceID，如图3-11所示。最后演示了使用GameObject前置引用来获取外部对象的Rigidbody组件的方法。由打印结果可知，虽然rb1、rb2和rb3的获取方式不一样，但都指向了相同的对象。
 
 ## 4.HideFlags类
 
+HideFlags为枚举类，用于控制Object对象的销毁方式及其在检视面板中的可视性。本章将对HideFlags类枚举成员的功能及使用方法进行较为详细的说明。
+
+### 4.1 HideFlags 类枚举成员
+
+枚举类HideFlags涉及的枚举成员有DontSave、HideAndDontSave、HideInHierarchy、HideInInspector、None和NotEditable，下面详细介绍这些枚举成员。
+
+#### 4.1.1 DontSave：保留对象到新场景
+
+功能说明：设置是否将Object对象保留到新的场景中，如果使用HideFlags.DontSave，则Object对象将在新场景中被保留下来。
+
+- 如果GameObject对象被HideFlags.DontSave标识，则在新Scene中GameObject的所有组件将被保留下来，但其子类GameObject对象不会被保留到新Scene中。
+- 不可以对GameObject对象的某个组件如Transform进行HideFlags.DontSave标识，否则无效。
+- 即使程序已经退出，被HideFlags.DontSave标识的对象也会一直存在于程序中，造成内存泄漏，对HideFlags.DontSave标识的对象，在不需要或程序退出时需要使用DestroyImmediate手动销毁。
+
+代码：演示属性DontSave的使用。本实例工程包含两个场景，下面是场景DontSave_unity中的脚本代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DontSave_ts : MonoBehaviour 
+{
+    public GameObject go;
+    public Transform t;
+    void Start()
+    {
+        //GameObject对象使用HideFlags.DontSave可以在新scene中被保留
+        go.hideFlags = HideFlags.DontSave;
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.DontSave;
+        //不可以对GameObject的组件设置HideFlags.DontSave，否则无效
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2.0f, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.DontSave;
+        //导入名为newScene_unity的新scene
+        Application.LoadLevel("newScene2_unity");
+    }
+}
+```
+
+在这段代码中，分别对场景中GameObject对象go、新创建的GameObject对象P1和新实例化的Transform实例tf的hideFlags属性设置为HideFlags.DontSave，然后导入名为newScene2_unity的新场景。
+
+代码newScene2_unity中：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class NewScene2_ts : MonoBehaviour {
+    GameObject cube, plane;
+    void Start () 
+    {
+        Debug.Log("这是NewScene2！");
+    }
+    
+    //当程序退出时用DestroyImmediate()销毁被HideFlags.DontSave标识的对象
+    //否则即使程序已经退出，被HideFlags.DontSave标识的对象依然在Hierarchy面板中
+    //即每运行一次程序就会产生多余对象，造成内存泄漏
+    void OnApplicationQuit()
+    {
+        cube = GameObject.Find("Cube0");
+        plane = GameObject.Find("Plane");
+        if (cube)
+        {
+            Debug.Log("Cube0 DestroyImmediate");
+            DestroyImmediate(cube);
+        }
+        if (plane)
+        {
+            Debug.Log("Plane DestroyImmediate");
+            DestroyImmediate(plane);
+        }
+    }
+}
+```
+
+在OnApplicationQuit()方法中查找当前场景中是否存在名为cube和plane的对象，如果存在，则在程序退出时将它们立即销毁。
+
+#### 4.1.2 HideAndDontSave：保留对象到新场景
+
+功能说明：设置是否将Object对象保留到新Scene中，如果使用HideFlags.HideAndDontSave，则Object对象将在新Scene中被保留下来，但不会显示在Hierarchy面板中。
+
+#### 4.1.3 HideInHierarchy：在Hierarchy面板中隐藏
+
+功能说明：设置Object对象在Hierarchy面板中是否被隐藏。
+
+- 若要在Hierarchy面板中隐藏不是在脚本中创建的对象，需要在Awake方法中使用HideFlags.HideInHierarchy才能生效。
+- 若隐藏父物体，子物体也会被隐藏掉，但隐藏子物体，父物体不会被影响。
+
+代码:
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class HideInHierarchy_ts : MonoBehaviour
+{
+    public GameObject go, sub;
+    public Transform t;
+    void Awake()
+    {
+        //go、sub、gameObject为已存在对象，需在Awake方法中使用HideFlags.HideInHierarchy
+        go.hideFlags = HideFlags.HideInHierarchy;
+        sub.hideFlags = HideFlags.HideInHierarchy;
+        gameObject.hideFlags = HideFlags.HideInHierarchy;
+    }
+    
+    void Start()
+    {
+        //P1、tf是在代码中创建的对象，可以在任何方法中使用HideFlags.HideInHierarchy
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.HideInHierarchy;
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.HideInHierarchy;
+    }
+}
+```
+
+在Awake方法中设置hideFlags属性为HideFlags.HideInHierarchy。然后在Start方法中临时创建和实例化了两个GameObject对象P1和tf，并对它们的hideFlags进行设置。从运行结果可以发现，原来的cube对象包括其子类sphere、cube、MainCamera及新创建的两个对象P1和tf都被隐藏了。
+
+#### 4.1.4 HideInInspector：在Inspector面板中隐藏
+
+功能说明：设置Object对象在Inspector面板中是否被隐藏。
+
+- 如果一个GameObject 使用了HideFlags.HideInInspector ， 则其所有组件将在Inspector面板中被隐藏，但其子类对象的组件仍可在Inspector面板中显示。
+- 如果只隐藏了GameObject对象的某个组件，如Transform，则并不影响GameObject的其他组件如Renderer、Rigidbody等在Inspector面板中的显示状态。
+
+代码:
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class HideInInspector_td : MonoBehaviour 
+{
+    public GameObject go;
+    public Transform t;
+    void Start()
+    {
+        //go、gameObject、Pl都是GameObject对象，使用HideFlags.HideInInspector后
+        //其所有组件将在Inspector面板中隐藏
+        //但并不影响其子类在Inspector面板中的显示
+        go.hideFlags = HideFlags.HideInInspector;
+        gameObject.hideFlags = HideFlags.HideInInspector;
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.HideInInspector;
+        //tf为Transform对象，使用HideFlags.HideInInspector后
+        //tf对应的GameObject的Transform组件将在Inspector面板中隐藏
+        //但GameObject的其他组件仍可在Inspector面板中显示
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2.0f, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.HideInInspector;
+    }
+}
+```
+
+在Start方法中对go及MainCamera的hideFlags设置为HideFlags.HideInInspector，接着分别创建和实例化了一个GameObject对象P1和一个Transform实例tf，并将它们的hideFlags都设置为HideFlags.HideInInspector。运行程序可以发现，对象go、MainCamera及P1的Inspector面板中的组件都被隐藏，tf组件也被隐藏，但其所在GameObject对象的其他组件却未被隐藏。
+
+#### 4.1.5 None：HideFlags默认值
+
+功能说明：None为HideFlags的默认值，不改变Object对象的可见性。
+
+#### 4.1.6 NotEditable：对象在Inspector面板中的可编辑性
+
+功能说明：在程序运行时Object对象是否可在Inspector面板中被编辑。
+
+- GameObject对象使用HideFlags.NotEditable可以使得GameObject对象的所有组件在Inspector面板中都处于不可编辑状态。但GameObject对象被HideFlags.NotEditable标识并不影响其子类对象的可编辑性。
+- 对于GameObject对象的某个组件如Transform单独使用HideFlags.NotEditable，只会使得当前组件不可编辑，但GameObject的其他组件仍可在Inspector面板中编辑。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class NotEditable_ts : MonoBehaviour 
+{
+    public GameObject go;
+    public Transform t;
+    void Start()
+    {
+        //GameObject对象使用HideFlags.NotEditable可以使得GameObject的
+        //所有组件在Inspector面板中都处于不可编辑状态
+        //GameObject对象被HideFlags.NotEditable标识并不影响其子类的可编辑性
+        go.hideFlags = HideFlags.NotEditable;
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.NotEditable;
+        //对于GameObject的某个组件单独使用HideFlags.NotEditable
+        //只会使得当前组件不可编辑，但GameObject的其他组件仍可编辑
+        t.hideFlags = HideFlags.NotEditable;
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2.0f, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.NotEditable;
+    }
+}
+```
+
+在Start方法中对go、新创建的GameObject对象P1及新实例化的Transform实例tf的hideFlags属性设置为HideFlags. NotEditable。对象go和P1的所有组件将不可被编辑，组件tf也不可被编辑，但组件tf所在的GameObject对象的其他组件仍可被编辑。
+
+### 4.2 HideFlags 类使用小结
+
+本章对HideFlags类的枚举成员进行了介绍。在HideFlags类的6个枚举成员中，用得较多的是DontSave，使用它将Object对象保留到新Scene中时，需要注意在合适的时机将Object对象手动销毁。若想将场景中的某个Object对象在Hierarchy面板或Inspector面板中隐藏，可以使用成员HideInHierarchy或HideInInspector，但要注意对象间的层次问题。
+
 ## 5.Mathf类
+
+Mathf是Unity中的数学类，只有静态属性和静态方法。在使用时，直接调用其静态属性或静态方法，如Mathf.PI、Mathf.Sin等。
+
+### 5.1 Mathf 类静态属性
+
+在Mathf类中，涉及的静态属性有Deg2Rad、Rad2Deg和Infinity。
+
+#### 5.1.1 Deg2Rad属性：从角度到弧度常量
+
+```
+基本语法 public const float Deg2Rad = 0.0174533f;
+```
+
+功能说明：表示数学计算中从角度到弧度转变的常量值，其值为`(2 * Mathf.PI) / 360=0.01745329`，此属性只读。
+
+---
+
+提示：Rad2Deg属性与此属性功能相反，是从弧度到角度的转换常量，其值为57.2958f。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DegAndRad_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        //从角度到弧度转换常量
+        Debug.Log("Mathf.Deg2Rad:" + Mathf.Deg2Rad);
+        //从弧度到角度转换常量
+        Debug.Log("Mathf.Rad2Deg:" + Mathf.Rad2Deg);
+    }
+}
+```
+
+#### 5.1.2 Infinity属性：正无穷大
+
+```
+基本语法 public const float Infinity = 1.0f / 0.0f;
+```
+
+功能说明：表示数学中的正无穷大，只读。
+
+- `Mathf.Infinity ÷ x = Mathf.Infinity`，其中x为一个具体数值，如10000。
+- `Mathf.Infinity ÷ Mathf.Infinity = NaN`，计算结果不是数值（Not a Number）。
+- Mathf.Infinity是正无穷大，不要用在计算中。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Infinity_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("0:" + Mathf.Infinity);				   //Infinity
+        Debug.Log("1:" + Mathf.Infinity / 10000.0f);	   //Infinity
+        Debug.Log("2:" + Mathf.Infinity / Mathf.Infinity); //NaN
+    }
+}
+```
+
+### 5.2 Mathf 类静态方法
+
+静态方法有`Clamp`、`ClosestPowerOfTwo`、`DeltaAngle`、`InverseLerp`、`Lerp`、`LerpAngle`、`MoveTowards`、`MoveTowardsAngle`、`PingPong`、`Repeat`、`Round`、`SmoothDamp`、`SmoothDampAngle`和`SmoothStep`。
+
+#### 5.2.1 Clamp：返回有限范围值
+
+```
+基本语法 (1) public static float Clamp(float value, float min, float max);
+        (2) public static int Clamp(int value, int min, int max);
+        	其中min最小值，max最大值。整型/浮点型。
+```
+
+功能说明：限制value的值在[min, max]之内。
+
+---
+
+提示：Clamp01只需要一个参数，限制value取值范围为[0,1]之内。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Clamp_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("当value<min时：" + Mathf.Clamp(-1, 0, 10));
+        Debug.Log("当min<value<max时：" + Mathf.Clamp(3, 0, 10));
+        Debug.Log("当value>max时：" + Mathf.Clamp(11, 0, 10));
+        //方法Clamp01的返回值范围为[0,1]
+        Debug.Log("当value<0时:" + Mathf.Clamp01(-0.1f));
+        Debug.Log("当0<value<1时:" + Mathf.Clamp01(0.5f));
+        Debug.Log("当value>1时:" + Mathf.Clamp01(1.1f));
+    }
+}
+```
+
+#### 5.2.2 ClosestPowerOfTwo方法：返回2 的某次幂
+
+```
+基本语法 public static int ClosestPowerOfTwo(int value);
+```
+
+功能说明：返回最接近value的2的某次幂的值。中间向上取值：
+
+```C#
+f = Mathf.ClosestPowerOfTwo(11)		//f=8；
+f = Mathf.ClosestPowerOfTwo(12)		//f=16；
+当value值小于0时，返回值为0。
+```
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ClosestPowerOfTwo_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("11与8最接近，输出值为：" + Mathf.ClosestPowerOfTwo(11));
+        Debug.Log("12与8和16的差值都为4，输出值为：" + Mathf.ClosestPowerOfTwo(12));
+        Debug.Log("当value<0时，输出值为：" + Mathf.ClosestPowerOfTwo(-1));
+    }
+}
+```
+
+#### 5.2.3 DeltaAngle方法：最小增量角度
+
+```
+基本语法 public static float DeltaAngle(float current, float target);
+		其中参数current为当前角度，参数target为目标角度。
+```
+
+功能说明：返回从current到target的最小增量角度值。计算方法：将current和target按照360度为一周换算到区间（-180,180]中，设current和target换算后的值分别对应c和t，<span style="color:red;">在坐标轴中的夹角为e（0≤e≤180），则若c经过顺时针旋转e度能到达t，则返回值为e；若c经过逆时针旋转e度能到达t，则返回值为-e。</span>
+
+![](https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/DeltaAngle%E6%8D%A2%E7%AE%97%E5%9B%BE.png)
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DeltaAngle_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        Debug.Log(Mathf.DeltaAngle(1180, 90));
+        //100=1180-360*3,即求100和90之间的夹角		//-10
+        Debug.Log(Mathf.DeltaAngle(-1130, 90));
+        //-50=-1130+360*3,即求-50和90之间的夹角		//140
+        Debug.Log(Mathf.DeltaAngle(-1200, 90));
+        //-120=-1200+360*3,即求-120和90之间的夹角	//150
+    }
+}
+```
+
+#### 5.2.4 InverseLerp方法：计算比例值
+
+```
+基本语法 public static float InverseLerp(float from, float to, float value);
+		其中参数from为起始值，参数to为终点值，参数value为参考值。
+```
+
+功能说明：返回value值在从参数from到to中的比例值。设`f = Mathf.InverseLerp(from,to,value)`，$\large{f' = \frac{value-from}{to-from}}$，则若f'∈[0.0f,1.0f]则f = f '；若f ' < 0，则f = 0；若f ' > 1则f = 1。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class InverseLerp_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        // Unity 中的实现t = 0.5 (15 在 10~20 的中间)
+		float t = Mathf.InverseLerp(10, 20, 15);
+       	//***
+        float f,from,to,v;
+        from = -10.0f;
+        to = 30.0f;
+        v = 10.0f;
+        f = Mathf.InverseLerp(from,to,v);
+        Debug.Log("当0<f'<1时："+f);
+        v = -20.0f;
+        f = Mathf.InverseLerp(from, to, v);
+        Debug.Log("当f'<0时：" + f);
+        v = 40.0f;
+        f = Mathf.InverseLerp(from, to, v);
+        Debug.Log("当f'>1时：" + f);
+        ***//
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 6.Matrix4X4类
 
