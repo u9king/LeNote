@@ -2000,7 +2000,7 @@ public class Clamp_ts : MonoBehaviour
 }
 ```
 
-#### 5.2.2 ClosestPowerOfTwo方法：返回2 的某次幂
+#### 5.2.2 ClosestPowerOfTwo：返回2 的某次幂
 
 ```
 基本语法 public static int ClosestPowerOfTwo(int value);
@@ -2030,7 +2030,7 @@ public class ClosestPowerOfTwo_ts : MonoBehaviour
 }
 ```
 
-#### 5.2.3 DeltaAngle方法：最小增量角度
+#### 5.2.3 DeltaAngle：最小增量角度
 
 ```
 基本语法 public static float DeltaAngle(float current, float target);
@@ -2060,7 +2060,7 @@ public class DeltaAngle_ts : MonoBehaviour
 }
 ```
 
-#### 5.2.4 InverseLerp方法：计算比例值
+#### 5.2.4 InverseLerp：计算比例值
 
 ```
 基本语法 public static float InverseLerp(float from, float to, float value);
@@ -2098,33 +2098,461 @@ public class InverseLerp_ts : MonoBehaviour
 }
 ```
 
+#### 5.2.5 Lerp：线性插值
 
+```
+基本语法 public static float Lerp(float from, float to, float t);
+		from为起始值，to为结束值，t为插值系数。
+```
 
+功能说明：返回一个从from到to的线性插值。返回值的计算方法为(to-from)*t'+from
 
+- t的取值范围为[0,1]，当t<0时有效值t'=0，当t>1时有效值t'=1；
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class Lerp_ts : MonoBehaviour 
+{
+    float r, g, b;
+    void FixedUpdate () 
+    {
+        r = Mathf.Lerp(0.0f,1.0f,Time.time*0.2f);
+        g = Mathf.Lerp(0.0f, 1.0f, -1.0f + Time.time * 0.2f);
+        b = Mathf.Lerp(0.0f, 1.0f, -2.0f + Time.time * 0.2f);
+        light.color = new Color(r, g, b);
+    }
+}
+```
 
+变量r、g和b记录Color的RGB值。在FixedUpdate方法中使用Lerp使r、g、b随着时间依次递增。运
+行程序，light会由黑变红接着变黄最后变成白色。
 
+#### 5.2.6 LerpAngle：角度插值
 
+```
+基本语法 public static float LerpAngle(float a, float b, float t);
+		a为起始角度，b为结束角度，参数t为插值系数。
+```
 
+功能说明：返回从a到b之间的角度插值。
 
+- 插值系数t的取值范围为[0,1]，当t<0时其有效值t'=0，当t>1时其有效值t'=1。
+- 插值计算之前需要先对a、b进行规范化，以确定需要插值的大小，对a、b规范化规
+    则如下（以参数a为例，b与此相同）：
 
+$$
+a' = 360k + a\text{,  其中k∈Z,求k使得a'∈[0, 360]}
+$$
 
+对a、b规范化为a'、b'。设a'和b'之间的差值为c，并且c∈[0，180]。
 
+当a'沿着顺时针方向旋转c度与b'重合时，则插值计算方式为：`f=a-c*t',t'为t的有效值`；
+当a'沿着逆时针方向旋转c度与b'重合时，则插值计算方式为：`f=a+c*t',t'为t的有效值`；
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class LerpAngle_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        float a, b;
+        a = -50.0f;	  //a'=360-50=310
+        b = 400.0f;	  //b'=-360+400=40
+        Debug.Log("test1:"+Mathf.LerpAngle(a,b,0.3f));
+        //从a'到b'可以逆时针旋转90°，故返回值test1 = a+c*t = -50+90*0.3 = -23
+        
+        a = 400.0f;	   //a'=-360+400=40
+        b = -50.0f;	   //b'=360-50=310
+        Debug.Log("test2:" + Mathf.LerpAngle(a, b, 0.3f));
+        //从a'到b'可以顺时针旋转90°，故返回值test2 = a-c*t= 400-90*0.3 = 373
+    }
+}
+```
 
+#### 5.2.7 MoveTowards：选择性插值
 
+```
+基本语法 public static float MoveTowards(float current, float target, float maxDelta);
+		current为当前值，target为目标值，maxDelta为步长。
+```
 
+功能说明：返回一个从current到target之间的插值。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class MoveTowards_ts : MonoBehaviour
+{
+    void Start()
+    {
+        float current, target, maxDelta;
+        current = 10.0f;
+        target = -10.0f;
+        maxDelta = 5.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta)); 
+        //5 = 10 - 5 
+        
+        maxDelta = 50.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta));
+        //-10
+        
+        current = 10.0f;
+        target = 50.0f;
+        maxDelta = 5.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta));
+        //15 = 10 + 5
+        
+        maxDelta = 50.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta));
+        //50
+    }
+}
+```
 
+#### 5.2.8 MoveTowardsAngle：角度的选择性插值
 
+```
+基本语法 public static float MoveTowardsAngle(float current, float target, float maxDelta);
+		curren为当前角度，target为目标角度，maxDelta为步长。
+```
 
+功能说明：返回一个从当前角度current向目标角度target旋转的插值。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class MoveTowardsAngle_ts : MonoBehaviour
+{
+    float targets = 0.0f;
+    float speed = 40.0f;
+    void Update()
+    {
+        //每帧不超过speed * Time.deltaTime度
+        float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targets, speed * Time.deltaTime);
+        transform.eulerAngles = new Vector3(0, angle, 0);
+    }
+    
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "顺时针旋转90度"))
+        {
+            targets += 90.0f;
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "逆时针旋转90度"))
+        {
+            targets -= 90.0f;
+        }
+    }
+}
+```
 
+targets用于记录物体旋转的目标角度，可在OnGUI方法中设置，变量speed用于控制物体每帧旋转的最大角度。在Update方法中调用MoveTowardsAngle，返回一个从物体当前角度到目标角度的一个插值。将这个插值赋给transform的eulerAngles。
+
+#### 5.2.9 PingPong：往复运动
+
+```
+基本语法 public static float PingPong(float t, float length);
+```
+
+功能说明：让数值在 0 和 length之间来回往返，形成循环运动。
+$$
+\text{PingPong}(t, l) = l - \left| (t\%2l) - l \right|
+\text{其中t为时间参数，l为运动区间长度}
+$$
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class PingPong_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        float f, t, l;
+        t = 11.0f;
+        l = 5.0f;
+        f = Mathf.PingPong(t,l);	//1 = 5 - |(11 % (2*5) - 5)|
+        t = 17.0f;
+        l = 5.0f;
+        f = Mathf.PingPong(t, l);	//3 = 5 - |(17 % (2*5)) - 5|
+    }
+}
+```
+
+#### 5.2.10 Repeat：取模运算
+
+```
+基本语法 public static float Repeat(float t, float length);
+```
+
+功能说明：浮点数的取模运算。
+$$
+\text{Repeat}(t, l) = t \: \% \: l
+$$
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Repeat_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        float f, t, l;
+        t = 12.5f;
+        l = 5.3f;
+        f = Mathf.Repeat(t,l); // 1.9 = 12.5 - 5.3 * 2
+        t = -12.5f;
+        l = -5.3f;
+        f = Mathf.Repeat(t, l);// -1.9 = -12.5f - (-5.3) * 2
+        //特殊
+        t = -12.5f;
+        l = 0.0f;
+        f = Mathf.Repeat(t, l);// Nan
+    }
+}
+```
+
+#### 5.2.11 Round：浮点数的整型值
+
+```
+基本语法 public static float Round(float f);
+```
+
+功能说明：返回离f最近的整型浮点值。设a为整数部分和b为小数部分即f=a+b计算规则（银行家舍入法（四舍六入五成双））。
+
+- |小数部分|< 0.5，Round(f)返回整数部分；
+- |小数部分|> 0.5，若f为正数返回整数部分+1；若f为负数返回整数部分-1。（上下取整）
+- |小数部分|= 0.5，若整数部分为偶数，返回值为整数部分；若整数部分为奇数，如果f是负数返回整数部分-1，如果f是正数返回整数部分+1。
+
+$$
+\text{Round}(x) = 
+\begin{cases} 
+\lfloor x \rfloor      & \text{if } x - \lfloor x \rfloor < 0.5, \\
+\lceil x \rceil        & \text{if } x - \lfloor x \rfloor > 0.5, \\
+\lfloor x \rfloor      & \text{if } x - \lfloor x \rfloor = 0.5 \text{ 且 } \lfloor x \rfloor \text{ 为偶数}, \\
+\lfloor x \rfloor + 1  & \text{if } x - \lfloor x \rfloor = 0.5 \text{ 且 } \lfloor x \rfloor \text{ 为奇数}.
+\end{cases}
+$$
+
+---
+
+提示：RoundToInt类似，返回整型值。
+
+tips:银行家舍入法可以减少统计偏差通过「五成双」规则（向偶数取整），使舍入误差在统计上更均衡。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Round_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //设Round(f)中f=a.b
+        Debug.Log("b<0.5,f>0：" + Mathf.Round(2.49f));	//2
+        Debug.Log("b<0.5,f<0：" + Mathf.Round(-2.49f));	//-2
+        Debug.Log("b>0.5,f>0：" + Mathf.Round(2.61f));	//3
+        Debug.Log("b>0.5,f<0：" + Mathf.Round(-2.61f));	//-3
+        Debug.Log("b=0.5,a为偶数,f>0：" + Mathf.Round(6.5f));	//6
+        Debug.Log("b=0.5,a为偶数,f<0：" + Mathf.Round(-6.5f));	//-6
+        Debug.Log("b=0.5,a为奇数,f>0：" + Mathf.Round(7.5f));	//8
+        Debug.Log("b=0.5,a为奇数,f<0：" + Mathf.Round(-7.5f));	//-8
+    }
+}
+```
+
+#### 5.2.12 SmoothDamp：模拟阻尼运动
+
+```
+基本语法 (1) public static float SmoothDamp(float current, float target, ref float currentVelocity, float smoothTime);
+        (2) public static float SmoothDamp(float current, float target, ref float currentVelocity, float smoothTime, float maxSpeed);
+        (3) public static float SmoothDamp(float current, float target, ref float currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
+        current为起始值；target为目标值；currentVelocity为当前帧速度；smoothTime为预计平滑时间；maxSpeed为当前帧最大速度值，默认值为Mathf.Infinity；deltaTime为平滑时间，值越大返回值也相对越大，一般用Time.deltaTime计算。
+```
+
+功能说明：模拟平滑阻尼运动，并返回模拟插值。smoothTime预计平滑时间，物体越靠近目标，加速度的绝对值越小。实际到达目标的时间往往要比预计时间大很多，smoothTime∈(0.0f,1.0f)。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothDamp_ts : MonoBehaviour
+{
+    float targets = 110.0f;//目标值
+    float cv1 = 0.0f, cv2 = 0.0f; //输出值
+    float maxSpeeds = 50.0f;//每帧最大值
+    float f1 = 10.0f, f2 = 10.0f;//起始值
+    void FixedUpdate()
+    {
+        //maxSpeed取默认值
+        f1 = Mathf.SmoothDamp(f1, targets, ref cv1, 0.5f);
+        Debug.Log("f1:" + f1);
+        Debug.Log("cv1:" + cv1);
+        //maxSpeed取有限值50.0f
+        f2 = Mathf.SmoothDamp(f2, targets, ref cv2, 0.5f, maxSpeeds);
+        Debug.Log("f2:" + f2);
+        Debug.Log("cv2:" + cv2);
+    }
+}
+```
+
+在FixedUpdate中调用了两次SmoothDamp方法，第一次调用时取maxSpeed值为默认值，即无穷大，第二次调用时取maxSpeed值为有限值。图中分别是对输出值cv1和cv2随时间变化的可视化显示，起始时输出速度提升很快，结束时速度下降却很平缓，在移动距离相同的情况下，有最大速度限制的花费时间也更多。
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/SmoothDamp%E6%A8%A1%E6%8B%9F%E9%98%BB%E5%B0%BC%E5%9B%BE.png" style="zoom:80%;" />
+
+#### 5.2.13 SmoothDampAngle：阻尼旋转
+
+```
+基本语法 (1) public static float SmoothDampAngle(float current, float target, ref float
+currentVelocity, float smoothTime);
+		(2) public static float SmoothDampAngle(float current, float target, ref float
+currentVelocity, float smoothTime, float maxSpeed);
+		(3) public static float SmoothDampAngle(float current, float target, ref float
+currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
+        current为起始值；target为目标值；currentVelocity为当前帧速度；smoothTime为预计平滑时间；maxSpeed为当前帧最大速度值，默认值为Mathf.Infinity；参数deltaTime为平滑时间。
+```
+
+功能说明：模拟角度的平滑阻尼旋转，并返回模拟插值。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothDampAngle_ts : MonoBehaviour
+{
+    public Transform targets;
+    float smoothTime = 0.3f;
+    float distance = 5.0f;
+    float yVelocity = 0.0f;
+    void Update()
+    {
+        //返回平滑阻尼角度值
+        float yAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targets.eulerAngles.y,ref yVelocity, smoothTime);
+        Vector3 positions = targets.position;
+        //由于使用transform.LookAt，此处计算targets的-z轴方向距离targets为distance
+        //欧拉角为摄像机绕target的y轴旋转yAngle的坐标位置
+        positions += Quaternion.Euler(0, yAngle, 0) * new Vector3(0, 0, -distance);
+        //向上偏移2个单位
+        transform.position = positions + new Vector3(0.0f, 2.0f, 0.0f);
+        transform.LookAt(targets);
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "将targets旋转60度"))
+        {
+            //更改targets的eulerAngles
+            targets.eulerAngles += new Vector3(0.0f, 60.0f, 0.0f);
+        }
+    }
+}
+```
+
+#### 5.2.14 SmoothStep：平滑插值
+
+```
+基本语法 public static float SmoothStep(float from, float to, float t);
+		from为起始值，to为结束值，t为插值系数。
+```
+
+功能说明：返回一个从from到to的平滑插值。t∈[0.0f,1.0f]
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothStep_ts : MonoBehaviour 
+{
+    float min = 10.0f;
+    float max = 110.0f;
+    float f1, f2 = 0.0f;
+    void FixedUpdate () 
+    {
+        //f1为SmoothStep插值返回值
+        f1 = Mathf.SmoothStep(min,max,Time.time);
+        //计算相邻两帧插值的变化
+        f2 = f1 - f2;
+        Debug.Log("f1:" + f1);
+        Debug.Log("f2:" + f2);
+        f2 = f1;
+    }
+}
+```
+
+在FixedUpdate方法中调用方法SmoothStep，并将返回值赋给f1，接着计算与前一帧插值的差，并分别打印出f1和f2的值。
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/SmoothStep%E5%B9%B3%E6%BB%91%E6%8F%92%E5%80%BC%E5%9B%BE.png" style="zoom: 80%;" />
 
 ## 6.Matrix4X4类
+
+在Unity常用Vector3、Quaternion、Transform等来对物体进行变换，Matrix4x4类通常用在一些比较特殊的地方，如对摄像机的非标准投影变换等。本章主要介绍了Matrix4x4类的一些实例方法和静态方法。
+
+### 6.1 Matrix4x4 类实例方法
+
+在Matrix4x4类中有`MultiplyPoint`、`MultiplyPoint3x4`、`MultiplyVector`和`SetTRS`。
+
+#### 6.1.1 MultiplyPoint：投影矩阵变换
+
+```
+基本语法 public Vector3 MultiplyPoint(Vector3 v);
+```
+
+功能说明：对点v进行投影矩阵变换。例如，设m1为Matrix4x4实例，v1为Vector3实例，Vector3 v2=m1. MultiplyPoint(v1)，则v2值的变换过程如下：v2=v1·m1·M，系统在进行变换时会给v1增加一个w的分量，扩充为四维向量，w默认值为1，而M为投影变换矩阵：
+$$
+M = \begin{vmatrix} 
+\frac{\cotθ}{Aspect} & 0 & 0 & 0 \\ 
+0 & \cotθ & 0 & 0 \\ 
+0 & 0 & \frac{f}{f-n} & 1 \\ 
+0 & 0 & \frac{n·f}{n-f} & 0 \\ 
+\end{vmatrix} \\
+\text{f: 远视口距离} \quad \text{θ: 视口夹角} \quad \text{Aspect: 纵横比} \quad \text{n: 近视口距离}
+$$
+
+---
+
+提示：MultiplyPoint主要用于Camera的投影变换，对于一般物体的矩阵变换用MultiplyPoint3x4，不涉及投影变换，计算速度也更快。
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 7.Object类
 
