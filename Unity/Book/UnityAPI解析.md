@@ -2503,7 +2503,7 @@ public class SmoothStep_ts : MonoBehaviour
 
 ### 6.1 Matrix4x4 类实例方法
 
-在Matrix4x4类中有`MultiplyPoint`、`MultiplyPoint3x4`、`MultiplyVector`和`SetTRS`。
+在Matrix4x4类中实例方法有`MultiplyPoint`、`MultiplyPoint3x4`、`MultiplyVector`和`SetTRS`。
 
 #### 6.1.1 MultiplyPoint：投影矩阵变换
 
@@ -2528,21 +2528,247 @@ $$
 
 ---
 
+代码：参考Camera类中的cameraToWorldMatrix代码功能。
 
+#### 6.1.2 MultiplyPoint3X4：矩阵变换
 
+```
+基本语法 public Vector3 MultiplyPoint3x4(Vector3 v);
+```
 
+功能说明：对参数值点v进行矩阵变换。因为矩阵变换中，不涉及投影变换，所以速度比MultiplyPoint快。例如，设m1为Matrix4x4实例，v1为Vector3实例，则`Vector3 v2=m1. MultiplyPoint3x4(v1)`，即为v2=v3*m1，其中v3=(v1,w)，w默认值为1。
 
+#### 6.1.3 MultiplyVector方法：矩阵变换
 
+```
+基本语法 public Vector3 MultiplyVector(Vector3 v);
+```
 
+功能说明：对向量v进行矩阵变换。把v当做方向向量而非坐标点进行变换，当用矩阵与v进行变换时，只是对v的方向进行转换，即系统会对变换Matrix4x4进行特殊处理：设M为参与变换的Matrix4x4实例，其值为：
+$$
+M = \begin{vmatrix} 
+m00 & m01 & m02 & m03 \\ 
+m10 & m11 & m12 & m13 \\ 
+m20 & m21 & m22 & m23 \\
+m30 & m31 & m32 & m33 
+\end{vmatrix}
+$$
+则系统处理后的M值为：
+$$
+M' = \begin{vmatrix} 
+n00 & n01 & n02 & 0 \\ 
+n10 & n11 & n12 & 0 \\ 
+n20 & n21 & n22 & 0 \\
+0 & 0 & 0 & 1
+\end{vmatrix} \\
+其中n00^2 + n10^2 + n20^2 = 1, \quad n01^2 + n11^2 + n21^2 = 1, \quad n02^2 + n12^2 + n22^2 = 1
+$$
+代码：此处以DirectX为例。在DirectX中向量变换是v·M，而在OpenGL中向量变换形式是M·v。
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class MultiplyVector_ts : MonoBehaviour
+{
+    public Transform tr;
+    Matrix4x4 mv0 = Matrix4x4.identity;
+    Matrix4x4 mv1 = Matrix4x4.identity;
+    void Start()
+    {
+        //分别设置变换矩阵mv0和mv1的位置变换和角度变换都不为0
+        mv0.SetTRS(Vector3.one * 10.0f, Quaternion.Euler(new Vector3(0.0f, 30.0f, 0.0f)),Vector3.one);
+        mv1.SetTRS(Vector3.one * 10.0f, Quaternion.Euler(new Vector3(0.0f, 0.6f, 0.0f)),Vector3.one);
+    }
+    void Update()
+    {
+        tr.position = mv1.MultiplyVector(tr.position); //用tr来定位变换后的向量
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 120.0f, 45.0f), "方向旋转30度"))
+        {
+            Vector3 v = mv0.MultiplyVector(new Vector3(10.0f, 0.0f, 0.0f));
+            Debug.Log("变换后向量："+v); //(8.7,0.0,-5.0)
+            Debug.Log("变换后向量模长：" + v.magnitude);  //10
+            //尽管mv0的位置变换不为0，但变换后向量的长度应与变换前相同
+        }
+    }
+}
+```
 
+#### 6.1.4 SetTRS方法：重设Matrix4x4变换矩阵
 
+```
+基本语法 public void SetTRS(Vector3 pos, Quaternion q, Vector3 s);
+		pos为位置向量，q为旋转角，s为放缩向量。
+```
 
+功能说明：此方法用来重设Matrix4x4变换矩阵。设有如下代码：
 
+```C#
+Matrix4x4 m1 = Matrix4x4.identity;
+m1.SetTRS(pos,q,s);
+Vector3 v2 = m1.MultiplyPoint3x4(v1);
+则v2的值等于将v1的position增加pos，rotation旋转q，scale放缩s后的值。
+```
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class SetTRS_ts : MonoBehaviour
+{
+    Vector3 v1 = Vector3.one;
+    Vector3 v2 = Vector3.zero;
+    void Start()
+    {
+        Matrix4x4 m1 = Matrix4x4.identity;
+        //Position沿y轴增加5个单位，绕y轴旋转45度，放缩2倍
+        m1.SetTRS(Vector3.up * 5, Quaternion.Euler(Vector3.up * 45.0f), Vector3.one * 2.0f);
+        //也可以使用如下静态方法设置m1变换
+        //m1 = Matrix4x4.TRS(Vector3.up * 5, Quaternion.Euler(Vector3.up * 45.0f), Vector3.one* 2.0f);
+        v2 = m1.MultiplyPoint3x4(v1);
+        Debug.Log("v1的值：" + v1);  //(1.0,1.0,1.0)
+        Debug.Log("v2的值：" + v2); //(2.8,7.0,0.0)
+    }
+    
+    void FixedUpdate()
+    {
+        Debug.DrawLine(Vector3.zero, v1, Color.green);
+        Debug.DrawLine(Vector3.zero, v2, Color.red);
+    }
+}
+```
 
+在Start中初始化m1，并调用SetTRS重置m1，接着调用方法MultiplyPoint3x4对向量v1进行变换，并将变换后的值赋给v2，最后在FixedUpdate方法中根据v1和v2的值绘制了两条直线。v1向v2变换顺序如下:
 
+- v1绕y轴旋转45度后变为(1.414,1.0,0.0)，即x轴的分量变为了原来x和z分量的长度值，y值不变。
+- 对v1扩大2倍后v1变为(2.8,2.0,0.0)。
+- v1沿着y轴增加5个单位后变为(2.8,7.0,0.0)。
+
+### 6.2 Matrix4x4 类静态方法
+
+在Matrix4x4类中静态方法有`Ortho`、`Perspective`和`TRS`。
+
+#### 6.2.1 Ortho：创建正交投影矩阵
+
+```
+基本语法 public static Matrix4x4 Ortho(float left, float right, float bottom, float top,
+float zNear, float zFar);
+        left:正交视口左边边长 right:正交视口右边边长 bottom:正交视口下部边长  
+        top:正交视口上部边长  zNear:近视口距离      zFar:远视口距离。
+```
+
+功能说明：创建一个正交投影矩阵。
+
+---
+
+提示：
+
+- left、right、bottom和top分正负方向，一般以right和top为正数，left和bottom为负数。
+- left与right的值不能相等，bottom与top的值也不能相等，否则程序会报错。
+- 为防止视图变形，参数的设定通常需要和Camera的aspect结合使用。
+
+---
+
+代码：参考Perspective
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/Ortho%E6%AD%A3%E4%BA%A4%E6%8A%95%E5%BD%B1%E7%9F%A9%E9%98%B5%E5%9B%BE.png" style="zoom:80%;" />
+
+#### 6.2.2 Perspective方法：创建透视投影矩阵
+
+```
+基本语法 public static Matrix4x4 Perspective(float fov,float aspect,float zNear,float zFar);
+        fov:视口夹角 aspect:视口纵横比例 zNear:近视口距离 zFar:远视口距离
+```
+
+功能说明：创建一个透视投影矩阵。若要更改摄像机的透视投影矩阵，可以用如下代码：
+
+```
+Camera.main. projectionMatrix=Matrix4x4.Perspective(fov,aspect,zNerar,zFar);
+若要重置其投影矩阵，需要使用代码：
+Camera.main. ResetProjectionMatrix ();
+其中aspect=width/height
+```
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/Perspective%E9%80%8F%E8%A7%86%E6%8A%95%E5%BD%B1%E7%9F%A9%E9%98%B5%E5%9B%BE.png" style="zoom:80%;" />
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class OrthoAndPerspective_ts : MonoBehaviour
+{
+    Matrix4x4 Perspective = Matrix4x4.identity;//透视投影变量
+    Matrix4x4 ortho = Matrix4x4.identity;//正交投影变量
+    //声明变量，用于记录正交视口的左、右、下、上的值
+    float l, r, b, t;
+    void Start()
+    {
+        //设置透视投影矩阵
+        Perspective = Matrix4x4.Perspective(65.0f, 1.5f, 0.1f, 500.0f);
+        t = 10.0f;
+        b = -t;
+        //为防止视图变形需要与 Camera.main.aspect相乘
+        l = b * Camera.main.aspect;
+        r = t * Camera.main.aspect;
+        //设置正交投影矩阵
+        ortho = Matrix4x4.Ortho(l, r, b, t, 0.1f, 100.0f);
+    }
+    void OnGUI()
+    {
+        //使用默认正交投影
+        if (GUI.Button(new Rect(10.0f, 8.0f, 150.0f, 20.0f), "Reset Ortho"))
+        {
+            Camera.main.orthographic = true;
+            Camera.main.ResetProjectionMatrix();
+            Camera.main.orthographicSize = 5.1f;
+    	}
+        //使用自定义正交投影
+        if (GUI.Button(new Rect(10.0f, 38.0f, 150.0f, 20.0f), "use Ortho"))
+        {
+            ortho = Matrix4x4.Ortho(l, r, b, t, 0.1f, 100.0f);
+            Camera.main.orthographic = true;
+            Camera.main.ResetProjectionMatrix();
+            Camera.main.projectionMatrix = ortho;
+            Camera.main.orthographicSize = 5.1f;
+        }
+        //使用自定义透视投影
+        if (GUI.Button(new Rect(10.0f, 68.0f, 150.0f, 20.0f), "use Perspective"))
+        {
+            Camera.main.orthographic = false;
+            Camera.main.projectionMatrix = Perspective;
+        }
+        //恢复系统默认透视投影
+        if (GUI.Button(new Rect(10.0f, 98.0f, 150.0f, 20.0f), "Reset Perspective"))
+        {
+            Camera.main.orthographic = false;
+            Camera.main.ResetProjectionMatrix();
+        }
+    }
+}
+```
+
+在Start中创建一个透视投影矩阵和一个正交投影矩阵，在OnGUI方法中编写了4种不同的投影方式：正交投影、自定义正交投影、自定义透视投影和系统默认透视投影。
+
+#### 6.2.3 TRS：返回Matrix4x4 实例
+
+```
+基本语法 public static Matrix4x4 TRS(Vector3 pos, Quaternion q, Vector3 s);
+		pos:位置向量 q:旋转角 s:放缩向量。
+```
+
+功能说明：使用pos、q和s作为变换参数返回一个Matrix4x4实例
+
+```C#
+Matrix4x4 m1 = Matrix4x4.TRS(pos,q,s);
+Vector v2 = m1.MultiplyPoint3x4(v1);
+v2等于将v1的position增加pos，rotation旋转q，scale放缩s
+```
+
+代码：参考SetTRS
 
 
 
