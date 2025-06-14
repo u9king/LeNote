@@ -2770,19 +2770,269 @@ v2等于将v1的position增加pos，rotation旋转q，scale放缩s
 
 代码：参考SetTRS
 
-
-
-
-
-
-
-
-
-
-
 ## 7.Object类
 
+Object类是Unity中所有对象的基类，例如GameObject、Component、Material、Shader、Texture、
+Mesh、Font等都是Object的子类。本章主要介绍了Object类的实例方法和静态方法。
+
+### 7.1 Object类实例方法
+
+#### 7.1.1 GetInstanceID：Object对象ID
+
+```
+基本语法 public int GetInstanceID();
+```
+
+功能说明：返回Object对象的实例化ID，每个实例都有唯一的ID（int类型）
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class GetInstanceID_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        Debug.Log("gameObject的ID："+ gameObject.GetInstanceID());
+        Debug.Log("transform的ID："+ transform.GetInstanceID());
+        GameObject g1, g2;
+        //从GameObject创建一个对象
+        g1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //克隆对象
+        g2 = Instantiate(g1,Vector3.zero,Quaternion.identity) as GameObject;
+        Debug.Log("GameObject g1的ID："+ g1.GetInstanceID());
+        Debug.Log("Transform g1的ID："+ g1.transform.GetInstanceID());
+        Debug.Log("GameObject g2的ID：" + g2.GetInstanceID());
+        Debug.Log("Transform g2的ID：" + g2.transform.GetInstanceID());
+    }
+}
+```
+
+打印出了gameObject和transform的InstanceID，然后创建和实例化两个新对象g1和g2，打印g1和g2的ID。
+
+### 7.2 Object类静态方法
+
+在Object类中的静态方法有`Destroy`、`DontDestroyOnLoad`、`FindObjectOfType`、
+`FindObjectsOfType`和`Instantiate`。
+
+#### 7.2.1 Destroy：销毁对象
+
+```
+基本语法 (1) public static void Destroy(Object obj);
+        (2) public static void Destroy(Object obj, float t);
+        obj:待销毁的对象，t:销毁延迟时间，默认为0。
+```
+
+功能说明：执行方法t秒后销毁obj对象。Destroy也可以销毁GameObject对象中的某个组件如Rigidbody、脚本等。
+
+---
+
+提示：相近的方法DestroyImmediate立即销毁某个Object对象及其在Assets中的资源文件，编程中慎用，推荐使用Destroy方法。
+
+```
+基本语法 DestroyImmediate(Object obj, bool allowDestroyingAssets = false);
+```
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Destroy_ts : MonoBehaviour 
+{
+    public GameObject GO,Cube;
+    void Start () 
+    {
+        //5秒后销毁GO对象的Rigidbody组件
+        Destroy(GO.rigidbody,5.0f);
+        //7秒后销毁GO对象中的Destroy_ts脚本
+        Destroy(GO.GetComponent<Destroy_ts>(),7.0f);
+        //10秒后销毁Cube对象，同时Cube对象的所有组件及子类将一并销毁
+        Destroy(Cube, 10.0f);
+    }
+}
+```
+
+#### 7.2.2 DontDestroyOnLoad：新场景中保留对象
+
+```
+基本语法 public static void DontDestroyOnLoad(Object target);
+		target:被保留的对象。
+```
+
+功能说明：设置参数target指向的对象是否在新Scene中被保留下来。
+
+- 如果target为父物体其子物体都会被导入到新Scene中。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DontDestoryOnLoad_ts : MonoBehaviour
+{
+    public GameObject g1, g2;
+    public Renderer re1, re2;
+    void Start()
+    {
+        //g1指向一个顶层父物体对象,在导入新Scene时g1被保存
+        DontDestroyOnLoad(g1);
+        //g2指向一个子类对象,在导入新Scene时会发现g2没有被保存
+        DontDestroyOnLoad(g2);
+        //re1指向一个顶层父物体的Renderer组件,在导入新Scene时re1被保存
+        DontDestroyOnLoad(re1);
+        //re2指向一个子类对象的renderer组件，在导入新Scene时会发现re2指向的对象及组件没有被保存
+        DontDestroyOnLoad(re2);
+        Application.LoadLevel("FindObjectsOfType_unity");
+    }
+}
+```
+
+#### 7.2.3 FindObjectsOfType：获取对象
+
+```
+基本语法 (1) public static T[] FindObjectsOfType<T>() where T : Object;
+		(2) public static Object[] FindObjectsOfType(Type type);
+		type：对象类型
+```
+
+功能说明：获取工程中所有符合参数类型的对象。遍历整个工程，执行速度较慢，不适宜在每帧中调用。
+
+---
+
+提示：FindObjectOfType相近，获取工程中符合type类型的第一个对象，多用于检测工程中是否含有某种类型的对象。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class FindObjectOfType_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        GameObject[] gos = FindObjectsOfType(typeof(GameObject)) as GameObject[];
+        foreach(GameObject go in gos)
+        {
+            //1.5秒后销毁除摄像机外的所有GameObject
+            if (go.name != "Main Camera") Destroy(go, 1.5f);
+        }
+        
+        Rigidbody[] rbs = FindObjectsOfType(typeof(Rigidbody))as Rigidbody[];
+        foreach(Rigidbody rb in rbs)
+        {
+            //启用除球体外的所有刚体的重力感应
+            if(rb.name!="Sphere") rb.useGravity = true;
+        }
+    }
+}
+```
+
+调用FindObjectsOfType查找游戏中所有的GameObject对象，并将查找结果赋给数组gos，然后遍历数组gos，在1.5秒后销毁除摄像机外的所有GameObject对象。
+
+#### 7.2.4 Instantiate：实例化对象
+
+```
+基本语法 (1) public static Object Instantiate(Object original);
+        (2) public static Object Instantiate(Object original, Vector3 position,Quaternion rotation);
+        original：类型，position：位置，rotation：旋转角度。
+```
+
+功能说明：实例化一个Object对象。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Instantiate_ts : MonoBehaviour 
+{
+    public GameObject A;
+    public Transform B;
+    public Rigidbody C;
+    void Start () 
+    {
+        Object g1 = Instantiate(A,Vector3.zero,Quaternion.identity) as Object;
+        Debug.Log("克隆一个Object对象g1:"+g1);
+        GameObject g2 = Instantiate(A, Vector3.zero, Quaternion.identity) as GameObject;
+        Debug.Log("克隆一个GameObject对象g2:" + g2);
+        Transform t1 = Instantiate(B, Vector3.zero, Quaternion.identity) as Transform;
+        Debug.Log("克隆一个Transform对象t1:" + t1);
+        Rigidbody r1 = Instantiate(C, Vector3.zero, Quaternion.identity) as Rigidbody;
+        Debug.Log("克隆一个Rigidbody对象r1:" + r1);
+    }
+}
+```
+
+在Start中调用Instantiate分别实例化了4种不同类型的对象，并将实例化的对象打印出来。
+
 ## 8.Quaternaion类
+
+Quaternion又称四元数，由x、y、z和w这4个分量组成，属于struct类型。在Unity中，用Quaternion来存储和表示对象的旋转角度。Quaternion的变换比较复杂，对于GameObject一般的旋转及移动，可以用Transform中的相关方法实现。本章主要介绍了Quaternion类的实例属性、静态方法和运算符`*`.
+
+### 8.1 Quaternion类实例属性
+
+#### 8.1.1 eulerAngles：欧拉角
+
+```
+基本语法 public Vector3 eulerAngles { get; set; }
+```
+
+功能说明：返回Quaternion实例对应的欧拉角。<span style="color:red;">注意不同的旋转次序得到的最终状态是不同的。</span>
+
+- 对Transform的欧拉角变换次序是
+  1. 先绕z轴旋转相应的角度
+  2. 再绕x轴旋转相应的角度
+  3. 最后绕y轴旋转相应的角度
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class EulerAngle_ts : MonoBehaviour
+{
+    public Transform A, B;
+    Quaternion rotations=Quaternion.identity;
+    Vector3 eulerAngle = Vector3.zero;
+    float speed = 10.0f;
+    void Update()
+    {
+        //第一种方式：将Quaternion赋值给transform的rotation
+        rotations.eulerAngles = new Vector3(0.0f, speed * Time.time, 0.0f);
+        A.rotation = rotations;
+        //第二种方式：将三维向量代表的欧拉角直接赋值给transform的eulerAngles
+        eulerAngle = new Vector3(0.0f, speed * Time.time, 0.0f);
+        B.eulerAngles = eulerAngle;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 9.Random类
 
