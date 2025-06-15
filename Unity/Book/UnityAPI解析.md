@@ -1,6 +1,5 @@
----
 typora-default-code-lang: csharp
----
+
 # UnityAPI解析
 
 ## 1.Application类
@@ -1589,25 +1588,1451 @@ public class SendMessage_ts : MonoBehaviour
 
 ### 3.4 GameObject 类静态方法
 
+静态方法主要有CreatePrimitive。在使用CreatePrimitive创建GameObject对象时，会涉及添加组件（AddComponent）和查找对象（Find）。
 
+#### **3.4.1 CreatePrimitive：创建GameObject对象**
 
+```
+基本语法 public static GameObject CreatePrimitive(PrimitiveType type);
+		其中参数type为PrimitiveType的类型值。
+```
 
+功能说明：创建GameObject对象。
 
+代码：CreatePrimitive方法以及Find方法的使用。
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class CreatePrimitive_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //使用GameObject.CreatePrimitive方法创建GameObject
+        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        g1.name = "G1";
+        g1.tag = "sphere_Tag";
+        
+        //使用 AddComponent (className : String)方法添加组件
+        g1.AddComponent("SpringJoint");
+        
+        //使用AddComponent (componentType : Type)方法添加组件
+        g1.AddComponent(typeof(GUITexture));
+        
+        g1.transform.position = Vector3.zero;
+        
+        GameObject g2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        g2.name = "G2";
+        g2.tag = "sphere_Tag";
+        
+        //使用AddComponent.<T>()方法添加组件
+        g2.AddComponent<Rigidbody>();
+        
+        g2.transform.position = 2.0f * Vector3.right;
+        g2.GetComponent<Rigidbody>().useGravity = false;
+        
+        GameObject g3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        g3.name = "G1";
+        g3.tag = "sphere_Tag";
+        g3.transform.position = 4.0f * Vector3.right;
+        
+        //使用GameObject.Find类方法获取GameObject，返回符合条件的第一个对象
+        Debug.Log("use Find:" + GameObject.Find("G1").transform.position);
+        
+        //使用GameObject.FindGameObjectWithTag类方法获取GameObject，返回符合条件的第一个对象
+        Debug.Log("use FindGameObjectWithTag:" + GameObject.FindGameObjectWithTag("sphere_
+        Tag").transform.position);
+                                                                                  
+        //使用GameObject.FindGameObjectsWithTag类方法获取GameObject，返回符合条件的所有对象
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("sphere_Tag");
+        foreach (GameObject go in gos)
+        {
+            Debug.Log("use FindGameObjectsWithTag:" + go.name + ":" + go.transform.position);
+        }
+        //更改g1、g2和g3的层级关系
+        g3.transform.parent = g2.transform;
+        g2.transform.parent = g1.transform;
+        Debug.Log("use Find again1:" + GameObject.Find("G1").transform.position);
+        //使用带"/"限定条件的方式查找GameObject
+        //此处返回的对象需其父类为G2，且G2的父类名为G1
+        //注意与上面不带"/"限定条件返回的对象的区别
+        Debug.Log("use Find again2:" + GameObject.Find("/G1/G2/G1").transform.position);
+    }
+}
+```
 
+### 3.5 关于GameObject类和Component类的使用注解
 
+GameObject和Component是Unity中常用且非常重要的两个类，二者的实例属性和实例方法相似，
+只是在使用方法上稍有区别，所以本书不再对Component类作单独介绍，下面对这两个类之间的
+关系及其实例方法的使用进行简要说明。
 
+- 通常一个GameObject对象由多个Component组成，而且至少有一个Transform组件。GameObject用来管理工程中的各个物体，而Component用来扩展这些物体自身的功能。
+- GameObject类和Component类的属性名称和方法名称基本相同，各个属性和方法的用法也很相近，但它们仍有一些差别，以下以GetComponent方法为例说明。
 
+若要获取当前脚本所在GameObject对象中的某个组件，直接使用GetComponent方法即可，如
+`Rigidbody rb = GetComponent<Rigidbody>()`。
+
+代码:
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class GameObjectAndComponent_ts : MonoBehaviour {
+    public GameObject sp;
+    void Start () {
+        //以下3种表达方式功能一样，都返回当前脚本所在GameObject对象中的Rigidbody组件
+        Rigidbody rb1 = rigidbody;	//这是个什么写法？内置？
+        Rigidbody rb2 = GetComponent<Rigidbody>();
+        Rigidbody rb3 = rigidbody.GetComponent<Rigidbody>();
+        Debug.Log("rb1的InstanceID：" + rb1.GetInstanceID());
+        Debug.Log("rb2的InstanceID：" + rb2.GetInstanceID());
+        Debug.Log("rb3的InstanceID：" + rb3.GetInstanceID());
+        //使用前置引用获取引用对象的Rigidbody组件
+        Debug.Log("前置引用sp对象中Rigidbody的InstanceID："+sp.GetComponent<Rigidbody>().GetInstanceID());
+    }
+}
+```
+
+在这段代码中，首先声明了一个GameObject变量sp，用来指向外部GameObject对象，然后在Start方法中用3种不同的方法来获取当前脚本所在GameObject对象中的Rigidbody组件，并打印出它们的InstanceID，如图3-11所示。最后演示了使用GameObject前置引用来获取外部对象的Rigidbody组件的方法。由打印结果可知，虽然rb1、rb2和rb3的获取方式不一样，但都指向了相同的对象。
 
 ## 4.HideFlags类
 
+HideFlags为枚举类，用于控制Object对象的销毁方式及其在检视面板中的可视性。本章将对HideFlags类枚举成员的功能及使用方法进行较为详细的说明。
+
+### 4.1 HideFlags 类枚举成员
+
+枚举类HideFlags涉及的枚举成员有DontSave、HideAndDontSave、HideInHierarchy、HideInInspector、None和NotEditable，下面详细介绍这些枚举成员。
+
+#### 4.1.1 DontSave：保留对象到新场景
+
+功能说明：设置是否将Object对象保留到新的场景中，如果使用HideFlags.DontSave，则Object对象将在新场景中被保留下来。
+
+- 如果GameObject对象被HideFlags.DontSave标识，则在新Scene中GameObject的所有组件将被保留下来，但其子类GameObject对象不会被保留到新Scene中。
+- 不可以对GameObject对象的某个组件如Transform进行HideFlags.DontSave标识，否则无效。
+- 即使程序已经退出，被HideFlags.DontSave标识的对象也会一直存在于程序中，造成内存泄漏，对HideFlags.DontSave标识的对象，在不需要或程序退出时需要使用DestroyImmediate手动销毁。
+
+代码：演示属性DontSave的使用。本实例工程包含两个场景，下面是场景DontSave_unity中的脚本代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DontSave_ts : MonoBehaviour 
+{
+    public GameObject go;
+    public Transform t;
+    void Start()
+    {
+        //GameObject对象使用HideFlags.DontSave可以在新scene中被保留
+        go.hideFlags = HideFlags.DontSave;
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.DontSave;
+        //不可以对GameObject的组件设置HideFlags.DontSave，否则无效
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2.0f, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.DontSave;
+        //导入名为newScene_unity的新scene
+        Application.LoadLevel("newScene2_unity");
+    }
+}
+```
+
+在这段代码中，分别对场景中GameObject对象go、新创建的GameObject对象P1和新实例化的Transform实例tf的hideFlags属性设置为HideFlags.DontSave，然后导入名为newScene2_unity的新场景。
+
+代码newScene2_unity中：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class NewScene2_ts : MonoBehaviour {
+    GameObject cube, plane;
+    void Start () 
+    {
+        Debug.Log("这是NewScene2！");
+    }
+    
+    //当程序退出时用DestroyImmediate()销毁被HideFlags.DontSave标识的对象
+    //否则即使程序已经退出，被HideFlags.DontSave标识的对象依然在Hierarchy面板中
+    //即每运行一次程序就会产生多余对象，造成内存泄漏
+    void OnApplicationQuit()
+    {
+        cube = GameObject.Find("Cube0");
+        plane = GameObject.Find("Plane");
+        if (cube)
+        {
+            Debug.Log("Cube0 DestroyImmediate");
+            DestroyImmediate(cube);
+        }
+        if (plane)
+        {
+            Debug.Log("Plane DestroyImmediate");
+            DestroyImmediate(plane);
+        }
+    }
+}
+```
+
+在OnApplicationQuit()方法中查找当前场景中是否存在名为cube和plane的对象，如果存在，则在程序退出时将它们立即销毁。
+
+#### 4.1.2 HideAndDontSave：保留对象到新场景
+
+功能说明：设置是否将Object对象保留到新Scene中，如果使用HideFlags.HideAndDontSave，则Object对象将在新Scene中被保留下来，但不会显示在Hierarchy面板中。
+
+#### 4.1.3 HideInHierarchy：在Hierarchy面板中隐藏
+
+功能说明：设置Object对象在Hierarchy面板中是否被隐藏。
+
+- 若要在Hierarchy面板中隐藏不是在脚本中创建的对象，需要在Awake方法中使用HideFlags.HideInHierarchy才能生效。
+- 若隐藏父物体，子物体也会被隐藏掉，但隐藏子物体，父物体不会被影响。
+
+代码:
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class HideInHierarchy_ts : MonoBehaviour
+{
+    public GameObject go, sub;
+    public Transform t;
+    void Awake()
+    {
+        //go、sub、gameObject为已存在对象，需在Awake方法中使用HideFlags.HideInHierarchy
+        go.hideFlags = HideFlags.HideInHierarchy;
+        sub.hideFlags = HideFlags.HideInHierarchy;
+        gameObject.hideFlags = HideFlags.HideInHierarchy;
+    }
+    
+    void Start()
+    {
+        //P1、tf是在代码中创建的对象，可以在任何方法中使用HideFlags.HideInHierarchy
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.HideInHierarchy;
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.HideInHierarchy;
+    }
+}
+```
+
+在Awake方法中设置hideFlags属性为HideFlags.HideInHierarchy。然后在Start方法中临时创建和实例化了两个GameObject对象P1和tf，并对它们的hideFlags进行设置。从运行结果可以发现，原来的cube对象包括其子类sphere、cube、MainCamera及新创建的两个对象P1和tf都被隐藏了。
+
+#### 4.1.4 HideInInspector：在Inspector面板中隐藏
+
+功能说明：设置Object对象在Inspector面板中是否被隐藏。
+
+- 如果一个GameObject 使用了HideFlags.HideInInspector ， 则其所有组件将在Inspector面板中被隐藏，但其子类对象的组件仍可在Inspector面板中显示。
+- 如果只隐藏了GameObject对象的某个组件，如Transform，则并不影响GameObject的其他组件如Renderer、Rigidbody等在Inspector面板中的显示状态。
+
+代码:
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class HideInInspector_td : MonoBehaviour 
+{
+    public GameObject go;
+    public Transform t;
+    void Start()
+    {
+        //go、gameObject、Pl都是GameObject对象，使用HideFlags.HideInInspector后
+        //其所有组件将在Inspector面板中隐藏
+        //但并不影响其子类在Inspector面板中的显示
+        go.hideFlags = HideFlags.HideInInspector;
+        gameObject.hideFlags = HideFlags.HideInInspector;
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.HideInInspector;
+        //tf为Transform对象，使用HideFlags.HideInInspector后
+        //tf对应的GameObject的Transform组件将在Inspector面板中隐藏
+        //但GameObject的其他组件仍可在Inspector面板中显示
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2.0f, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.HideInInspector;
+    }
+}
+```
+
+在Start方法中对go及MainCamera的hideFlags设置为HideFlags.HideInInspector，接着分别创建和实例化了一个GameObject对象P1和一个Transform实例tf，并将它们的hideFlags都设置为HideFlags.HideInInspector。运行程序可以发现，对象go、MainCamera及P1的Inspector面板中的组件都被隐藏，tf组件也被隐藏，但其所在GameObject对象的其他组件却未被隐藏。
+
+#### 4.1.5 None：HideFlags默认值
+
+功能说明：None为HideFlags的默认值，不改变Object对象的可见性。
+
+#### 4.1.6 NotEditable：对象在Inspector面板中的可编辑性
+
+功能说明：在程序运行时Object对象是否可在Inspector面板中被编辑。
+
+- GameObject对象使用HideFlags.NotEditable可以使得GameObject对象的所有组件在Inspector面板中都处于不可编辑状态。但GameObject对象被HideFlags.NotEditable标识并不影响其子类对象的可编辑性。
+- 对于GameObject对象的某个组件如Transform单独使用HideFlags.NotEditable，只会使得当前组件不可编辑，但GameObject的其他组件仍可在Inspector面板中编辑。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class NotEditable_ts : MonoBehaviour 
+{
+    public GameObject go;
+    public Transform t;
+    void Start()
+    {
+        //GameObject对象使用HideFlags.NotEditable可以使得GameObject的
+        //所有组件在Inspector面板中都处于不可编辑状态
+        //GameObject对象被HideFlags.NotEditable标识并不影响其子类的可编辑性
+        go.hideFlags = HideFlags.NotEditable;
+        GameObject P1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        P1.hideFlags = HideFlags.NotEditable;
+        //对于GameObject的某个组件单独使用HideFlags.NotEditable
+        //只会使得当前组件不可编辑，但GameObject的其他组件仍可编辑
+        t.hideFlags = HideFlags.NotEditable;
+        Transform tf = Instantiate(t, go.transform.position + new Vector3(2.0f, 0.0f, 0.0f),Quaternion.identity) as Transform;
+        tf.hideFlags = HideFlags.NotEditable;
+    }
+}
+```
+
+在Start方法中对go、新创建的GameObject对象P1及新实例化的Transform实例tf的hideFlags属性设置为HideFlags. NotEditable。对象go和P1的所有组件将不可被编辑，组件tf也不可被编辑，但组件tf所在的GameObject对象的其他组件仍可被编辑。
+
+### 4.2 HideFlags 类使用小结
+
+本章对HideFlags类的枚举成员进行了介绍。在HideFlags类的6个枚举成员中，用得较多的是DontSave，使用它将Object对象保留到新Scene中时，需要注意在合适的时机将Object对象手动销毁。若想将场景中的某个Object对象在Hierarchy面板或Inspector面板中隐藏，可以使用成员HideInHierarchy或HideInInspector，但要注意对象间的层次问题。
+
 ## 5.Mathf类
+
+Mathf是Unity中的数学类，只有静态属性和静态方法。在使用时，直接调用其静态属性或静态方法，如Mathf.PI、Mathf.Sin等。
+
+### 5.1 Mathf 类静态属性
+
+在Mathf类中，涉及的静态属性有Deg2Rad、Rad2Deg和Infinity。
+
+#### 5.1.1 Deg2Rad属性：从角度到弧度常量
+
+```
+基本语法 public const float Deg2Rad = 0.0174533f;
+```
+
+功能说明：表示数学计算中从角度到弧度转变的常量值，其值为`(2 * Mathf.PI) / 360=0.01745329`，此属性只读。
+
+---
+
+提示：Rad2Deg属性与此属性功能相反，是从弧度到角度的转换常量，其值为57.2958f。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DegAndRad_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        //从角度到弧度转换常量
+        Debug.Log("Mathf.Deg2Rad:" + Mathf.Deg2Rad);
+        //从弧度到角度转换常量
+        Debug.Log("Mathf.Rad2Deg:" + Mathf.Rad2Deg);
+    }
+}
+```
+
+#### 5.1.2 Infinity属性：正无穷大
+
+```
+基本语法 public const float Infinity = 1.0f / 0.0f;
+```
+
+功能说明：表示数学中的正无穷大，只读。
+
+- `Mathf.Infinity ÷ x = Mathf.Infinity`，其中x为一个具体数值，如10000。
+- `Mathf.Infinity ÷ Mathf.Infinity = NaN`，计算结果不是数值（Not a Number）。
+- Mathf.Infinity是正无穷大，不要用在计算中。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Infinity_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("0:" + Mathf.Infinity);				   //Infinity
+        Debug.Log("1:" + Mathf.Infinity / 10000.0f);	   //Infinity
+        Debug.Log("2:" + Mathf.Infinity / Mathf.Infinity); //NaN
+    }
+}
+```
+
+### 5.2 Mathf 类静态方法
+
+静态方法有`Clamp`、`ClosestPowerOfTwo`、`DeltaAngle`、`InverseLerp`、`Lerp`、`LerpAngle`、`MoveTowards`、`MoveTowardsAngle`、`PingPong`、`Repeat`、`Round`、`SmoothDamp`、`SmoothDampAngle`和`SmoothStep`。
+
+#### 5.2.1 Clamp：返回有限范围值
+
+```
+基本语法 (1) public static float Clamp(float value, float min, float max);
+        (2) public static int Clamp(int value, int min, int max);
+        	其中min最小值，max最大值。整型/浮点型。
+```
+
+功能说明：限制value的值在[min, max]之内。
+
+---
+
+提示：Clamp01只需要一个参数，限制value取值范围为[0,1]之内。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Clamp_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("当value<min时：" + Mathf.Clamp(-1, 0, 10));
+        Debug.Log("当min<value<max时：" + Mathf.Clamp(3, 0, 10));
+        Debug.Log("当value>max时：" + Mathf.Clamp(11, 0, 10));
+        //方法Clamp01的返回值范围为[0,1]
+        Debug.Log("当value<0时:" + Mathf.Clamp01(-0.1f));
+        Debug.Log("当0<value<1时:" + Mathf.Clamp01(0.5f));
+        Debug.Log("当value>1时:" + Mathf.Clamp01(1.1f));
+    }
+}
+```
+
+#### 5.2.2 ClosestPowerOfTwo：返回2 的某次幂
+
+```
+基本语法 public static int ClosestPowerOfTwo(int value);
+```
+
+功能说明：返回最接近value的2的某次幂的值。中间向上取值：
+
+```C#
+f = Mathf.ClosestPowerOfTwo(11)		//f=8；
+f = Mathf.ClosestPowerOfTwo(12)		//f=16；
+当value值小于0时，返回值为0。
+```
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ClosestPowerOfTwo_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("11与8最接近，输出值为：" + Mathf.ClosestPowerOfTwo(11));
+        Debug.Log("12与8和16的差值都为4，输出值为：" + Mathf.ClosestPowerOfTwo(12));
+        Debug.Log("当value<0时，输出值为：" + Mathf.ClosestPowerOfTwo(-1));
+    }
+}
+```
+
+#### 5.2.3 DeltaAngle：最小增量角度
+
+```
+基本语法 public static float DeltaAngle(float current, float target);
+		其中参数current为当前角度，参数target为目标角度。
+```
+
+功能说明：返回从current到target的最小增量角度值。计算方法：将current和target按照360度为一周换算到区间（-180,180]中，设current和target换算后的值分别对应c和t，<span style="color:red;">在坐标轴中的夹角为e（0≤e≤180），则若c经过顺时针旋转e度能到达t，则返回值为e；若c经过逆时针旋转e度能到达t，则返回值为-e。</span>
+
+![](https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/DeltaAngle%E6%8D%A2%E7%AE%97%E5%9B%BE.png)
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DeltaAngle_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        Debug.Log(Mathf.DeltaAngle(1180, 90));
+        //100=1180-360*3,即求100和90之间的夹角		//-10
+        Debug.Log(Mathf.DeltaAngle(-1130, 90));
+        //-50=-1130+360*3,即求-50和90之间的夹角		//140
+        Debug.Log(Mathf.DeltaAngle(-1200, 90));
+        //-120=-1200+360*3,即求-120和90之间的夹角	//150
+    }
+}
+```
+
+#### 5.2.4 InverseLerp：计算比例值
+
+```
+基本语法 public static float InverseLerp(float from, float to, float value);
+		其中参数from为起始值，参数to为终点值，参数value为参考值。
+```
+
+功能说明：返回value值在从参数from到to中的比例值。设`f = Mathf.InverseLerp(from,to,value)`，$\large{f' = \frac{value-from}{to-from}}$，则若f'∈[0.0f,1.0f]则f = f '；若f ' < 0，则f = 0；若f ' > 1则f = 1。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class InverseLerp_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        // Unity 中的实现t = 0.5 (15 在 10~20 的中间)
+		float t = Mathf.InverseLerp(10, 20, 15);
+       	//***
+        float f,from,to,v;
+        from = -10.0f;
+        to = 30.0f;
+        v = 10.0f;
+        f = Mathf.InverseLerp(from,to,v);
+        Debug.Log("当0<f'<1时："+f);
+        v = -20.0f;
+        f = Mathf.InverseLerp(from, to, v);
+        Debug.Log("当f'<0时：" + f);
+        v = 40.0f;
+        f = Mathf.InverseLerp(from, to, v);
+        Debug.Log("当f'>1时：" + f);
+        ***//
+    }
+}
+```
+
+#### 5.2.5 Lerp：线性插值
+
+```
+基本语法 public static float Lerp(float from, float to, float t);
+		from为起始值，to为结束值，t为插值系数。
+```
+
+功能说明：返回一个从from到to的线性插值。返回值的计算方法为(to-from)*t'+from
+
+- t的取值范围为[0,1]，当t<0时有效值t'=0，当t>1时有效值t'=1；
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Lerp_ts : MonoBehaviour 
+{
+    float r, g, b;
+    void FixedUpdate () 
+    {
+        r = Mathf.Lerp(0.0f,1.0f,Time.time*0.2f);
+        g = Mathf.Lerp(0.0f, 1.0f, -1.0f + Time.time * 0.2f);
+        b = Mathf.Lerp(0.0f, 1.0f, -2.0f + Time.time * 0.2f);
+        light.color = new Color(r, g, b);
+    }
+}
+```
+
+变量r、g和b记录Color的RGB值。在FixedUpdate方法中使用Lerp使r、g、b随着时间依次递增。运
+行程序，light会由黑变红接着变黄最后变成白色。
+
+#### 5.2.6 LerpAngle：角度插值
+
+```
+基本语法 public static float LerpAngle(float a, float b, float t);
+		a为起始角度，b为结束角度，参数t为插值系数。
+```
+
+功能说明：返回从a到b之间的角度插值。
+
+- 插值系数t的取值范围为[0,1]，当t<0时其有效值t'=0，当t>1时其有效值t'=1。
+- 插值计算之前需要先对a、b进行规范化，以确定需要插值的大小，对a、b规范化规
+    则如下（以参数a为例，b与此相同）：
+
+$$
+a' = 360k + a\text{,  其中k∈Z,求k使得a'∈[0, 360]}
+$$
+
+对a、b规范化为a'、b'。设a'和b'之间的差值为c，并且c∈[0，180]。
+
+当a'沿着顺时针方向旋转c度与b'重合时，则插值计算方式为：`f=a-c*t',t'为t的有效值`；
+当a'沿着逆时针方向旋转c度与b'重合时，则插值计算方式为：`f=a+c*t',t'为t的有效值`；
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class LerpAngle_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        float a, b;
+        a = -50.0f;	  //a'=360-50=310
+        b = 400.0f;	  //b'=-360+400=40
+        Debug.Log("test1:"+Mathf.LerpAngle(a,b,0.3f));
+        //从a'到b'可以逆时针旋转90°，故返回值test1 = a+c*t = -50+90*0.3 = -23
+        
+        a = 400.0f;	   //a'=-360+400=40
+        b = -50.0f;	   //b'=360-50=310
+        Debug.Log("test2:" + Mathf.LerpAngle(a, b, 0.3f));
+        //从a'到b'可以顺时针旋转90°，故返回值test2 = a-c*t= 400-90*0.3 = 373
+    }
+}
+```
+
+#### 5.2.7 MoveTowards：选择性插值
+
+```
+基本语法 public static float MoveTowards(float current, float target, float maxDelta);
+		current为当前值，target为目标值，maxDelta为步长。
+```
+
+功能说明：返回一个从current到target之间的插值。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class MoveTowards_ts : MonoBehaviour
+{
+    void Start()
+    {
+        float current, target, maxDelta;
+        current = 10.0f;
+        target = -10.0f;
+        maxDelta = 5.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta)); 
+        //5 = 10 - 5 
+        
+        maxDelta = 50.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta));
+        //-10
+        
+        current = 10.0f;
+        target = 50.0f;
+        maxDelta = 5.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta));
+        //15 = 10 + 5
+        
+        maxDelta = 50.0f;
+        Debug.Log(Mathf.MoveTowards(current, target, maxDelta));
+        //50
+    }
+}
+```
+
+#### 5.2.8 MoveTowardsAngle：角度的选择性插值
+
+```
+基本语法 public static float MoveTowardsAngle(float current, float target, float maxDelta);
+		curren为当前角度，target为目标角度，maxDelta为步长。
+```
+
+功能说明：返回一个从当前角度current向目标角度target旋转的插值。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class MoveTowardsAngle_ts : MonoBehaviour
+{
+    float targets = 0.0f;
+    float speed = 40.0f;
+    void Update()
+    {
+        //每帧不超过speed * Time.deltaTime度
+        float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targets, speed * Time.deltaTime);
+        transform.eulerAngles = new Vector3(0, angle, 0);
+    }
+    
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "顺时针旋转90度"))
+        {
+            targets += 90.0f;
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "逆时针旋转90度"))
+        {
+            targets -= 90.0f;
+        }
+    }
+}
+```
+
+targets用于记录物体旋转的目标角度，可在OnGUI方法中设置，变量speed用于控制物体每帧旋转的最大角度。在Update方法中调用MoveTowardsAngle，返回一个从物体当前角度到目标角度的一个插值。将这个插值赋给transform的eulerAngles。
+
+#### 5.2.9 PingPong：往复运动
+
+```
+基本语法 public static float PingPong(float t, float length);
+```
+
+功能说明：让数值在 0 和 length之间来回往返，形成循环运动。
+$$
+\text{PingPong}(t, l) = l - \left| (t\%2l) - l \right|
+\text{其中t为时间参数，l为运动区间长度}
+$$
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class PingPong_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        float f, t, l;
+        t = 11.0f;
+        l = 5.0f;
+        f = Mathf.PingPong(t,l);	//1 = 5 - |(11 % (2*5) - 5)|
+        t = 17.0f;
+        l = 5.0f;
+        f = Mathf.PingPong(t, l);	//3 = 5 - |(17 % (2*5)) - 5|
+    }
+}
+```
+
+#### 5.2.10 Repeat：取模运算
+
+```
+基本语法 public static float Repeat(float t, float length);
+```
+
+功能说明：浮点数的取模运算。
+$$
+\text{Repeat}(t, l) = t \: \% \: l
+$$
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Repeat_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        float f, t, l;
+        t = 12.5f;
+        l = 5.3f;
+        f = Mathf.Repeat(t,l); // 1.9 = 12.5 - 5.3 * 2
+        t = -12.5f;
+        l = -5.3f;
+        f = Mathf.Repeat(t, l);// -1.9 = -12.5f - (-5.3) * 2
+        //特殊
+        t = -12.5f;
+        l = 0.0f;
+        f = Mathf.Repeat(t, l);// Nan
+    }
+}
+```
+
+#### 5.2.11 Round：浮点数的整型值
+
+```
+基本语法 public static float Round(float f);
+```
+
+功能说明：返回离f最近的整型浮点值。设a为整数部分和b为小数部分即f=a+b计算规则（银行家舍入法（四舍六入五成双））。
+
+- |小数部分|< 0.5，Round(f)返回整数部分；
+- |小数部分|> 0.5，若f为正数返回整数部分+1；若f为负数返回整数部分-1。（上下取整）
+- |小数部分|= 0.5，若整数部分为偶数，返回值为整数部分；若整数部分为奇数，如果f是负数返回整数部分-1，如果f是正数返回整数部分+1。
+
+$$
+\text{Round}(x) = 
+\begin{cases} 
+\lfloor x \rfloor      & \text{if } x - \lfloor x \rfloor < 0.5, \\
+\lceil x \rceil        & \text{if } x - \lfloor x \rfloor > 0.5, \\
+\lfloor x \rfloor      & \text{if } x - \lfloor x \rfloor = 0.5 \text{ 且 } \lfloor x \rfloor \text{ 为偶数}, \\
+\lfloor x \rfloor + 1  & \text{if } x - \lfloor x \rfloor = 0.5 \text{ 且 } \lfloor x \rfloor \text{ 为奇数}.
+\end{cases}
+$$
+
+---
+
+提示：RoundToInt类似，返回整型值。
+
+tips:银行家舍入法可以减少统计偏差通过「五成双」规则（向偶数取整），使舍入误差在统计上更均衡。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Round_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //设Round(f)中f=a.b
+        Debug.Log("b<0.5,f>0：" + Mathf.Round(2.49f));	//2
+        Debug.Log("b<0.5,f<0：" + Mathf.Round(-2.49f));	//-2
+        Debug.Log("b>0.5,f>0：" + Mathf.Round(2.61f));	//3
+        Debug.Log("b>0.5,f<0：" + Mathf.Round(-2.61f));	//-3
+        Debug.Log("b=0.5,a为偶数,f>0：" + Mathf.Round(6.5f));	//6
+        Debug.Log("b=0.5,a为偶数,f<0：" + Mathf.Round(-6.5f));	//-6
+        Debug.Log("b=0.5,a为奇数,f>0：" + Mathf.Round(7.5f));	//8
+        Debug.Log("b=0.5,a为奇数,f<0：" + Mathf.Round(-7.5f));	//-8
+    }
+}
+```
+
+#### 5.2.12 SmoothDamp：模拟阻尼运动
+
+```
+基本语法 (1) public static float SmoothDamp(float current, float target, ref float currentVelocity, float smoothTime);
+        (2) public static float SmoothDamp(float current, float target, ref float currentVelocity, float smoothTime, float maxSpeed);
+        (3) public static float SmoothDamp(float current, float target, ref float currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
+        current为起始值；target为目标值；currentVelocity为当前帧速度；smoothTime为预计平滑时间；maxSpeed为当前帧最大速度值，默认值为Mathf.Infinity；deltaTime为平滑时间，值越大返回值也相对越大，一般用Time.deltaTime计算。
+```
+
+功能说明：模拟平滑阻尼运动，并返回模拟插值。smoothTime预计平滑时间，物体越靠近目标，加速度的绝对值越小。实际到达目标的时间往往要比预计时间大很多，smoothTime∈(0.0f,1.0f)。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothDamp_ts : MonoBehaviour
+{
+    float targets = 110.0f;//目标值
+    float cv1 = 0.0f, cv2 = 0.0f; //输出值
+    float maxSpeeds = 50.0f;//每帧最大值
+    float f1 = 10.0f, f2 = 10.0f;//起始值
+    void FixedUpdate()
+    {
+        //maxSpeed取默认值
+        f1 = Mathf.SmoothDamp(f1, targets, ref cv1, 0.5f);
+        Debug.Log("f1:" + f1);
+        Debug.Log("cv1:" + cv1);
+        //maxSpeed取有限值50.0f
+        f2 = Mathf.SmoothDamp(f2, targets, ref cv2, 0.5f, maxSpeeds);
+        Debug.Log("f2:" + f2);
+        Debug.Log("cv2:" + cv2);
+    }
+}
+```
+
+在FixedUpdate中调用了两次SmoothDamp方法，第一次调用时取maxSpeed值为默认值，即无穷大，第二次调用时取maxSpeed值为有限值。图中分别是对输出值cv1和cv2随时间变化的可视化显示，起始时输出速度提升很快，结束时速度下降却很平缓，在移动距离相同的情况下，有最大速度限制的花费时间也更多。
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/SmoothDamp%E6%A8%A1%E6%8B%9F%E9%98%BB%E5%B0%BC%E5%9B%BE.png" style="zoom:80%;" />
+
+#### 5.2.13 SmoothDampAngle：阻尼旋转
+
+```
+基本语法 (1) public static float SmoothDampAngle(float current, float target, ref float
+currentVelocity, float smoothTime);
+		(2) public static float SmoothDampAngle(float current, float target, ref float
+currentVelocity, float smoothTime, float maxSpeed);
+		(3) public static float SmoothDampAngle(float current, float target, ref float
+currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
+        current为起始值；target为目标值；currentVelocity为当前帧速度；smoothTime为预计平滑时间；maxSpeed为当前帧最大速度值，默认值为Mathf.Infinity；参数deltaTime为平滑时间。
+```
+
+功能说明：模拟角度的平滑阻尼旋转，并返回模拟插值。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothDampAngle_ts : MonoBehaviour
+{
+    public Transform targets;
+    float smoothTime = 0.3f;
+    float distance = 5.0f;
+    float yVelocity = 0.0f;
+    void Update()
+    {
+        //返回平滑阻尼角度值
+        float yAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targets.eulerAngles.y,ref yVelocity, smoothTime);
+        Vector3 positions = targets.position;
+        //由于使用transform.LookAt，此处计算targets的-z轴方向距离targets为distance
+        //欧拉角为摄像机绕target的y轴旋转yAngle的坐标位置
+        positions += Quaternion.Euler(0, yAngle, 0) * new Vector3(0, 0, -distance);
+        //向上偏移2个单位
+        transform.position = positions + new Vector3(0.0f, 2.0f, 0.0f);
+        transform.LookAt(targets);
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "将targets旋转60度"))
+        {
+            //更改targets的eulerAngles
+            targets.eulerAngles += new Vector3(0.0f, 60.0f, 0.0f);
+        }
+    }
+}
+```
+
+#### 5.2.14 SmoothStep：平滑插值
+
+```
+基本语法 public static float SmoothStep(float from, float to, float t);
+		from为起始值，to为结束值，t为插值系数。
+```
+
+功能说明：返回一个从from到to的平滑插值。t∈[0.0f,1.0f]
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothStep_ts : MonoBehaviour 
+{
+    float min = 10.0f;
+    float max = 110.0f;
+    float f1, f2 = 0.0f;
+    void FixedUpdate () 
+    {
+        //f1为SmoothStep插值返回值
+        f1 = Mathf.SmoothStep(min,max,Time.time);
+        //计算相邻两帧插值的变化
+        f2 = f1 - f2;
+        Debug.Log("f1:" + f1);
+        Debug.Log("f2:" + f2);
+        f2 = f1;
+    }
+}
+```
+
+在FixedUpdate方法中调用方法SmoothStep，并将返回值赋给f1，接着计算与前一帧插值的差，并分别打印出f1和f2的值。
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/SmoothStep%E5%B9%B3%E6%BB%91%E6%8F%92%E5%80%BC%E5%9B%BE.png" style="zoom: 80%;" />
 
 ## 6.Matrix4X4类
 
+在Unity常用Vector3、Quaternion、Transform等来对物体进行变换，Matrix4x4类通常用在一些比较特殊的地方，如对摄像机的非标准投影变换等。本章主要介绍了Matrix4x4类的一些实例方法和静态方法。
+
+### 6.1 Matrix4x4 类实例方法
+
+在Matrix4x4类中实例方法有`MultiplyPoint`、`MultiplyPoint3x4`、`MultiplyVector`和`SetTRS`。
+
+#### 6.1.1 MultiplyPoint：投影矩阵变换
+
+```
+基本语法 public Vector3 MultiplyPoint(Vector3 v);
+```
+
+功能说明：对点v进行投影矩阵变换。例如，设m1为Matrix4x4实例，v1为Vector3实例，Vector3 v2=m1. MultiplyPoint(v1)，则v2值的变换过程如下：v2=v1·m1·M，系统在进行变换时会给v1增加一个w的分量，扩充为四维向量，w默认值为1，而M为投影变换矩阵：
+$$
+M = \begin{vmatrix} 
+\frac{\cotθ}{Aspect} & 0 & 0 & 0 \\ 
+0 & \cotθ & 0 & 0 \\ 
+0 & 0 & \frac{f}{f-n} & 1 \\ 
+0 & 0 & \frac{n·f}{n-f} & 0 \\ 
+\end{vmatrix} \\
+\text{f: 远视口距离} \quad \text{θ: 视口夹角} \quad \text{Aspect: 纵横比} \quad \text{n: 近视口距离}
+$$
+
+---
+
+提示：MultiplyPoint主要用于Camera的投影变换，对于一般物体的矩阵变换用MultiplyPoint3x4，不涉及投影变换，计算速度也更快。
+
+---
+
+代码：参考Camera类中的cameraToWorldMatrix代码功能。
+
+#### 6.1.2 MultiplyPoint3X4：矩阵变换
+
+```
+基本语法 public Vector3 MultiplyPoint3x4(Vector3 v);
+```
+
+功能说明：对参数值点v进行矩阵变换。因为矩阵变换中，不涉及投影变换，所以速度比MultiplyPoint快。例如，设m1为Matrix4x4实例，v1为Vector3实例，则`Vector3 v2=m1. MultiplyPoint3x4(v1)`，即为v2=v3*m1，其中v3=(v1,w)，w默认值为1。
+
+#### 6.1.3 MultiplyVector方法：矩阵变换
+
+```
+基本语法 public Vector3 MultiplyVector(Vector3 v);
+```
+
+功能说明：对向量v进行矩阵变换。把v当做方向向量而非坐标点进行变换，当用矩阵与v进行变换时，只是对v的方向进行转换，即系统会对变换Matrix4x4进行特殊处理：设M为参与变换的Matrix4x4实例，其值为：
+$$
+M = \begin{vmatrix} 
+m00 & m01 & m02 & m03 \\ 
+m10 & m11 & m12 & m13 \\ 
+m20 & m21 & m22 & m23 \\
+m30 & m31 & m32 & m33 
+\end{vmatrix}
+$$
+则系统处理后的M值为：
+$$
+M' = \begin{vmatrix} 
+n00 & n01 & n02 & 0 \\ 
+n10 & n11 & n12 & 0 \\ 
+n20 & n21 & n22 & 0 \\
+0 & 0 & 0 & 1
+\end{vmatrix} \\
+其中n00^2 + n10^2 + n20^2 = 1, \quad n01^2 + n11^2 + n21^2 = 1, \quad n02^2 + n12^2 + n22^2 = 1
+$$
+代码：此处以DirectX为例。在DirectX中向量变换是v·M，而在OpenGL中向量变换形式是M·v。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class MultiplyVector_ts : MonoBehaviour
+{
+    public Transform tr;
+    Matrix4x4 mv0 = Matrix4x4.identity;
+    Matrix4x4 mv1 = Matrix4x4.identity;
+    void Start()
+    {
+        //分别设置变换矩阵mv0和mv1的位置变换和角度变换都不为0
+        mv0.SetTRS(Vector3.one * 10.0f, Quaternion.Euler(new Vector3(0.0f, 30.0f, 0.0f)),Vector3.one);
+        mv1.SetTRS(Vector3.one * 10.0f, Quaternion.Euler(new Vector3(0.0f, 0.6f, 0.0f)),Vector3.one);
+    }
+    void Update()
+    {
+        tr.position = mv1.MultiplyVector(tr.position); //用tr来定位变换后的向量
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 120.0f, 45.0f), "方向旋转30度"))
+        {
+            Vector3 v = mv0.MultiplyVector(new Vector3(10.0f, 0.0f, 0.0f));
+            Debug.Log("变换后向量："+v); //(8.7,0.0,-5.0)
+            Debug.Log("变换后向量模长：" + v.magnitude);  //10
+            //尽管mv0的位置变换不为0，但变换后向量的长度应与变换前相同
+        }
+    }
+}
+```
+
+#### 6.1.4 SetTRS方法：重设Matrix4x4变换矩阵
+
+```
+基本语法 public void SetTRS(Vector3 pos, Quaternion q, Vector3 s);
+		pos为位置向量，q为旋转角，s为放缩向量。
+```
+
+功能说明：此方法用来重设Matrix4x4变换矩阵。设有如下代码：
+
+```C#
+Matrix4x4 m1 = Matrix4x4.identity;
+m1.SetTRS(pos,q,s);
+Vector3 v2 = m1.MultiplyPoint3x4(v1);
+则v2的值等于将v1的position增加pos，rotation旋转q，scale放缩s后的值。
+```
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SetTRS_ts : MonoBehaviour
+{
+    Vector3 v1 = Vector3.one;
+    Vector3 v2 = Vector3.zero;
+    void Start()
+    {
+        Matrix4x4 m1 = Matrix4x4.identity;
+        //Position沿y轴增加5个单位，绕y轴旋转45度，放缩2倍
+        m1.SetTRS(Vector3.up * 5, Quaternion.Euler(Vector3.up * 45.0f), Vector3.one * 2.0f);
+        //也可以使用如下静态方法设置m1变换
+        //m1 = Matrix4x4.TRS(Vector3.up * 5, Quaternion.Euler(Vector3.up * 45.0f), Vector3.one* 2.0f);
+        v2 = m1.MultiplyPoint3x4(v1);
+        Debug.Log("v1的值：" + v1);  //(1.0,1.0,1.0)
+        Debug.Log("v2的值：" + v2); //(2.8,7.0,0.0)
+    }
+    
+    void FixedUpdate()
+    {
+        Debug.DrawLine(Vector3.zero, v1, Color.green);
+        Debug.DrawLine(Vector3.zero, v2, Color.red);
+    }
+}
+```
+
+在Start中初始化m1，并调用SetTRS重置m1，接着调用方法MultiplyPoint3x4对向量v1进行变换，并将变换后的值赋给v2，最后在FixedUpdate方法中根据v1和v2的值绘制了两条直线。v1向v2变换顺序如下:
+
+- v1绕y轴旋转45度后变为(1.414,1.0,0.0)，即x轴的分量变为了原来x和z分量的长度值，y值不变。
+- 对v1扩大2倍后v1变为(2.8,2.0,0.0)。
+- v1沿着y轴增加5个单位后变为(2.8,7.0,0.0)。
+
+### 6.2 Matrix4x4 类静态方法
+
+在Matrix4x4类中静态方法有`Ortho`、`Perspective`和`TRS`。
+
+#### 6.2.1 Ortho：创建正交投影矩阵
+
+```
+基本语法 public static Matrix4x4 Ortho(float left, float right, float bottom, float top,
+float zNear, float zFar);
+        left:正交视口左边边长 right:正交视口右边边长 bottom:正交视口下部边长  
+        top:正交视口上部边长  zNear:近视口距离      zFar:远视口距离。
+```
+
+功能说明：创建一个正交投影矩阵。
+
+---
+
+提示：
+
+- left、right、bottom和top分正负方向，一般以right和top为正数，left和bottom为负数。
+- left与right的值不能相等，bottom与top的值也不能相等，否则程序会报错。
+- 为防止视图变形，参数的设定通常需要和Camera的aspect结合使用。
+
+---
+
+代码：参考Perspective
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/Ortho%E6%AD%A3%E4%BA%A4%E6%8A%95%E5%BD%B1%E7%9F%A9%E9%98%B5%E5%9B%BE.png" style="zoom:80%;" />
+
+#### 6.2.2 Perspective方法：创建透视投影矩阵
+
+```
+基本语法 public static Matrix4x4 Perspective(float fov,float aspect,float zNear,float zFar);
+        fov:视口夹角 aspect:视口纵横比例 zNear:近视口距离 zFar:远视口距离
+```
+
+功能说明：创建一个透视投影矩阵。若要更改摄像机的透视投影矩阵，可以用如下代码：
+
+```
+Camera.main. projectionMatrix=Matrix4x4.Perspective(fov,aspect,zNerar,zFar);
+若要重置其投影矩阵，需要使用代码：
+Camera.main. ResetProjectionMatrix ();
+其中aspect=width/height
+```
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/Perspective%E9%80%8F%E8%A7%86%E6%8A%95%E5%BD%B1%E7%9F%A9%E9%98%B5%E5%9B%BE.png" style="zoom:80%;" />
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class OrthoAndPerspective_ts : MonoBehaviour
+{
+    Matrix4x4 Perspective = Matrix4x4.identity;//透视投影变量
+    Matrix4x4 ortho = Matrix4x4.identity;//正交投影变量
+    //声明变量，用于记录正交视口的左、右、下、上的值
+    float l, r, b, t;
+    void Start()
+    {
+        //设置透视投影矩阵
+        Perspective = Matrix4x4.Perspective(65.0f, 1.5f, 0.1f, 500.0f);
+        t = 10.0f;
+        b = -t;
+        //为防止视图变形需要与 Camera.main.aspect相乘
+        l = b * Camera.main.aspect;
+        r = t * Camera.main.aspect;
+        //设置正交投影矩阵
+        ortho = Matrix4x4.Ortho(l, r, b, t, 0.1f, 100.0f);
+    }
+    void OnGUI()
+    {
+        //使用默认正交投影
+        if (GUI.Button(new Rect(10.0f, 8.0f, 150.0f, 20.0f), "Reset Ortho"))
+        {
+            Camera.main.orthographic = true;
+            Camera.main.ResetProjectionMatrix();
+            Camera.main.orthographicSize = 5.1f;
+    	}
+        //使用自定义正交投影
+        if (GUI.Button(new Rect(10.0f, 38.0f, 150.0f, 20.0f), "use Ortho"))
+        {
+            ortho = Matrix4x4.Ortho(l, r, b, t, 0.1f, 100.0f);
+            Camera.main.orthographic = true;
+            Camera.main.ResetProjectionMatrix();
+            Camera.main.projectionMatrix = ortho;
+            Camera.main.orthographicSize = 5.1f;
+        }
+        //使用自定义透视投影
+        if (GUI.Button(new Rect(10.0f, 68.0f, 150.0f, 20.0f), "use Perspective"))
+        {
+            Camera.main.orthographic = false;
+            Camera.main.projectionMatrix = Perspective;
+        }
+        //恢复系统默认透视投影
+        if (GUI.Button(new Rect(10.0f, 98.0f, 150.0f, 20.0f), "Reset Perspective"))
+        {
+            Camera.main.orthographic = false;
+            Camera.main.ResetProjectionMatrix();
+        }
+    }
+}
+```
+
+在Start中创建一个透视投影矩阵和一个正交投影矩阵，在OnGUI方法中编写了4种不同的投影方式：正交投影、自定义正交投影、自定义透视投影和系统默认透视投影。
+
+#### 6.2.3 TRS：返回Matrix4x4 实例
+
+```
+基本语法 public static Matrix4x4 TRS(Vector3 pos, Quaternion q, Vector3 s);
+		pos:位置向量 q:旋转角 s:放缩向量。
+```
+
+功能说明：使用pos、q和s作为变换参数返回一个Matrix4x4实例
+
+```C#
+Matrix4x4 m1 = Matrix4x4.TRS(pos,q,s);
+Vector v2 = m1.MultiplyPoint3x4(v1);
+v2等于将v1的position增加pos，rotation旋转q，scale放缩s
+```
+
+代码：参考SetTRS
+
 ## 7.Object类
 
+Object类是Unity中所有对象的基类，例如GameObject、Component、Material、Shader、Texture、
+Mesh、Font等都是Object的子类。本章主要介绍了Object类的实例方法和静态方法。
+
+### 7.1 Object类实例方法
+
+#### 7.1.1 GetInstanceID：Object对象ID
+
+```
+基本语法 public int GetInstanceID();
+```
+
+功能说明：返回Object对象的实例化ID，每个实例都有唯一的ID（int类型）
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class GetInstanceID_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        Debug.Log("gameObject的ID："+ gameObject.GetInstanceID());
+        Debug.Log("transform的ID："+ transform.GetInstanceID());
+        GameObject g1, g2;
+        //从GameObject创建一个对象
+        g1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //克隆对象
+        g2 = Instantiate(g1,Vector3.zero,Quaternion.identity) as GameObject;
+        Debug.Log("GameObject g1的ID："+ g1.GetInstanceID());
+        Debug.Log("Transform g1的ID："+ g1.transform.GetInstanceID());
+        Debug.Log("GameObject g2的ID：" + g2.GetInstanceID());
+        Debug.Log("Transform g2的ID：" + g2.transform.GetInstanceID());
+    }
+}
+```
+
+打印出了gameObject和transform的InstanceID，然后创建和实例化两个新对象g1和g2，打印g1和g2的ID。
+
+### 7.2 Object类静态方法
+
+在Object类中的静态方法有`Destroy`、`DontDestroyOnLoad`、`FindObjectOfType`、
+`FindObjectsOfType`和`Instantiate`。
+
+#### 7.2.1 Destroy：销毁对象
+
+```
+基本语法 (1) public static void Destroy(Object obj);
+        (2) public static void Destroy(Object obj, float t);
+        obj:待销毁的对象，t:销毁延迟时间，默认为0。
+```
+
+功能说明：执行方法t秒后销毁obj对象。Destroy也可以销毁GameObject对象中的某个组件如Rigidbody、脚本等。
+
+---
+
+提示：相近的方法DestroyImmediate立即销毁某个Object对象及其在Assets中的资源文件，编程中慎用，推荐使用Destroy方法。
+
+```
+基本语法 DestroyImmediate(Object obj, bool allowDestroyingAssets = false);
+```
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Destroy_ts : MonoBehaviour 
+{
+    public GameObject GO,Cube;
+    void Start () 
+    {
+        //5秒后销毁GO对象的Rigidbody组件
+        Destroy(GO.rigidbody,5.0f);
+        //7秒后销毁GO对象中的Destroy_ts脚本
+        Destroy(GO.GetComponent<Destroy_ts>(),7.0f);
+        //10秒后销毁Cube对象，同时Cube对象的所有组件及子类将一并销毁
+        Destroy(Cube, 10.0f);
+    }
+}
+```
+
+#### 7.2.2 DontDestroyOnLoad：新场景中保留对象
+
+```
+基本语法 public static void DontDestroyOnLoad(Object target);
+		target:被保留的对象。
+```
+
+功能说明：设置参数target指向的对象是否在新Scene中被保留下来。
+
+- 如果target为父物体其子物体都会被导入到新Scene中。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class DontDestoryOnLoad_ts : MonoBehaviour
+{
+    public GameObject g1, g2;
+    public Renderer re1, re2;
+    void Start()
+    {
+        //g1指向一个顶层父物体对象,在导入新Scene时g1被保存
+        DontDestroyOnLoad(g1);
+        //g2指向一个子类对象,在导入新Scene时会发现g2没有被保存
+        DontDestroyOnLoad(g2);
+        //re1指向一个顶层父物体的Renderer组件,在导入新Scene时re1被保存
+        DontDestroyOnLoad(re1);
+        //re2指向一个子类对象的renderer组件，在导入新Scene时会发现re2指向的对象及组件没有被保存
+        DontDestroyOnLoad(re2);
+        Application.LoadLevel("FindObjectsOfType_unity");
+    }
+}
+```
+
+#### 7.2.3 FindObjectsOfType：获取对象
+
+```
+基本语法 (1) public static T[] FindObjectsOfType<T>() where T : Object;
+		(2) public static Object[] FindObjectsOfType(Type type);
+		type：对象类型
+```
+
+功能说明：获取工程中所有符合参数类型的对象。遍历整个工程，执行速度较慢，不适宜在每帧中调用。
+
+---
+
+提示：FindObjectOfType相近，获取工程中符合type类型的第一个对象，多用于检测工程中是否含有某种类型的对象。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class FindObjectOfType_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        GameObject[] gos = FindObjectsOfType(typeof(GameObject)) as GameObject[];
+        foreach(GameObject go in gos)
+        {
+            //1.5秒后销毁除摄像机外的所有GameObject
+            if (go.name != "Main Camera") Destroy(go, 1.5f);
+        }
+        
+        Rigidbody[] rbs = FindObjectsOfType(typeof(Rigidbody))as Rigidbody[];
+        foreach(Rigidbody rb in rbs)
+        {
+            //启用除球体外的所有刚体的重力感应
+            if(rb.name!="Sphere") rb.useGravity = true;
+        }
+    }
+}
+```
+
+调用FindObjectsOfType查找游戏中所有的GameObject对象，并将查找结果赋给数组gos，然后遍历数组gos，在1.5秒后销毁除摄像机外的所有GameObject对象。
+
+#### 7.2.4 Instantiate：实例化对象
+
+```
+基本语法 (1) public static Object Instantiate(Object original);
+        (2) public static Object Instantiate(Object original, Vector3 position,Quaternion rotation);
+        original：类型，position：位置，rotation：旋转角度。
+```
+
+功能说明：实例化一个Object对象。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Instantiate_ts : MonoBehaviour 
+{
+    public GameObject A;
+    public Transform B;
+    public Rigidbody C;
+    void Start () 
+    {
+        Object g1 = Instantiate(A,Vector3.zero,Quaternion.identity) as Object;
+        Debug.Log("克隆一个Object对象g1:"+g1);
+        GameObject g2 = Instantiate(A, Vector3.zero, Quaternion.identity) as GameObject;
+        Debug.Log("克隆一个GameObject对象g2:" + g2);
+        Transform t1 = Instantiate(B, Vector3.zero, Quaternion.identity) as Transform;
+        Debug.Log("克隆一个Transform对象t1:" + t1);
+        Rigidbody r1 = Instantiate(C, Vector3.zero, Quaternion.identity) as Rigidbody;
+        Debug.Log("克隆一个Rigidbody对象r1:" + r1);
+    }
+}
+```
+
+在Start中调用Instantiate分别实例化了4种不同类型的对象，并将实例化的对象打印出来。
+
 ## 8.Quaternaion类
+
+Quaternion又称四元数，由x、y、z和w这4个分量组成，属于struct类型。在Unity中，用Quaternion来存储和表示对象的旋转角度。Quaternion的变换比较复杂，对于GameObject一般的旋转及移动，可以用Transform中的相关方法实现。本章主要介绍了Quaternion类的实例属性、静态方法和运算符`*`.
+
+### 8.1 Quaternion类实例属性
+
+#### 8.1.1 eulerAngles：欧拉角
+
+```
+基本语法 public Vector3 eulerAngles { get; set; }
+```
+
+功能说明：返回Quaternion实例对应的欧拉角。<span style="color:red;">注意不同的旋转次序得到的最终状态是不同的。</span>
+
+- 对Transform的欧拉角变换次序是
+  1. 先绕z轴旋转相应的角度
+  2. 再绕x轴旋转相应的角度
+  3. 最后绕y轴旋转相应的角度
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class EulerAngle_ts : MonoBehaviour
+{
+    public Transform A, B;
+    Quaternion rotations=Quaternion.identity;
+    Vector3 eulerAngle = Vector3.zero;
+    float speed = 10.0f;
+    void Update()
+    {
+        //第一种方式：将Quaternion赋值给transform的rotation
+        rotations.eulerAngles = new Vector3(0.0f, speed * Time.time, 0.0f);
+        A.rotation = rotations;
+        //第二种方式：将三维向量代表的欧拉角直接赋值给transform的eulerAngles
+        eulerAngle = new Vector3(0.0f, speed * Time.time, 0.0f);
+        B.eulerAngles = eulerAngle;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 9.Random类
 

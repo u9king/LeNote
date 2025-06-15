@@ -222,7 +222,8 @@ a = \left(
 	\alpha_1 & test1\\
 	\alpha_2 & test2
 }
-\right)
+\right) \\
+\text{a: 矩阵}
 $$
 
 - 也可以使用`matrix`,小括号矩阵`pmatrix`,方括号矩阵`bmatrix`,中括号矩阵`Bmatrix`,单竖线矩阵`vmatrix`,双竖线矩阵`Vmatrix`
