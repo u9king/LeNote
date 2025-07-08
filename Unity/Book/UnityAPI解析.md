@@ -3013,28 +3013,605 @@ public class EulerAngle_ts : MonoBehaviour
 }
 ```
 
+### 8.2 Quaternion类实例方法
 
+涉及的实例方法有`SetFromToRotation`、`SetLookRotation`和`ToAngleAxis`，静态方法AngleAxis和实例方法ToAngleAxis一起介绍。
 
+#### 8.2.1 SetFromToRotation：创建rotation实例
 
+```
+基本语法 public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection);
+```
 
+功能说明：从fromDirection到toDirection的旋转。
 
+```C#
+Quaternion q1 = Quaternion.identity;  //新建
+q1.SetFromToRotation(v1,v2);		  //旋转
+transform.rotation = q1;		      //赋值
+```
 
+将GameObject对象自身坐标系中向量v1指向的方向旋转到v2方向。
 
+---
 
+提示：不可直接使用transform.rotation.SetFromToRotation(v1,v2)方式进行设置，只能将实例化的Quaternion赋值给transform.rotation。
 
+---
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class SetFromToRotation_ts : MonoBehaviour 
+{
+    public Transform A, B, C;
+    Quaternion q1 = Quaternion.identity;
+    void Update () 
+    {
+        //不可直接使用C.rotation.SetFromToRotation(A.position,B.position);
+        q1.SetFromToRotation(A.position,B.position);
+        C.rotation = q1;
+        //在Scene面板中绘制直线
+        Debug.DrawLine(Vector3.zero,A.position,Color.red);
+        Debug.DrawLine(Vector3.zero, B.position, Color.green);
+        Debug.DrawLine(C.position, C.position+new Vector3(0.0f,1.0f,0.0f), Color.black);
+        Debug.DrawLine(C.position, C.TransformPoint(Vector3.up*1.5f), Color.yellow);
+    }
+}
+```
 
+A为起始坐标，B为结束坐标，C为旋转物体，在Update方法中对新建的q1调用方法SetFromToRotation，并将改变后的q1赋给C.rotation。在Scene场景中绘制直线以观察，可以更改A或B的位置查看物体C的状态变化。
 
+#### 8.2.2 SetLookRotation：设置Quaternion实例的朝向
 
+```
+基本语法 (1) public void SetLookRotation(Vector3 view);
+		(2) public void SetLookRotation(Vector3 view, Vector3 up);
+```
 
+功能说明：设置Quaternion的朝向
 
+```C#
+Quaternion q1 = Quaternion.identity;
+q1.SetLookRotation(v1, v2);
+transform.rotation = q1;
+```
 
+- 物体`transform.forward`与v1方向相同。
 
+---
 
+提示：不可以直接使用transform.rotation.SetLookRotation(v1, v2)的方式来使用SetLookRotation
+方法。
 
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SetLookRotation_ts : MonoBehaviour
+{
+    public Transform A, B, C;
+    Quaternion q1 = Quaternion.identity;
+    void Update()
+    {
+        q1.SetLookRotation(A.position, B.position);
+        C.rotation = q1;
+        //分别绘制A、B和C.right的朝向线
+        //请在Scene视图中查看
+        Debug.DrawLine(Vector3.zero, A.position, Color.red);
+        Debug.DrawLine(Vector3.zero, B.position, Color.green);
+        Debug.DrawLine(C.position, C.TransformPoint(Vector3.right * 2.5f), Color.yellow);
+        Debug.DrawLine(C.position, C.TransformPoint(Vector3.forward * 2.5f), Color.gray);
+        //分别打印C.right与A、B的夹角
+        Debug.Log("C.right与A的夹角:" + Vector3.Angle(C.right, A.position));
+        Debug.Log("C.right与B的夹角:" + Vector3.Angle(C.right, B.position));
+        //C.up与B的夹角
+        Debug.Log("C.up与B的夹角:" + Vector3.Angle(C.up, B.position));
+    }
+}
+```
+
+A为起始坐标，B为结束坐标，C为旋转物体，在Update方法中对新建的q1调用方法SetLookRotation，并将改变后的q1赋给C.rotation。在Scene场景中绘制直线以观察，可以更改A或B的位置查看物体C的状态变化。
+
+#### 8.2.3 ToAngleAxis：Quaternion实例的角轴表示
+
+```
+基本语法 public void ToAngleAxis(out float angle, out Vector3 axis);
+		参数angle:旋转角 参数axis:轴向量
+```
+
+功能说明：将Quaternion实例转换为角轴表示。在transform.rotation.ToAngleAxis(out angle, out axis)中，输出值angle和axis的含义为：要将GameObject对象的rotation从Quaternion.Identity状态变换到当前状态，只需要将GameObject对象绕着axis的轴向（指世界坐标系中）旋转angle角度即可。
+
+---
+
+提示：此方法通常和静态方法AngleAxis (angle : float, axis : Vector3)联合使用，使得一个物体的rotation始终和另一个物体的rotation保持一致。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ToAngleAxis_ts : MonoBehaviour 
+{
+    public Transform A, B;
+    float angle;
+    Vector3 axis = Vector3.zero;
+    void Update () 
+    {
+        //使用ToAngleAxis获取A的Rotation的旋转轴和角度
+        A.rotation.ToAngleAxis(out angle, out axis);
+        //使用AngleAxis设置B的rotation，使得B的rotation状态的和A相同
+        //当然也可以只使得B与A的axis相同，而angle不同
+        //可以在程序运行时修改A的rotation查看B的状态
+        B.rotation = Quaternion.AngleAxis(angle,axis);
+    }
+}
+```
+
+声明两个GameObject变量A和B，用于指向场景中的物体，然后在Update方法中，首先调用ToAngleAxis方法将A的rotation转换为角轴angle和axis，调用方法AngleAxis将角轴代表的Quaternion值赋给B.rotation。修改A的旋转角查看物体B的相应旋转状态。
+
+### 8.3 Quaternion类静态方法
+
+在Quaternion类中涉及的静态方法有`Angle`、`Dot`、`Euler`、`FromToRotation`、`Inverse`、`Lerp`、`LookRotation`、`RotateTowards`和`Slerp`。
+
+#### 8.3.1 Angle：Quaternion实例间夹角
+
+```
+基本语法 public static float Angle(Quaternion a, Quaternion b);
+```
+
+功能说明：返回从参数a到参数b变换的夹角。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Angle_ts : MonoBehaviour 
+{
+    void Start()
+    {
+        Quaternion q1 = Quaternion.identity;
+        Quaternion q2 = Quaternion.identity;
+        q1.eulerAngles = new Vector3(10.0f, 20.0f, 30.0f);
+        float f1 = Quaternion.Angle(q1,q2);
+        float f2 = 0.0f;
+        Vector3 v1 = Vector3.zero;
+        q1.ToAngleAxis(out f2, out v1);
+        Debug.Log("f1:" + f1);
+        Debug.Log("f2:" + f2);
+        Debug.Log("q1的欧拉角：" + q1.eulerAngles + " q1的rotation：" + q1);
+        Debug.Log("q2的欧拉角：" + q2.eulerAngles + " q2的rotation：" + q2);
+    }
+}
+```
+
+对q1的欧拉角进行赋值，调用方法Angle求q1和q2之间的夹角，并将返回值赋给f1，最后调用方法ToAngleAxis，求解从当前q1状态转换到Quaternion.identity状态需要旋转的最小角度值f2。
+
+#### 8.3.2 Dot：点乘
+
+```
+基本语法 public static float Dot(Quaternion a, Quaternion b);
+```
+
+功能说明：a和b的点乘。
+
+```
+q1(x1,y1,z1,w1)	q2(x2,y2,z2,w2)
+float f = Quaternion.Dot(q1,q2); 
+等价于f=x1*x2+y1*y2+z1*z2+w1*w2，结果值f的范围为[-1,1]
+```
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Dot_ts : MonoBehaviour 
+{
+    public Transform A, B;
+    Quaternion q1=Quaternion.identity;
+    Quaternion q2=Quaternion.identity;
+    float f;
+    void Start () 
+    {
+        A.eulerAngles = new Vector3(0.0f,40.0f,0.0f);
+        //B比A绕y轴多转360度
+        B.eulerAngles = new Vector3(0.0f, 360.0f+40.0f, 0.0f);
+        q1 = A.rotation;
+        q2 = B.rotation;
+        f = Quaternion.Dot(q1,q2);
+        Debug.Log("q1的rotation:"+q1);
+        Debug.Log("q2的rotation:" + q2);
+        Debug.Log("q1的欧拉角:" + q1.eulerAngles);
+        Debug.Log("q2的欧拉角:" + q2.eulerAngles);
+        Debug.Log("Dot(q1,q2):"+f);
+    }
+}
+```
+
+将A和B的rotation分别赋予q1和q2，调用Dot方法将q1和q2的点乘值赋给f。从输出结果可知q1和q2的欧拉角相等，但它们的值却相反。当Dot返回值为-1时，两个参数的角度差值相差一周。
+
+#### 8.3.3 Euler：欧拉角对应的四元数
+
+```
+基本语法 (1) public static Quaternion Euler(Vector3 euler);
+		(2) public static Quaternion Euler(float x, float y, float z);
+```
+
+功能说明：返回欧拉角Vector3(x,y,z) 对应的四元数Quaternion 实例。四元数
+Quaternion(qx,qy,qz,qw)与其欧拉角eulerAngles(ex,ey,ez)之间的对应关系如下。$PIover180 = \frac{3.141592}{180} = 0.0174532925$是计算机图形学中的一个常量，变换过程如下。
+$$
+\begin{aligned}
+e_x &=  \frac{e_x \times PIover180}{2.0f} \\
+e_y &=  \frac{e_y \times PIover180}{2.0f} \\
+e_z &=  \frac{e_z \times PIover180}{2.0f}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+q_x &= \sin(e_x)\cos(e_y)\cos(e_z) + \cos(e_x)\sin(e_y)\sin(e_z) \\
+q_y &= \cos(e_x)\sin(e_y)\cos(e_z) - \sin(e_x)\cos(e_y)\sin(e_z) \\
+q_z &= \cos(e_x)\cos(e_y)\sin(e_z) - \sin(e_x)\sin(e_y)\cos(e_z) \\
+q_w &= \cos(e_x)\cos(e_y)\cos(e_z) + \sin(e_x)\sin(e_y)\sin(e_z)
+\end{aligned}
+$$
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Euler_ts : MonoBehaviour
+{
+    //记录欧拉角，单位为角度，可以在Inspector面板中设置
+    public float ex, ey, ez;
+    //用于记录计算结果
+    float qx, qy, qz, qw;
+    float PIover180 = 0.0174532925f;//常量
+    Quaternion Q = Quaternion.identity;
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 100.0f, 45.0f), "计算"))
+        {
+            Debug.Log("欧拉角：" + " ex：" + ex + " ey：" + ey + " ez：" + ez);
+            //欧拉角:ex:30 ey:40 ez:50
+            Q = Quaternion.Euler(ex, ey, ez);
+            Debug.Log("Q.x:" + Q.x + " Q.y:" + Q.y + " Q.z:" + Q.z + " Q.w:" + Q.w);
+            //Q.x:0.3600422 Q.y:0.1966282 Q.z:0.3033718 Q.w:0.8600422
+            ex = ex * PIover180 / 2.0f;
+            ey = ey * PIover180 / 2.0f;
+            ez = ez * PIover180 / 2.0f;
+            qx = Mathf.Sin(ex) * Mathf.Cos(ey) * Mathf.Cos(ez) + Mathf.Cos(ex) *
+            Mathf.Sin(ey) * Mathf.Sin(ez);
+            qy = Mathf.Cos(ex) * Mathf.Sin(ey) * Mathf.Cos(ez) - Mathf.Sin(ex) *
+            Mathf.Cos(ey) * Mathf.Sin(ez);
+            qz = Mathf.Cos(ex) * Mathf.Cos(ey) * Mathf.Sin(ez) - Mathf.Sin(ex) *
+            Mathf.Sin(ey) * Mathf.Cos(ez);
+            qw = Mathf.Cos(ex) * Mathf.Cos(ey) * Mathf.Cos(ez) + Mathf.Sin(ex) *
+            Mathf.Sin(ey) * Mathf.Sin(ez);
+            Debug.Log("qx:" + qx + " qy:" + qy + " qz:" + qz + " qw:" + qw);
+            //qx:0.3600422 qy:0.3033718 qw:0.8600422
+        }
+    }
+}
+```
+
+#### 8.3.4 FromToRotation：Quaternion变换
+
+```
+基本语法 public static Quaternion FromToRotation(Vector3 fromDirection, Vector3 toDirection);
+```
+
+功能说明：从参数fromDirection到toDirection的Quaternion变换。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class FromToRotation_ts : MonoBehaviour
+{
+    public Transform A, B, C, D;
+    Quaternion q1 = Quaternion.identity;
+    void Update()
+    {
+        //使用实例方法
+        q1.SetFromToRotation(A.position, B.position);
+        C.rotation = q1;
+        //使用类方法
+        D.rotation = Quaternion.FromToRotation(A.position, B.position);
+        //在Scene视图中绘制直线
+        Debug.DrawLine(Vector3.zero, A.position, Color.white);
+        Debug.DrawLine(Vector3.zero, B.position, Color.white);
+        Debug.DrawLine(C.position, C.position + new Vector3(0.0f, 1.0f, 0.0f),Color.white);
+        Debug.DrawLine(C.position, C.TransformPoint(Vector3.up * 1.5f), Color.white);
+        Debug.DrawLine(D.position, D.position + new Vector3(0.0f, 1.0f, 0.0f),Color.white);
+        Debug.DrawLine(D.position, D.TransformPoint(Vector3.up * 1.5f), Color.white);
+    }
+}
+```
+
+4个Transform变量指向场景中的对象。在Update方法中调用方法SetFromToRotation，使得C的旋转角度与向量A和B之间的夹角相同，接着使用方法FromToRotation，使得D的旋转角度与向量A和B之间的夹角相同，在Scene视图中拖动A或B的位置观察C和D的变化。
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/FromToRotation%E6%BC%94%E7%A4%BA.png" style="zoom:80%;" />
+
+#### 8.3.5 Inverse：逆向Quaternion值
+
+```
+基本语法 public static Quaternion Inverse(Quaternion rotation);
+```
+
+功能说明：返回rotation的Quaternion逆向值。例如，设有实例rotation=(x,y,z,w)，则Inverse(rotation)=(-x,-y,-z,w)。从效果上说，设rotation. eulerAngles=(a,b,c)，则transform.rotation=Inverse(rotation)相当于transform依次绕自身坐标系的z轴、x轴和y轴分别旋转-c度、-a度和-b度。由于是局部坐标系内的变换，最后transform的欧拉角的各个分量值并不一定等于-a、-b或-c。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Inverse_ts : MonoBehaviour
+{
+    public Transform A, B;
+    void Start()
+    {
+        Quaternion q1 = Quaternion.identity;
+        Quaternion q2 = Quaternion.identity;
+        q1.eulerAngles = new Vector3(10.0f, 20.0f, 30.0f);
+        q2 = Quaternion.Inverse(q1);
+        A.rotation = q1;
+        B.rotation = q2;
+        Debug.Log("q1的欧拉角：" + q1.eulerAngles + " q1的rotation：" + q1);
+        Debug.Log("q2的欧拉角：" + q2.eulerAngles + " q2的rotation：" + q2);
+    }
+}
+```
+
+#### 8.3.6 Lerp：线性插值
+
+```
+基本语法 public static Quaternion Lerp(Quaternion from, Quaternion to, float t);
+```
+
+功能说明：返回从参数from到to的线性插值。当参数t≤0时返回值为from，当参数t≥1时返回值为to。此方法执行速度比Slerp方法快，一般情况下可代替Slerp方法。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Slerp_ts : MonoBehaviour
+{
+    public Transform A, B, C, D;
+    float speed = 0.2f;
+    //分别演示方法Slerp和Lerp的使用
+    void Update()
+    {
+        C.rotation = Quaternion.Slerp(A.rotation, B.rotation, Time.time * speed);
+        D.rotation = Quaternion.Lerp(A.rotation, B.rotation, Time.time * speed);
+    }
+}
+```
+
+4个Transform变量A、B、C和D，分别指向场景中不同的物体对象，在Update方法中分别演示了方法Slerp和Lerp的使用。
+
+#### 8.3.7 LookRotation：设置Quaternion的朝向
+
+```
+基本语法 (1) public static Quaternion LookRotation(Vector3 forward);
+        (2) public static Quaternion LookRotation(Vector3 forward, Vector3 upwards);
+        参数forward：返回Quaternion的forward朝向。
+```
+
+功能说明：返回一个Quaternion实例，使GameObject对象的z轴朝向参数forward方向。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class LookRotation_ts : MonoBehaviour
+{
+    public Transform A, B, C, D;
+    Quaternion q1 = Quaternion.identity;
+    void Update()
+    {
+        //使用实例方法
+        q1.SetLookRotation(A.position, B.position);
+        C.rotation = q1;
+        //使用类方法
+        D.rotation = Quaternion.LookRotation(A.position, B.position);
+        //绘制直线，请在Scene视图中查看
+        Debug.DrawLine(Vector3.zero, A.position, Color.white);
+        Debug.DrawLine(Vector3.zero, B.position, Color.white);
+        Debug.DrawLine(C.position, C.TransformPoint(Vector3.up * 2.5f), Color.white);
+        Debug.DrawLine(C.position, C.TransformPoint(Vector3.forward * 2.5f),Color.white);
+        Debug.DrawLine(D.position, D.TransformPoint(Vector3.up * 2.5f), Color.white);
+        Debug.DrawLine(D.position, D.TransformPoint(Vector3.forward * 2.5f),Color.white);
+	}
+}
+```
+
+#### 8.3.8 RotateTowards：Quaternion插值
+
+```
+基本语法 public static Quaternion RotateTowards(Quaternion from, Quaternion to, float
+maxDegreesDelta);
+        from：起始Quaternion to：结束Quaternion maxDegreesDelta：每帧最大角度值。
+```
+
+功能说明：返回从参数from到to的插值，且返回值的最大角度不超过maxDegreesDelta。此方法功能与方法Slerp相似，只是maxDegreesDelta指的是角度值，不是插值系数。当maxDegreesDelta<0时，将沿着从to到from的方向插值计算。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class RotateTowards_ts : MonoBehaviour 
+{
+    public Transform A, B, C;
+    float speed = 10.0f;
+    void Update()
+    {
+        //调用方法RotateTowards，并将其返回值赋给C.rotation
+        C.rotation = Quaternion.RotateTowards(A.rotation, B.rotation, Time.time *
+        speed-40.0f);
+        Debug.Log("C与A的欧拉角的差值：" + (C.eulerAngles-A.eulerAngles) + " maxDegreesDelta: +" (Time.time * speed - 40.0f));
+    }
+}
+```
+
+#### 8.3.9 Slerp：球面插值
+
+```
+基本语法 public static Quaternion Slerp(Quaternion from, Quaternion to, float t);
+```
+
+功能说明：返回从参数from到to的球面插值。当参数t≤0时返回值为from，当参数t≥1时返回值为to。一般情况下可用方法Lerp代替。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Slerp_ts : MonoBehaviour
+{
+    public Transform A, B, C, D;
+    float speed = 0.2f;
+    //分别演示方法Slerp和Lerp的使用
+    void Update()
+    {
+        C.rotation = Quaternion.Slerp(A.rotation, B.rotation, Time.time * speed);
+        D.rotation = Quaternion.Lerp(A.rotation, B.rotation, Time.time * speed);
+    }
+}
+```
+
+### 8.4 Quaternion类运算符
+
+在Quaternion类中涉及的运算符运算有两个Quaternion相乘、Quaternion和一个Vector3相乘，下面介绍这两种不同的运算。
+
+#### 8.4.1 operator * (lhs : Quaternion, rhs : Quaternion)
+
+功能说明：返回两个Quaternion实例相乘后的结果。A 和B均为GameObject对象代码如下：
+
+```
+B.rotation *= A.rotation;
+```
+
+- 代码每执行一次，B都会绕着B的局部坐标系的z、x、y轴分别旋转A.eulerAngles.z度、A.eulerAngles.x度和A.eulerAngles.y度，注意它们的旋转次序一定是先饶z轴再绕x轴最后绕y轴进行相应的旋转。另外由于是绕着局部坐标系旋转，故而当绕着其中一个轴旋转时，很可能会影响其余两个坐标轴方向的欧拉角（除非其余两轴的欧拉角都为0才不受影响）。
+- 设A的欧拉角为euler_a(ax,ay,az)，则沿着B的初始局部坐标系的euler_a方向向下看，会发现B在绕euler_a顺时针旋转。B的旋转状况还受其初始状态的影响，可以在运行示例程序时在Inspector面板中更改B的初始欧拉角，从而查看运行状态的不同。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class QxQ_ts : MonoBehaviour 
+{
+    public Transform A, B;
+    void Start () 
+    {
+        //设置A的欧拉角//试着更改各个分量查看B的不同旋转状态
+        A.eulerAngles = new Vector3(1.0f,1.5f,2.0f);
+    }
+    void Update () 
+    {
+        B.rotation *= A.rotation;
+        //输出B的欧拉角，注意观察B的欧拉角变化
+        Debug.Log(B.eulerAngles);
+    }
+}
+```
+
+在Update方法中将B.rotation与A.rotation相乘的值赋给B.rotation，从而实现B对象的不断旋转。注意观察B的欧拉角的变化，B绕着其自身坐标系的Vector3(1.0f,1.5f,2.0f)方向旋转。虽然每次绕这个轴向旋转的角度相同，但角度的旋转在3个坐标轴上的值都不为零，其中一轴的旋转会影响其他两轴的角度，故而B的欧拉角的各个分量的每次递增值是不固定的。
+
+#### 8.4.2 operator * (rotation : Quaternion, point : Vector3)
+
+功能说明：对参数坐标点point进行rotation变换。A为Vector3：
+
+```
+transform.position += transform.rotation * A;
+```
+
+则每执行一次代码，transform对应的对象便会沿着自身坐标系中向量A的方向移动A的模长的距离。transform.rotation与A相乘主要来确定移动的方向和距离。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class QxV_ts : MonoBehaviour
+{
+    public Transform A;
+    float speed = 0.1f;
+    //初始化A的position和eulerAngles
+    void Start()
+    {
+        A.position = Vector3.zero;
+        A.eulerAngles = new Vector3(0.0f, 45.0f, 0.0f);
+    }
+    void Update()
+    {
+        //沿着A自身坐标系的forward方向每帧前进speed距离
+        A.position += A.rotation * (Vector3.forward * speed);
+        Debug.Log(A.position);
+    }
+}
+```
+
+在Update方法中，使用Quaternion与Vector3相乘，使得物体A沿着自身坐标系的forward方向每帧前进speed距离。
+
+### 8.5 关于Quaternion类中相乘运算符的两种重载方式的注解
+
+在Quaternion类中，相乘运算符（*）有两种重载方式，分别为operator * (lhs : Quaternion, rhs :
+Quaternion)和operator * (rotation : Quaternion, point : Vector3)。
+
+设A为两个Quaternion实例的乘积，结果为Quaternion类型，设B为Quaternion实例和Vector3的乘
+积，结果为Vector3类型，则二者主要有以下异同。
+
+- A与B的相似处是它们都通过自身坐标系的“相乘”方式来实现在世界坐标系中的变换；
+- A主要用来实现transform绕着自身坐标系中的某个轴进行旋转，而B主要用来实现
+    transform沿着自身坐标系的某个方向进行移动；
+- B的相乘顺序只有Quaternion*Vector3一种形式，而没有Vector3*Quaternion的形式；
+- 由于它们都是相对于自身坐标系进行的旋转或移动，故而当自身坐标系的轴向和世界坐标
+    系的轴向不一致时，它们绕着自身坐标系中某个轴向的变动都会影响到物体在世界坐标系
+    中各个坐标轴的变动。
 
 ## 9.Random类
+
+Random类是Unity中用于产生随机数的类，不可实例化，只有静态属性和静态方法。
+
+### 9.1 Random类静态属性
+
+在Random类中，静态属性有`insideUnitCircle`、`insideUnitSphere`、`onUnitSphere`、`rotationUniform`、`rotation`和`seed`。
+
+#### 9.1.1 insideUnitCircle：圆内随机点
+
+```
+基本语法 public static Vector2 insideUnitCircle { get; }
+```
+
+功能说明：返回一个半径为1的圆内的随机点坐标，返回值为Vector2类型。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 10.RigidBody类
 
