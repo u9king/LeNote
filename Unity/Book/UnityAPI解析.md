@@ -3824,6 +3824,333 @@ public class CollisionDetectionMode_ts : MonoBehaviour
 
 声明了两个Rigidbody变量A、B和两个Vector3变量v1、v2。在Start方法中设置A、B的useGravity属性为false，并将A、B的Position赋值给v1和v2，然后在OnGUI 方法中定义了多个Button ， 用来演示Discrete 、Continuous和ContinuousDynamic的功能。最后定义了一个inists方法，用于重置变量A、B对应刚体的状态。
 
+#### 10.1.2 drag：刚体阻力
+
+```
+基本语法 public float drag { get; set; }
+```
+
+功能说明：给刚体添加一个阻力。drag值越大刚体速度减慢得越快，当drag>0时，刚体在增加到一定速度后会匀速移动。
+
+---
+
+提示：刚体在自由落体运动中的最大速度值只与Gravity和drag值有关，与质量Mass无关。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Drag_ts : MonoBehaviour
+{
+    public Rigidbody R;
+    float drags = 20.0f;
+    string str = "200";
+    //初始化R.drag
+    void Start()
+    {
+        R.drag = drags;
+    }
+    void OnGUI()
+    {
+        GUI.Label(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "Gravity:" + Physics.gravity);
+        str = (GUI.TextField(new Rect(10.0f, 60.0f, 200.0f, 45.0f), str));
+        if (GUI.Button(new Rect(10.0f, 210.0f, 200.0f, 45.0f), "compute"))
+        {
+            drags = float.Parse(str);
+            R.drag = drags;
+        }
+        GUI.Label(new Rect(10.0f, 110.0f, 200.0f, 45.0f), "Velocity:" + R.velocity.y);
+        GUI.Label(new Rect(10.0f, 160.0f, 200.0f, 45.0f), "drag:" + drags);
+    }
+}
+```
+
+在OnGUI方法中绘制了一些GUI组件，用于测试不同的drag值下，物体下落的最终速度。
+
+| drag  | 0.1  | 0.2  | 0.3  | 0.4  | 0.5   | 0.6   | 0.7   | 0.8  | 0.9  | 1.0  |
+| ----- | ---- | ---- | ---- | ---- | ----- | ----- | ----- | ---- | ---- | ---- |
+| max_v | 97.9 | 48.9 | 32.5 | 24.3 | 19.42 | 16.15 | 13.82 | 12.1 | 10.7 | 9.67 |
+| drag  | 1.5  | 2    | 5    | 10   | 20    |       |       |      |      |      |
+| max_v | 6.34 | 4.7  | 1.76 | 0.78 | 0.29  |       |       |      |      |      |
+
+#### 10.1.3 inertiaTensor：惯性张量
+
+功能说明：用于设置刚体的惯性张量。在距离重心同等的条件下，刚体会向张量值大的一边倾斜。例如，设有如下代码：
+
+```C#
+rigidbody.inertiaTensor = new Vector3(5.0f,10.0f,1.0f);
+```
+
+起始状态如图10-1所示，则刚体会向y轴所在的方向倾斜翻转，如图10-2所示。
+
+<img src="https://gitee.com/u9king/ImageHostingService/raw/7f57eb279b52cf593f010a94635806cef66f3ab6/Unity/Book/inertiaTensor%E6%83%AF%E6%80%A7%E5%BC%A0%E9%87%8F.png" style="zoom: 80%;" />
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class inertiaTensor_ts : MonoBehaviour
+{
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 160.0f, 45.0f), "x轴惯性张量大于y轴"))
+        {
+            transform.position = new Vector3(0, 4, 0);
+            //transform绕z轴旋转45度
+            transform.rotation = Quaternion.Euler(0.0f, 0.0f, 45.0f);
+            //设置rigidbody的惯性张量
+            //x轴分量值大于y轴，则刚体会向x轴方向倾斜
+            rigidbody.inertiaTensor = new Vector3(15.0f, 10.0f, 1.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 160.0f, 45.0f), "y轴惯性张量大于x轴"))
+        {
+            transform.position = new Vector3(0, 4, 0);
+            transform.rotation = Quaternion.Euler(0.0f, 0.0f, 45.0f);
+            //设置rigidbody的惯性张量
+            //x轴分量值小于y轴，则刚体会向y轴方向倾斜
+            rigidbody.inertiaTensor = new Vector3(5.0f, 10.0f, 1.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 110.0f, 160.0f, 45.0f), "x轴和y轴惯性张量相同"))
+        {
+            transform.position = new Vector3(0, 4, 0);
+            transform.rotation = Quaternion.Euler(0.0f, 0.0f, 45.0f);
+            //设置rigidbody的惯性张量
+            //x轴和y轴惯性张量相同，则刚体会保持静止
+            rigidbody.inertiaTensor = new Vector3(10.0f, 10.0f, 1.0f);
+        }
+	}
+}
+```
+
+定义了3个Button，用来模拟不同惯性张量情况下刚体的运动情况。
+
+#### 10.1.4 mass：刚体质量
+
+```
+基本语法 public float mass { get; set; }
+```
+
+功能说明：设置或返回刚体的质量。一般刚体质量取值在0.1附近模拟最佳，最大不要超过10，否则容易出现模拟不稳定的情况。
+
+- 对于自由落体运动，物体的速度只与重力加速度Gravity和空气阻力drag有关，与质量mass无关。
+- mass的主要作用是在物体发生碰撞时计算碰撞后物体的速度。当一个物体分别去撞击mass大的物体和mass小的物体时，根据动量守恒定律，较重的物体被撞后的速度要慢于较轻的物体。
+- 代码
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Mass_ts : MonoBehaviour
+{
+    public Rigidbody r1, r2, r3, r4, r5;
+    Vector3 v3 = Vector3.zero;
+    void Start()
+    {
+        //r1和r2质量不同，但它们的速度始终相同
+        //r4和r5质量不同，当r3以同样的速度撞r4和r5后速度明显不同
+        r1.mass = 0.1f;
+        r2.mass = 5.0f;
+        r3.mass = 2.0f;
+        r4.mass = 0.1f;
+        r5.mass = 4.0f;
+        r3.useGravity = false;
+        r4.useGravity = false;
+        r5.useGravity = false;
+        v3 = r3.position;
+    }
+    
+    void FixedUpdate()
+    {
+        Debug.Log(Time.time + " R1的速度：" + r1.velocity);
+        Debug.Log(Time.time + " R2的速度：" + r2.velocity);
+        Debug.Log(Time.time + " R3的速度：" + r3.velocity);
+        Debug.Log(Time.time + " R4的速度：" + r4.velocity);
+        Debug.Log(Time.time + " R5的速度：" + r5.velocity);
+    }
+    
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "用R3撞R4"))
+        {
+            r3.position = v3;
+            r3.rotation = Quaternion.identity;
+            r3.velocity = new Vector3(4.0f, 0.0f, 0.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "用R3撞R5"))
+        {
+            r3.position = v3;
+            r3.rotation = Quaternion.identity;
+            r3.velocity = new Vector3(0.0f, 0.0f, 4.0f);
+        }
+    }
+}
+```
+
+在OnGUI方法中定义了两个不同功能的Button，最后在FixedUpdate方法中打印出每帧各个刚体的移动速度。运行程序发现，刚体r1和r2质量虽然不同，但速度却始终相同；当r3以同样的速度分别去撞r4和r5后，r4和r5的速度明显不同。
+
+#### 10.1.5 velocity：刚体速度
+
+```
+基本语法 public Vector3 velocity { get; set; }
+```
+
+功能说明：设置或返回刚体的速度值。
+
+- 在脚本中无论是给刚体赋予一个Vector3类型的速度向量v，还是获取当前刚体的速度v，v的方向都是相对世界坐标系而言的。
+- velocity的单位是米每秒，而不是帧每秒，其中米是Unity中默认的长度单位。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Velocity_ts : MonoBehaviour 
+{
+    public Rigidbody r1,r2;
+    // Use this for initialization
+    void Start () 
+    {
+        //给父物体r1一个向-z轴的速度，给子物体一个+z轴的速度
+        r1.velocity = new Vector3(0.0f,0.0f,-15.0f);
+        r2.velocity = new Vector3(0.0f, 0.0f, 10.0f);
+    }
+    void OnGUI() 
+    {
+        GUI.Label(new Rect(10.0f,8.0f,300.0f,40.0f),"R1当前速度："+r1.velocity);
+        GUI.Label(new Rect(10.0f,58.0f,300.0f,40.0f),"R2当前速度："+r2.velocity);
+        Debug.Log("R1当前速度：" + r1.velocity);  //R1当前速度:(0.0,0.0,-15.0)
+        Debug.Log("R2当前速度：" + r2.velocity);  //R2当前速度:(0.0,0.0,10.0)
+    }
+}
+```
+
+### 10.2 Rigidbody类实例方法
+
+在Rigidbody类中的实例方法有`AddExplosionForce`、`AddForceAtPosition`、`AddTorque`、`ClosestPointOnBounds`、`GetPointVelocity`、`MovePosition`、`Sleep`、`SweepTest`、`SweepTestAll`和`WakeUp`。
+
+#### 10.2.1 AddExplosionForce：模拟爆炸力
+
+```
+基本语法 (1) public void AddExplosionForce(float explosionForce, Vector3 explosionPosition,float explosionRadius);
+        (2) public void AddExplosionForce(float explosionForce, Vector3 explosionPosition,
+        float explosionRadius, float upwardsModifier);
+        (3) public void AddExplosionForce(float explosionForce, Vector3 explosionPosition,
+        float explosionRadius, float upwardsModifier, ForceMode mode);
+  参数 ———— explosionForce:爆炸点施加的力的大小
+            explosionPosition:爆炸点坐标（相对世界坐标系）
+            explosionRadius:爆炸作用力有效半径
+            upwardsModifier:爆炸力作用点在y轴方向上的偏移
+            mode:爆炸力的作用模式，默认为ForceMode.Force。
+```
+
+功能说明：用于对刚体添加一个模拟爆炸效果的作用力。设爆炸力大小为F，爆炸点坐标为E，有效半径为R，y轴的偏离量为y_m，刚体A的坐标为P，A受到的爆炸作用力为：A. AddExplosionForce(F,E,R,y_m);
+
+- 爆炸点E作用到A上的力的大小由E点到A表面的最近距离决定。尽管E到刚体A的空间距离为模长|EP|，但爆炸力的作用距离却是E到A的左下角B的距离|EB|，即爆炸力作用到A的大小为：
+    $$
+    \begin{aligned}
+    FA &=  \frac{R - |EB|}{R} × F \\
+    \end{aligned}
+    $$
+    当|EB|>R时，FA=0。由上可知，有可能刚体A发生了移动，但作用到A上的力的大小却没有改变，当刚体从粗实线的位置移动到细实线再移动到虚线的位置时，爆炸点到刚体的有效作用力距离始终是|Ep|。
+
+- 爆炸力作用在A上的方向由爆炸点E、刚体A的位置P和y轴偏移量y_m共同决定。
+
+    - 当y_m为默认值0时，作用力的方向即为从爆炸点到刚体A最近表面的方向。
+
+- 当y_m<0时，作用点向y轴正向移动y_m，从e1点移动到e2点，然后再以e2为爆炸原点求e2到刚体的作用力方向，从e2到B的方向。需要注意的是，无论爆炸点被偏移到什么地方，作用于刚体的力的大小都是由e1点到刚体的最短距离决定的，与偏移后的爆炸点位置无关。
+
+- 当y_m>0时，作用点向y轴负向移动y_m，从e1点移动到e2点，然后再以e2为爆炸原点求e2到刚体的作用力方向，从e2到B的方向。需要注意的是，无论爆炸点被偏移到什么地方，作用于刚体的力的大小都是由e1点到刚体的最短距离决定的，与偏移后的爆炸点位置无关。
+
+综上可知：
+
+- 爆炸力作用在刚体上的力的大小和方向是分开计算的；
+- 当爆炸点E固定时，刚体在某个范围移动时受到的爆炸力的大小可能不变；
+- 当作用力半径R=0时，所有接受爆炸点E作用的刚体受到的作用力大小都为F。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class AddExplosionForce_ts : MonoBehaviour
+{
+    public Rigidbody A;
+    public Transform Z;//Scene视图中显示爆炸点坐标
+    Vector3 E = Vector3.zero;//爆炸点坐标
+    float F, R, y_m;
+    bool is_change = false;
+    void Start()
+    {
+        //初始位置使得爆炸点和A的x、y轴坐标值相等
+        //可以更改F及R的大小查看运行时效果
+        E = A.position - new Vector3(0.0f, 0.0f, 3.0f);
+        F = 40.0f;
+        R = 10.0f;
+        y_m = 0.0f;
+        A.transform.localScale = Vector3.one * 2.0f;
+        Z.position = E;
+    }
+    void FixedUpdate()
+    {
+        if (is_change)
+        {
+            A.AddExplosionForce(F, E, R, y_m);
+            is_change = false;
+    	}
+	}
+    void OnGUI()
+    {
+    	//当爆炸点和A的重心的两个坐标轴的值相等时，A将平移不旋转
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "刚体移动不旋转"))
+        {
+            is_change = true;
+            inits();
+        }
+        //虽然受力大小不变，但产生扭矩发生旋转
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "刚体发生移动但受力大小不变"))
+        {
+            inits();
+            A.position += new Vector3(0.5f, -0.5f, 0.0f);
+            is_change = true;
+        }
+        if (GUI.Button(new Rect(10.0f, 110.0f, 200.0f, 45.0f), "按最近表面距离计算力的大小"))
+        {
+            inits();
+            A.position += new Vector3(0.0f, 2.0f, 0.0f);
+            is_change = true;
+        }
+        //y轴的偏移改变了A的原始方向
+        //可以更改y_m的值查看不同的效果
+        if (GUI.Button(new Rect(10.0f, 160.0f, 200.0f, 45.0f), "y轴发生偏移"))
+        {
+            inits();
+            is_change = true;A.position += new Vector3(0.0f, 2.0f, 0.0f);
+            y_m = -2.0f;
+        }
+    }
+    //初始化数据
+    void inits()
+    {
+        A.velocity = Vector3.zero;
+        A.angularVelocity = Vector3.zero;
+        A.position = E + new Vector3(0.0f, 0.0f, 3.0f);
+        A.transform.rotation = Quaternion.identity;
+        y_m = 0.0f;
+    }
+}
+```
+
+在OnGUI方法中定义了多个功能不同的Button，用于演示方法AddExplosionForce 在不同条件下的作用情况。
+
+
+
+
+
+
+
 
 
 
