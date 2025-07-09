@@ -3599,21 +3599,236 @@ Random类是Unity中用于产生随机数的类，不可实例化，只有静态
 
 功能说明：返回一个半径为1的圆内的随机点坐标，返回值为Vector2类型。
 
+---
 
+提示：类似属性还有
 
+- insideUnitSphere属性：返回一个半径为1 的球内的随机点坐标，返回值为Vector3类型；
+- onUnitSphere属性：返回一个半径为1 的球表面的随机点坐标，返回值为Vector3类型。
 
+---
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class insideUnitCircle_ts : MonoBehaviour
+{
+    public GameObject go;
+    void Start()
+    {
+        //每隔0.4秒执行一次use_rotationUniform方法
+        InvokeRepeating("use_rotationUniform", 1.0f, 0.4f);
+    }
+    void use_rotationUniform()
+    {
+        //在半径为5的圆内随机位置实例化一个GameObject对象
+        //Vector2实例转为Vector3时，z轴分量默认为0
+        Instantiate(go, Random.insideUnitCircle * 5.0f, Quaternion.identity);
+        //在半径为5的球内随机位置实例化一个GameObject对象
+        Instantiate(go, Vector3.forward * 15.0f + 5.0f * Random.insideUnitSphere,
+        Quaternion.identity);
+        //在半径为5的球表面随机位置实例化一个GameObject对象
+        Instantiate(go, Vector3.forward * 30.0f + 5.0f * Random.onUnitSphere,
+        Quaternion.identity);
+    }
+}
+```
 
+在这段代码中，首先声明了一个公共的GameObject变量go，然后在方法use_rotationUniform中分别使用Random属性insideUnitCircle、insideUnitSphere和onUnitSphere的返回值作为实例化对象的参考位置，最后在Start方法中调用InvokeRepeating方法，每隔0.4秒执行一次use_rotationUniform方法。
 
+![](https://gitee.com/u9king/ImageHostingService/raw/92ecee9b86de398bd49e723226ed730e44a42932/Unity/Book/insideUnitCircle%E9%9A%8F%E6%9C%BA%E7%82%B9%E7%94%9F%E6%88%90%E5%9B%BE.png)
 
+#### 9.1.2 rotationUniform：均匀分布特征
 
+```
+基本语法 public static Quaternion rotationUniform { get; }
+```
 
+功能说明：返回一个随机且符合均匀分布特征的rotation值。
 
+---
 
+提示：Random类的rotation属性与此属性功能相近，不同之处在于rotation属性只是产生一个随机的rotation值，不符合均匀分布特征，但其计算速度比rotationUniform快，一般情况下可用Random类的rotation属性产生一个随机的rotation值。
 
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class rotationUniform_ts : MonoBehaviour
+{
+    public GameObject go;
+    GameObject cb, sp;
+    GameObject cb1, sp1;
+    void Start()
+    {
+        //分别获取cb、sp、cb1和sp1对象
+        cb = GameObject.Find("Cube");
+        sp = GameObject.Find("Cube/Sphere");
+        cb1 = GameObject.Find("Cube1");
+        sp1 = GameObject.Find("Cube1/Sphere1");
+        //每隔0.4秒执行一次use_rotationUniform方法
+        InvokeRepeating("use_rotationUniform", 1.0f, 0.4f);
+    }
+    void use_rotationUniform()
+    {
+        //使用rotationUniform产生符合均匀分布特征的rotation
+        cb.transform.rotation = Random.rotationUniform;
+        //使用rotation产生一个随机rotation
+        cb1.transform.rotation = Random.rotation;
+        //分别在sp和sp1的位置实例化一个GameObject对象
+        Instantiate(go, sp.transform.position, Quaternion.identity);
+        Instantiate(go, sp1.transform.position, Quaternion.identity);
+    }
+}
+```
+
+在方法use_rotationUniform中分别使用属rotationUniform和rotation参数两个随机的rotation值，并将它们分别赋予cb和cb1。最后分别在sp和sp1的位置实例化一个GameObject对象。
+
+#### 9.1.3 seed：随机数种子
+
+```
+public static int seed { get; set; }
+```
+
+功能说明：设置随机数的种子。在计算机中产生随机数的方法有很多，但每种方法都需要一个种子，例如经典的伪随机数产生函数：f(x)=f(x-1)*a+b，其中a、b为已知的固定数值，那么只要知道某个x对应的f值，就可以推算出所有的值。通常情况下，会把f(0)当做随机数产生的种子，即只要知道了f(0)的值就可以推算出f(1)、f(2)…的值。总之，相同的Random.seed值对应着相同的随机数序列，如果不人为设定其值，Unity会根据某种算法自动产生一个种子。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Seed_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //设置随机数的种子
+        //不同的种子产生不同的随机数序列
+        //对于相同的种子，在程序每次启动时其序列是相同的
+        Random.seed = 1;
+    }
+    void Update()
+    {
+        Debug.Log(Random.value);
+        //[0.7323, 0.6478, 0.2391, 0.9382, 0.1523, ...]
+        //UnityRandom的实现以前主要基于Xorshift需要2^31 - 1次才会出现重复
+    }
+}
+```
+
+#### 9.2 Random类其他常用静态属性功能简介
+
+- insideUnitSphere：返回一个半径为1的球内的随机点坐标，返回值为Vector3类型；
+- onUnitSphere：返回一个半径为1的球表面的随机点坐标，返回值为Vector3类型；
+- rotation：用于返回一个随机的rotation值，返回值为Quaternion类型；
+- value：用于返回一个[0.0f,1.0f]区间内的随机数。
 
 ## 10.RigidBody类
+
+Rigidbody类的功能是用来模拟GameObject对象在现实世界中的物理特性，包括重力、阻力、质量、速度等。对Rigidbody对象属性的赋值代码通常放在脚本的OnFixedUpdate()方法中。
+
+### 10.1 Rigidbody类实例属性
+
+在Rigidbody类中涉及的实例属性有`collisionDetectionMode`、`drag`、`inertiaTensor`、`mass`和`velocity`。
+
+#### 10.1.1 collisionDetectionMode：碰撞检测模式
+
+```
+基本语法 public CollisionDetectionMode collisionDetectionMode { get; set; }
+```
+
+功能说明：设置刚体的碰撞检测模式。刚体的碰撞检测模式有3种，即枚举类型CollisionDetectionMode的３个值。
+
+- Discrete：静态离散检测模式，为系统的默认设置。在此模式下，只有在某一帧中两物体的碰撞器发生重叠时才能被检测到，这样就有可能导致某物体的前一帧在另一个刚体的上方，而下一帧移动到了另一个刚体的下方，这样就会发生穿越现象。
+- Continuous：静态连续检测模式，一般用在高速运动刚体的目标碰撞体上，防止被穿越，检测强度比Discrete强。
+- ContinuousDynamic：最强的连续动态检测模式，一般用在两个高速运动的物体上，防止互相穿越。其计算消耗最大，一般情况下慎用。
+
+无论哪种检测模式都有可能被穿越，为了防止穿越现象的发生，除了设置其碰撞检测模式外，还要适当增加两物体碰撞器的厚度，一般不要小于0.1，同时尽量降低两物体碰撞时的相对速度。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class CollisionDetectionMode_ts : MonoBehaviour
+{
+    public Rigidbody A, B;
+    Vector3 v1, v2;
+    void Start()
+    {
+        A.useGravity = false;
+        B.useGravity = false;
+        v1 = A.position;
+        v2 = B.position;
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "Discrete模式不被穿越"))
+        {
+            inists();
+            A.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            B.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            A.velocity = new Vector3(0.0f,-10.0f,0.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "Discrete模式被穿越"))
+        {
+            inists();
+            A.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            B.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            A.velocity = new Vector3(0.0f, -40.0f, 0.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 110.0f, 200.0f, 45.0f), "Continuous模式不被穿越"))
+        {
+            inists();
+            A.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            B.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            A.velocity = new Vector3(0.0f, -20.0f, 0.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 160.0f, 200.0f, 45.0f), "Continuous模式被穿越"))
+        {
+            inists();
+            A.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            B.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            A.velocity = new Vector3(0.0f, -15.0f, 0.0f);
+            B.velocity = new Vector3(0.0f, 15.0f, 0.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 210.0f, 200.0f, 45.0f), "ContinuousDynamic模式"))
+        {
+            inists();
+            A.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            B.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            A.velocity = new Vector3(0.0f, -200.0f, 0.0f);
+            B.velocity = new Vector3(0.0f, 200.0f, 0.0f);
+        }
+        if (GUI.Button(new Rect(10.0f, 260.0f, 200.0f, 45.0f), "重置"))
+        {
+            inists();
+        }
+    }
+    //初始化A、B
+    void inists() 
+    {
+        A.position = v1;
+        A.rotation = Quaternion.identity;
+        A.velocity = Vector3.zero;
+        A.angularVelocity = Vector3.zero;
+        B.position = v2;
+        B.rotation = Quaternion.identity;
+        B.velocity = Vector3.zero;
+        B.angularVelocity = Vector3.zero;
+    }
+}
+```
+
+声明了两个Rigidbody变量A、B和两个Vector3变量v1、v2。在Start方法中设置A、B的useGravity属性为false，并将A、B的Position赋值给v1和v2，然后在OnGUI 方法中定义了多个Button ， 用来演示Discrete 、Continuous和ContinuousDynamic的功能。最后定义了一个inists方法，用于重置变量A、B对应刚体的状态。
+
+
+
+
+
+
 
 ## 11.Time类
 
