@@ -4145,15 +4145,44 @@ public class AddExplosionForce_ts : MonoBehaviour
 
 在OnGUI方法中定义了多个功能不同的Button，用于演示方法AddExplosionForce 在不同条件下的作用情况。
 
+#### 10.2.2 AddForceAtPosition：增加刚体点作用力
 
+```
+基本语法 (1) public void AddForceAtPosition(Vector3 force, Vector3 position);
+		(2) public void AddForceAtPosition(Vector3 force, Vector3 position, ForceMode mode);
+		force为扭矩向量  position为作用点坐标值  mode为力的作用方式
+```
 
+功能说明：为position点增加一个力force，其参考坐标系为世界坐标系，作用方式为mode，默认值为ForceMode.Force。此方法与方法AddForce不同，AddForce方法对刚体施加力时不会产生扭矩使物体发生旋转，而AddForceAtPosition方法是在某个坐标点对刚体施加力，这样很可能会产生扭矩使刚体产生旋转。当力的作用点不在刚体重心时，由于作用点的扭矩会使刚体发生旋转。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class AddForceAtPosition_ts : MonoBehaviour
+{
+    public Rigidbody A, B, C;
+    Vector3 m_force = new Vector3(0.0f, 0.0f, 10.0f);
+    void FixedUpdate()
+    {
+        //当力的作用点在刚体重心时，刚体不发生旋转
+        A.AddForceAtPosition(m_force, A.transform.position, ForceMode.Force);
+        //当力的作用点不在刚体重心时，由于作用点的扭矩会使刚体发生旋转
+        B.AddForceAtPosition(m_force, B.transform.position + new Vector3(0.0f, 0.3f, 0.0f),
+        ForceMode.Force);
+        //但是，当力的作用点和刚体重心坐标的差向量与作用力的方向同向时不发生旋转
+        C.AddForceAtPosition(m_force, C.transform.position + new Vector3(0.0f, 0.0f, 0.3f),
+        ForceMode.Force);
+        Debug.Log("A的欧拉角：" + A.transform.eulerAngles); //A的欧拉角：(0.0,30.0,0.0)
+        Debug.Log("B的欧拉角：" + B.transform.eulerAngles); 
+        //B的欧拉角：(0.0,315.0,0.0)  //B的欧拉角：(0.0,315.0,359.7)
+        Debug.Log("C的欧拉角：" + C.transform.eulerAngles); //C的欧拉角：(0.0,50.0,0.0)
+    }
+}
+```
 
-
-
-
-
+声明了３个Rigidbody变量和一个Vector3变量，然后在方法FixedUpdate中分别对刚体A、B、C施加作用力，最后打印出刚体A、B、C的欧拉角。只有刚体B发生了旋转，刚体A和C的角度未发生变化。
 
 
 
