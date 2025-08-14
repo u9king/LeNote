@@ -4184,6 +4184,511 @@ public class AddForceAtPosition_ts : MonoBehaviour
 
 声明了３个Rigidbody变量和一个Vector3变量，然后在方法FixedUpdate中分别对刚体A、B、C施加作用力，最后打印出刚体A、B、C的欧拉角。只有刚体B发生了旋转，刚体A和C的角度未发生变化。
 
+#### 10.2.3 AddTorque：刚体添加扭矩
+
+```
+基本语法 (1) public void AddTorque(Vector3 torque);
+		(2) public void AddTorque(Vector3 torque, ForceMode mode);
+		(3) public void AddTorque(float x, float y, float z);
+		(4) public void AddTorque(float x, float y, float z, ForceMode mode)
+		torque为扭矩向量 mode为力的作用方式
+```
+
+功能说明：给刚体添加一个扭矩torque，作用力方式mode，默认为ForceMode.Force。例如，设A为立方体刚体，其边长L为2，质量m为1，现在对其施加一个扭矩`M = new Vector3(0.0f,10.0f,0.0f)`，使其y轴转动，由公式
+$$
+\begin{aligned}
+M &= I · \frac{dw}{dt}
+\end{aligned}
+$$
+和立方体的转动惯量公式
+$$
+\begin{aligned}
+I &= \frac{mL^{2}}{6}
+\end{aligned}
+$$
+可得：
+$$
+\begin{aligned}
+10 &= \frac{1×2^{2}}{6} × \frac{dw}{0.02}
+\end{aligned}
+$$
+从而可得dw=0.3，即刚体每帧转动的角度为0.3度，mode方式为ForceMode.Force。
+
+---
+
+提示：不同形状的刚体及不同的转轴，其转动惯量I的计算方式是不同的。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class AddTorque_ts : MonoBehaviour 
+{
+    public Rigidbody R;
+    Vector3 m_torque = new Vector3(0.0f,10.0f,0.0f);
+    void Start () 
+    {
+        R.transform.localScale = new Vector3(2.0f,2.0f,2.0f);
+        R.mass = 1.0f;
+        R.angularDrag = 0.0f;
+        Debug.Log("刚体默认的最大角速度："+R.maxAngularVelocity);
+        //可以使用如下代码更改刚体的最大角速度
+        //R.maxAngularVelocity = 10.0f;
+    }
+    void FixedUpdate () 
+    {
+        //每帧给物体添加一个扭矩，使其转速不断加快
+        R.AddTorque(m_torque,ForceMode.Force);
+        Debug.Log("刚体当前角速度："+R.angularVelocity);
+    }
+}
+```
+
+在Start方法中对变量R对应的刚体进行初始化设置，最后在方法FixedUpdate方法中给刚体R添加一个扭矩，使得R的转速不断加快，并打印出每帧R的旋转角度。
+
+---
+
+提示：运行程序几秒后，刚体角速度会保持在(0.0,7.0,0.0)而不再增加，这是因为刚体有最大角速度的限制，默认值为7.0f，可以通过属性maxAngularVelocity更改刚体的最大角速度。
+
+---
+
+#### 10.2.4 ClosestPointOnBounds：爆炸点到刚体最短距离
+
+```
+基本语法 public Vector3 ClosestPointOnBounds(Vector3 position);
+		参数position爆炸点坐标
+```
+
+功能说明：求爆炸点到刚体Collider表面的作用点。，爆炸点到刚体的最短距离，而不是到中心点的距离。
+
+---
+
+提示：返回值为刚体Collider表面上的某一点，而不是Mesh上的点。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ClosestPointOnBounds_ts : MonoBehaviour
+{
+	public Rigidbody r;
+    void Start()
+    {
+    	r.position = new Vector3(0.0f,4.0f,0.0f);
+    	Debug.Log(r.ClosestPointOnBounds(new Vector3(5.0f, 4.0f, 0.0f)));
+    }
+}
+```
+
+#### 10.2.5 GetPointVelocity：刚体点速度
+
+```
+基本语法 public Vector3 GetPointVelocity(Vector3 worldPoint);
+		参数worldPoint为世界坐标系中的点坐标。
+```
+
+功能说明：获取世界坐标系中worldPoint点在刚体局部坐标系中的速度。速度的计算会受刚体角速度的影响，对其使用说明如下。
+
+​	此方法的功能是计算世界坐标系中某一点在刚体局部坐标系中对应位置的速度。此点的坐标可以是世界坐标系中任意点的坐标，可以是刚体表面上某一点对应的世界坐标系的值，也可以不在其表面上。当刚体角速度为Vector3.zero而移动速度不为Vector3.zero时，世界坐标系上任意一点的移动速度都和刚体自身坐标系的原点（即刚体重心）的移动速度相等。而当刚体角速度不为Vector3.zero时，此点的速度值除了计算刚体重心的移动速度，还要计算此点绕刚体重心的角速度。
+
+#### 10.2.6 GetRelativePointVelocity：刚体点相对速度
+
+```
+基本语法 public Vector3 GetRelativePointVelocity(Vector3 relativePoint);
+		参数relativePoint为刚体自身坐标系中的点坐标。
+```
+
+功能说明：获取刚体自身坐标系中relativePoint点的速度，速度的计算会受刚体角速度的影响。
+
+- 计算刚体自身坐标系中某一点的速度，此坐标点指的是刚体自身坐标系中的任意坐标点，可以是刚体表面上的某一点，也可以不在其表面上。当刚体角速度为Vector3.zero而移动速度不为Vector3.zero时，刚体自身坐标系上任意一点的移动速度都和刚体自身坐标系的原点（即刚体重心）的移动速度相等。而当刚体
+    角速度不为Vector3.zero时，则刚体上任意一点的速度值除了计算刚体重心的移动
+    速度外，还要计算此点绕刚体重心的角速度。
+- 和GetPointVelocity作用类似，只是GetPointVelocity方法中使用世界坐标系中的坐标来确定位置，而此方法使用自身坐标系中的坐标来确定位置。为方便理解两个方法的功能，可以把GetPointVelocity中的worldPoint点或GetRelativePointVelocity中的relativePoint点理解为刚体的子类物体的重心坐标值，这样当父类只移动不旋转时，其子类的速度和父类相同；而当父类移动的同时还进行自身旋转时，尽管父类重心依旧朝某一个方向移动，但其子类在跟随父类向前移动时，还要绕着父类重心旋转。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class GetRelativePointVelocity_ts : MonoBehaviour
+{
+    public Rigidbody A;
+    string str = "";
+    void Start()
+    {
+        //给A施加一帧的力，使其产生速度
+        A.AddForce(Vector3.forward * 100.0f);
+    }
+    void FixedUpdate()
+    {
+        //A.transform.TransformPoint(Vector3.forward):获取A的局部坐标系中Vector3.forward点
+        在世界坐标系中的坐标值
+        //这样A.GetPointVelocity(A.transform.TransformPoint(Vector3.forward))和
+        //A.GetRelativePointVelocity(Vector3.forward)返回的是同一点的速度，即它们的返回值应
+        该相等
+        Debug.Log(str + "GetPointVelocity: " + A.GetPointVelocity(A.transform.TransformPoint
+        (Vector3.forward)));
+        Debug.Log(str + "GetRelativePointVelocity: " + A.GetRelativePointVelocity(Vector3.
+        forward));
+    }
+    void OnGUI()
+    {
+        //当刚体角速度为Vector3.zero时，任何点的速度都和刚体速度相等
+        //当刚体角速度不为Vector3.zero时，坐标系中各个点的速度是不等的
+        //GetPointVelocity和GetRelativePointVelocity只是两种计算坐标点的不同方法
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "增加角速度"))
+        {
+            A.angularVelocity = new Vector3(0.0f, 45.0f, 0.0f);
+            str = "增加角速度后，";
+        }
+    }
+}
+```
+
+在Start方法中给A施加一帧的作用力，使其速度不为零，此时A只有移动速度，没有旋转速度。然后在OnGUI方法中定义一个Button，用来给A增加一个角速度。最后在方法FixedUpdate中分别调用方法GetPointVelocity和GetRelativePointVelocity，打印出每帧中同一坐标点的速度。
+
+#### 10.2.7 MovePosition：刚体位置移动
+
+```
+基本语法 public void MovePosition(Vector3 position);
+		参数position为刚体组件要移动到的位置坐标
+```
+
+功能说明：对刚体的位置进行移动，通常用在刚体失去动力学模拟的情况下，即isKinematic为true时。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class MovePOrR_ts : MonoBehaviour
+{
+    public Rigidbody A;
+    bool is_pr = false;
+    void Start()
+    {
+        A.velocity = Vector3.forward * 20.0f;
+        A.angularVelocity = Vector3.up * 90.0f;
+        //当isKinematic == true时刚体的动力学模拟将失效
+        //此时可以使用MovePosition和MoveRotation对刚体进行移动和旋转
+        A.isKinematic = true;
+    }
+    void FixedUpdate()
+    {
+        if (is_pr)
+        {
+            A.MovePosition(A.position + Vector3.forward * Time.deltaTime);
+            Quaternion deltaRotation = Quaternion.Euler(Vector3.up * 90.0f * Time.deltaTime);
+            A.MoveRotation(A.rotation * deltaRotation);
+        }
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "刚体移动与旋转"))
+        {
+            is_pr = true;
+        }
+    }
+}
+```
+
+在Start方法中对A的velocity属性和angularVelocity属性进行设置，并关闭刚体A的动力学模拟，即设置isKinematic为true。最后在FixedUpdate方法中调用方法MovePosition和MoveRotation，对刚体A进行移动和旋转。
+
+#### 10.2.8 Sleep：刚体休眠
+
+```
+基本语法 public void Sleep();
+```
+
+功能说明：使刚体进入休眠状态，且至少休眠一帧。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SleepOrWake_ts : MonoBehaviour
+{
+    public Rigidbody A;
+    void Awake()
+    {
+        A.Sleep();
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "Sleep"))
+        {
+            if (!A.IsSleeping())
+            {
+                A.Sleep();
+            }
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "WakeUp"))
+        {
+            if (A.IsSleeping())
+            {
+                A.WakeUp();
+            }
+        }
+        Debug.Log("A物体的Y坐标：" + A.transform.position.y+" A物体是否处于休眠状态：
+        "+A.IsSleeping());
+    }
+}
+```
+
+在方法Awake中将刚体A置于休眠状态，最后在方法OnGUI中定义了两个不同功能的Button，用于控制刚体A的休眠状态。
+
+#### 10.2.9 SweepTest：检测碰撞器
+
+```
+基本语法 (1) public bool SweepTest(Vector3 direction, out RaycastHit hitInfo);
+		(2) public bool SweepTest(Vector3 direction, out RaycastHit hitInfo, float distance);
+		参数direction为探测方向 参数distance为有效探测距离，默认为无穷大。
+```
+
+功能说明：检测在刚体的direction方向是否有碰撞器对象，且对象的有效探测距离不大于distance。例如，设有GameObject实例A和B，如图10-16所示，它们的边长都为1，rotation都为0，A物体含有组件Rigidbody，B物体在A物体的右侧。设它们的坐标分别为A(1.0f,1.0f,1.0f)、B(4.0f,1.0f,1.0f)，则执行以下代码后：
+A.rigidbody.SweepTest(A.transform.right,out hit,10.0f);
+
+- hit.distance=2.0f，即从A物体的右表面到B物体左表面的距离，而非它们重心坐标之间的距离4-1=3.0f
+- B物体中只要含有Collider组件即可，无需含有Rigidbody组件
+- A的有效探测距离为10，所以当B.x>12时，即使B在A的右侧，A物体也无法探测B的存在，即返回值为false
+- direction的方向为A在世界坐标系中的方向
+- 若在B的右侧还有一个物体C也在A的有效探测范围内，则hit探测到B时就停止了，不会再向右继续探测，即SweepTest的返回结果只是第一个被探测到的物体
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SweepTest_ts : MonoBehaviour
+{
+    public GameObject A, B;
+    RaycastHit hit;
+    float len = 10.0f;//有效探测距离
+    void Start()
+    {
+        A.transform.position = new Vector3(1.0f, 1.0f, 1.0f);
+        B.transform.position = new Vector3(4.0f, 1.0f, 1.0f);
+    }
+    void FixedUpdate()
+    {
+        //探测刚体A右侧len距离内是否存在物体
+        if (A.rigidbody.SweepTest(A.transform.right, out hit, len))
+        {
+            Debug.Log("A物体右侧存在物体：" + hit.transform.name + " 其距离A的距离为：" +
+            hit.distance);
+        }
+        else
+            Debug.Log("A物体右侧" + len + "米范围内没检测到带碰撞器的物体！");
+	}
+	void OnGUI()
+	{
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "设置B坐标使A无法探测到"))
+        	B.transform.position = new Vector3(12.0f, 1.0f, 1.0f); //重置B的position，使得物体A、B的间距大于len值
+        
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "取消B中的Rigidbody组件"))
+        {
+            //销毁B物体中的Rigidbody组件
+            //运行程序可以发现，B物体中是否存在Rigidbody对探测结果没有影响
+            if (B.GetComponent<Rigidbody>())
+            	Destroy(B.GetComponent<Rigidbody>());
+        }
+        if (GUI.Button(new Rect(10.0f, 110.0f, 200.0f, 45.0f), "取消B中的Collider组件"))
+        {
+            //销毁B物体中的Collider组件
+            //运行程序可以发现，如果B中无Collider组件则A无论如何也探测不到B的存在
+            if (B.GetComponent<Collider>())
+                Destroy(B.GetComponent<Collider>());
+        }
+        //对B物体的状态重置
+        if (GUI.Button(new Rect(10.0f, 160.0f, 200.0f, 45.0f), "重置"))
+        {
+            B.transform.position = new Vector3(4.0f, 1.0f, 1.0f);
+            if (!B.GetComponent<Collider>())
+                B.AddComponent<BoxCollider>();
+
+            if (!B.GetComponent<Rigidbody>())
+            {
+                B.AddComponent<Rigidbody>();
+                B.rigidbody.useGravity = false;
+            }
+        }
+	}
+}
+```
+
+Start方法中对物体A、B的position进行重置。然后在OnGUI方法中定义了4个Button用于演示不同状况下A物体的探测结果，具体内容如代码注释所述。最后在FixedUpdate方法中调用方法SweepTest，来探测刚体A右侧len距离内是否存在物体。
+
+#### 10.2.10 SweepTestAll：探测碰撞器
+
+```
+基本语法  (1) public RaycastHit[] SweepTestAll(Vector3 direction);
+	     (2) public RaycastHit[] SweepTestAll(Vector3 direction, float distance);
+	     参数direction为探测方向 参数distance为有效探测距离
+```
+
+功能说明：探测刚体的direction方向的distance距离内是否含有碰撞器，并返回所有探测到的物体的RaycastHit。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SweepTestAll_ts : MonoBehaviour
+{
+    public GameObject A, B, C, D;
+    RaycastHit[] hits;
+    float len = 10.0f;//有效探测距离
+    void Start()
+    {
+        A.transform.position = new Vector3(1.0f, 1.0f, 1.0f);
+        B.transform.position = new Vector3(4.0f, 1.0f, 1.0f);
+        C.transform.position = new Vector3(7.0f, 1.0f, 1.0f);
+        //D物体超出了A的有效探测距离，不会被探测到
+        D.transform.position = new Vector3(12.0f, 1.0f, 1.0f);
+        hits = A.rigidbody.SweepTestAll(A.transform.right, len);
+        float l = hits.Length;
+        Debug.Log("A探测到的物体个数为：" + l + " 它们分别是：");
+        //遍历探测结果
+        foreach (RaycastHit hit in hits)
+        {
+            Debug.Log(hit.transform.name);
+        }
+    }
+}
+```
+
+在Start方法中对这4个变量的位置进行初始化，其中在设置对象D的位置时，使其与A的距离大于刚体A的有效探测距离len。接着接着调用方法SweepTestAll探测刚体A右侧len距离内的物体。
+
+#### 10.2.10 WakeUp：唤醒刚体
+
+```
+基本语法 public void WakeUp();
+```
+
+功能说明：将刚体从休眠状态唤醒。要将刚体从休眠状态唤醒，除了调用WakeUp方法外，在发生以下4种情况时，刚体会被自动唤醒。
+
+- 其他刚体与休眠中的刚体发生了碰撞；
+- 使用关节连接的其他刚体发生了移动；
+- 刚体的属性发生了改变；
+- 给休眠中的刚体施加了一个外力。
+
+### 10.3 关于useGravity、isKinematic 和velocity 的使用注解
+
+功能区别：
+
+- useGravity属性用来确定刚体是否接受重力。
+- isKinematic属性用来确定刚体是否接受动力学模拟，此影响不仅包括重力，还包括速度、阻力、质量等的物理模拟。
+
+A和B为两个刚体物体，A在B的正上方，开始时A和B的重力感应都被关闭，都处于静止状态，且接受动力学模拟即isKinematic为false。现在开启A的重力，则A从① 处开始加速下落，当下落到② 处时，关闭A的重力感应，但isKinematic依然为false（即接受动力学模拟），则A将以当前速度匀速下落。但是此时若关闭物理感应，即isKinematic=true，则A将立即停止移动。当A与B发生碰撞时，若B的重力感应依然关闭，但接受动力学模拟，即
+isKinematic=false，则根据动量守恒B将产生一个向下的速度。但是若关闭B物体的动力学模拟，即isKinematic=true，则B保持静止，不会因受到A的碰撞而下落。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class GraAndKin_ts : MonoBehaviour
+{
+    public Rigidbody A, B;
+    string str_AG = "";
+    string str_AK = "";
+    string str_BK = "";
+    Vector3 v1, v2;
+    void Start()
+    {
+        //为了更好地演示，将重力加速度降低
+        Physics.gravity = new Vector3(0.0f,-0.5f,0.0f);
+        A.useGravity = false;
+        B.useGravity = false;
+        A.isKinematic = false;
+        B.isKinematic = false;
+        str_AG = "A开启重力感应";
+        str_AK = "A关闭物理感应";
+        str_BK = "B关闭物理感应";
+        v1 = A.position;
+        v2 = B.position;
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), str_AG))
+        {
+            if (A.useGravity)
+            {
+            A.useGravity = false;
+            str_AG = "A开启重力感应";
+            }
+            else
+            {
+            A.useGravity = true;
+            str_AG = "A关闭重力感应";
+            }
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), str_AK))
+        {
+            if (A.isKinematic)
+            {
+            A.isKinematic = false;
+            str_AK = "A关闭物理感应";
+            }
+            else
+            {
+            A.isKinematic = true;
+            str_AK = "A开启物理感应";
+            }
+        }
+        if (GUI.Button(new Rect(10.0f, 110.0f, 200.0f, 45.0f), str_BK))
+        {
+            if (B.isKinematic)
+            {
+            B.isKinematic = false;
+            str_BK = "B关闭物理感应";
+            }
+            else
+            {
+            B.isKinematic = true;
+            str_BK = "B开启物理感应";
+            }
+        }
+        if (GUI.Button(new Rect(10.0f, 160.0f, 200.0f, 45.0f), "重置"))
+        {
+            A.position = v1;
+            A.rotation = Quaternion.identity;
+            B.position = v2;
+            B.rotation = Quaternion.identity;
+        }
+    }
+}
+```
+
+在Start方法中对A、B的useGravity、isKinematic及position进行初始化，最后在OnGUI方法中定义了4个Button，用于演示useGravity、isKinematic和velocity的关系。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## 11.Time类
