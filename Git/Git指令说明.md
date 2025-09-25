@@ -34,3 +34,12 @@ Host github.com
 git config --global --list
 ```
 
+#### 5.文件打包
+
+```
+//查看文件占用情况
+git count-objects -vH
+//将松散对象打包压缩
+git gc --prune=now --aggressive
+```
+

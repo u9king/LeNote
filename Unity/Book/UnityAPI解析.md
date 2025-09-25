@@ -4669,19 +4669,312 @@ public class GraAndKin_ts : MonoBehaviour
 
 在Start方法中对A、B的useGravity、isKinematic及position进行初始化，最后在OnGUI方法中定义了4个Button，用于演示useGravity、isKinematic和velocity的关系。
 
+### 10.4 关于Rigidbody 中mass、density 及scale 之间的关系注解
 
+在Rigidbody类中，mass、density和scale这3个API之间有着较为紧密的联系，下面对它们的关系
+进行说明。
 
+- 若在脚本中未使用Rigidbody. SetDensity (density : float)方法设置刚体的密度，则刚体
+    的质量mass值为在Inspector面板中Mass的大小，此时mass与Transform中的scale大小无关。
+- 若在脚本中使用Rigidbody. SetDensity (density : float)方法设置了刚体的密度，则刚
+    体的质量为mass=density*scale.x*scale.y*scale.z，而与Inspector面板中Mass的设置大小
+    无关。
+- 若在脚本中既设置了密度Density，又设置了质量mass，则刚体实际质量值要看脚本中代
+    码执行的前后次序了。若先执行密度设置代码，再执行质量设置代码，则刚体质量便不与
+    密度density及物体放缩值scale有关。
+- 当两物体发生碰撞时遵守动量守恒定理，即m1*v1+m2*v2=(m1+m2)*v，其中速度v1、v2
+    及v按运动方向分正负号。
 
+代码：下面使用实例演示Rigidbody中mass、density及scale之间的作用关系。
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class Mds_ts : MonoBehaviour
+{
+    public Rigidbody A, B;
+    //全局静态变量，用于与A、B刚体中脚本共享
+    public static bool is_AC = false, is_BC = false;
+    public static Vector3 A_v = Vector3.zero, B_v = Vector3.zero;
+    void Start()
+    {
+        //如果不使用SetDensity则scale的大小对刚体质量无影响
+        Debug.Log("A的质量mass：" + A.mass);
+        A.transform.localScale = A.transform.localScale * 2.0f;
+        Debug.Log("scale值放大后A的质量mass：" + A.mass);
+        A.transform.localScale = A.transform.localScale / 2.0f;
+        //注意，如果要使用SetDensity请先设定scale值再设置Density
+        //否则一旦density确定质量也就确定了，再去设置scale将对质量改变不起作用
+        A.transform.localScale = A.transform.localScale * 2.0f;
+        A.SetDensity(2.0f);
+        Debug.Log("改变density和scale值后A的质量mass：" + A.mass);
+        //给A一个初始速度
+        A.velocity = new Vector3(0.0f, 0.0f, 10.0f);
+        //碰撞前动量
+        Debug.Log("碰撞前mA*vA+mB*vB=" + (A.mass * (A.velocity.x + A.velocity.y + A.velocity.z)
+        + B.mass * (B.velocity.x + B.velocity.y + B.velocity.z)));
+    }
+    
+    void FixedUpdate()
+    {
+        if (is_AC && is_BC)
+        {
+            //碰撞后动量
+            Debug.Log("碰撞后mA*vA+mB*vB=" + (A.mass * (A.velocity.x + A.velocity.y +
+    A.velocity.z) + B.mass * (B.velocity.x + B.velocity.y + B.velocity.z)));
+        }
+    }
+}
+```
 
+在Start方法中演示了SetDensity、scale和mass之间的关系。在FixedUpdate方法中检验了物体间碰撞是否符合动量守恒定理。
 
+### 10.5 关于作用力方式ForceMode 的功能注解
 
+​	ForceMode为枚举类型，用来控制力的作用方式，有4个枚举成员，下面将一一介绍。其中设刚体
+质量均为`m=2.0f`，力向量均为`f=(10.0f,0.0f,0.0f)`。
 
+- ForceMode.Force：默认方式，使用刚体的质量计算，以每帧间隔时间为单位计算动量。设FixedUpdate()的执行频率采用系统默认值（即0.02s），则由动量定理
 
+$$
+F·t = m · v
+$$
 
+​		可得`10*0.02=2*v1`，从而可得`v1=0.1`，即每帧刚体在x轴上值增加0.1米，从而可计算得刚体的每秒移动速度为`v2=(1/0.02)*v1=5m/s`。
 
+- ForceMode.Acceleration：在此种作用方式下，会忽略刚体的实际质量而采用默认值1.0f，
+    时间间隔以系统帧频间隔计算（默认值为0.02s），即
 
+$$
+f·t = 1.0 · v
+$$
 
+​	可得`v1= f·t=10*0.02=0.2`，即刚体每帧增加0.2米，从而可得刚体的每秒移动速度为`v2=(1/0.02)*v1=10m/s`
+
+- ForceMode.Impulse：此种方式采用瞬间力作用方式，即把t的值默认为1，不再采用系统
+    的帧频间隔，即
+
+$$
+f·1.0 = m·v
+$$
+
+可得`v1=f/m=10.0/2.0=5.0`，即刚体每帧增加5.0米，从而可得刚体每秒的速度为`v2=(1/0.02)*5.0=250m/s`
+
+- ForceMode.VelocityChange：此种作用方式下将忽略刚体的实际质量，采用默认质量1.0，
+    同时也忽略系统的实际帧频间隔，采用默认间隔1.0，即
+
+$$
+f·1.0 = 1.0·v
+$$
+
+​	  可得v1=f=10.0，即刚体每帧沿x轴移动距离为10米，从而可得刚体每秒的速度为`v2=(1/0.02)*v1=500m/s`
+
+代码:
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ForceMode_ts : MonoBehaviour
+{
+    public Rigidbody A, B, C, D;
+    //作用力向量
+    Vector3 forces = new Vector3(10.0f, 0.0f, 0.0f);
+    void Start()
+    {
+        //初始化4个刚体的质量，使其相同
+        A.mass = 2.0f;
+        B.mass = 2.0f;
+        C.mass = 2.0f;
+        D.mass = 2.0f;
+        //对A、B、C、D采用不同的作用力方式
+        //注意此处只是对物体增加了1帧的作用力
+        //如果要对刚体产生持续作用力请把以下代码放在FixedUpdate()方法中
+        A.AddForce(forces, ForceMode.Force);
+        B.AddForce(forces, ForceMode.Acceleration);
+        C.AddForce(forces, ForceMode.Impulse);
+        D.AddForce(forces, ForceMode.VelocityChange);
+    }
+    
+    void FixedUpdate()
+    {
+        Debug.Log("ForceMode.Force作用方式下A每帧增加的速度：" + A.velocity);
+        Debug.Log("ForceMode.Acceleration作用方式下B每帧增加的速度：" + B.velocity);
+        Debug.Log("ForceMode.Impulse作用方式下C每帧增加的速度：" + C.velocity);
+        Debug.Log("ForceMode.VelocityChange作用方式下D每帧增加的速度：" + D.velocity);
+    }
+}
+```
+
+在Start方法中将4个刚体的质量都设为相同的值，并分别对4个刚体施加相同的力向量，但使用不同的作用方式。在FixedUpdate方法中分别打印出4个刚体的速度。
+
+### 10.6 关于OnTrigger{XXX} 和OnCollision{XXX} 的功能注解
+
+OnTriggerXXX指的是OnTriggerEnter、OnTriggerExit和OnTriggerStay这３个消息。OnCollisionXXX
+指的是OnCollisionEnter、OnCollisionExit和OnCollisionStay这３个消息，它们都是用来处理不
+同物体在不同状态下消息的反馈，对它们的使用说明如下。
+
+设现有A、B两个物体，且A物体正向B移动，B物体保持静止状态。
+
+- 若A中无Rigidbody组件，则B中无论是否含有Rigidbody组件，A都将穿越B物体，并且A和B脚本中的OnTriggerXXX和OnCollisionXXX方法都不会被调用。
+- 若A中含有Rigidbody组件，则B中无论是否还有Rigidbody组件，只要B中含有Collider类组件，A和B脚本中的OnTriggerXXX方法或OnCollisionXXX方法就会被调用，到底调用哪一种静态方法要看A和B物体中Collider类组件中的IsTrigger是否被选中。总之，要激活OnTriggerXXX方法或OnCollisionXXX方法必须使移动的物体中含有Rigidbody组件。
+- 若A中含有Rigidbody组件，B中含有Collider类组件，当A和B物体中Collider类组件的IsTrigger都没有选中时（即在Inspector面板中IsTrigger不要打勾），A和B脚本中OnCollisionXXX类的方法就会被调用，而OnTriggerXXX静态方法则不会被调用。
+- 若A中含有Rigidbody组件，B中含有Collider类组件，当A和B物体中的Collider类组件的IsTrigger至少有一个被选中时，A和B物体脚本中的OnTriggerXXX静态方法会被调用，而OnCollisionXXX静态方法不会被调用。
+- 当符合OnCollisionXXX静态方法激活条件时，A不可穿越B物体，A会与B发生弹性碰撞。
+- 当符合OnTriggerXXX静态方法激活条件时，A会穿越B物体，即A、B物体的运动行为互不影响，只是反馈了两个物体的接触状态：未接触、开始接触、接触中、互相分离。
+- OnTriggerEnter或OnCollisionEnter方法会在A刚开始接触B时被调用，且在A、B分离前只被调用一次。
+- OnTriggerStay或OnCollisionStay方法会在A和B保持接触状态时被调用，且在A、B分离前每帧都会被调用。
+- OnTriggerExit或OnCollisionExit方法会在A、B刚分离时被调用，且只被调用一次。
+
+代码：主程序脚本，用于控制A、B的移动
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class TriggerOrCollision_ts : MonoBehaviour
+{
+    public GameObject A, B;
+    Vector3 p_a, p_b;
+    int which_change = -1;
+//将物体A、B的初始位置赋给p_a和p_b，用于重置物体组件时使用
+    void Start()
+    {
+        p_a = A.transform.position;
+        p_b = B.transform.position;
+    }
+//控制物体A的移动
+    void FixedUpdate()
+    {
+    	if (which_change == 0) A.transform.Translate(Vector3.forward * Time.deltaTime);
+    }
+    
+    void OnGUI()
+    {
+        //当A物体无Rigidbody组件时
+        //无论B是否有Rigidbody都不会激活A和B脚本中的OnCollisionXXX或OnTriggerXXX方法
+        if (GUI.Button(new Rect(10.0f, 10.0f, 280.0f, 45.0f), "A物体无Rigidbody组件"))
+        {
+            inists();
+            which_change = 0;
+            if (A.GetComponent<Rigidbody>()) Destroy(A.GetComponent<Rigidbody>());
+        }
+        //当A物体有Rigidbody组件时
+        //一定会激活A和B脚本中的OnCollisionXXX或OnTriggerXXX方法
+        if (GUI.Button(new Rect(10.0f, 60.0f, 280.0f, 45.0f), "A有Rigidbody组件，B无Rigidbody组件"))
+        {
+            inists();
+            which_change = 1;
+            if (!A.GetComponent<Rigidbody>())
+            {
+                A.AddComponent<Rigidbody>();
+                A.rigidbody.useGravity = false;
+            }
+            if (B.GetComponent<Rigidbody>()) Destroy(B.GetComponent<Rigidbody>()); 
+            A.rigidbody.velocity = Vector3.forward;
+        }
+                       
+        //当A物体有Rigidbody组件时
+        //且A与B物体IsTrigger都未选中时，只会激活A和B脚本中的OnCollisionXXX方法
+        if (GUI.Button(new Rect(10.0f, 110.0f, 280.0f, 45.0f), "A与B物体IsTrigger都未选中"))
+        {
+            inists();
+            which_change = 2;
+            A.GetComponent<Collider>().isTrigger = false;
+            B.GetComponent<Collider>().isTrigger = false;
+            if (!A.GetComponent<Rigidbody>())
+            {
+                A.AddComponent<Rigidbody>();
+                A.rigidbody.useGravity = false;
+            }
+        	A.rigidbody.velocity = Vector3.forward;
+        }
+        
+        //当A物体有Rigidbody组件时
+        //且A与B物体IsTrigger至少有一个被选中时，只会激活A和B脚本中的OnTriggerXXX方法
+        if (GUI.Button(new Rect(10.0f, 160.0f, 280.0f, 45.0f), "A物体IsTrigger被选中"))
+        {
+            inists();
+            which_change = 3;
+            A.GetComponent<Collider>().isTrigger = true;
+            if (!A.GetComponent<Rigidbody>())
+            {
+                A.AddComponent<Rigidbody>();
+                A.rigidbody.useGravity = false;
+             }
+            A.rigidbody.velocity = Vector3.forward;
+        }
+        if (GUI.Button(new Rect(10.0f, 210.0f, 280.0f, 45.0f), "重置"))
+        {
+            inists();
+            which_change = 4;
+        }
+	}
+    
+//初始化数据
+    void inists()
+    {
+        if (A.GetComponent<Rigidbody>())
+        {
+            A.rigidbody.velocity = Vector3.zero;
+            A.rigidbody.angularVelocity = Vector3.zero;
+        }
+        if (B.GetComponent<Rigidbody>())
+        {
+            B.rigidbody.velocity = Vector3.zero;
+            B.rigidbody.angularVelocity = Vector3.zero;
+        }
+        A.transform.position = p_a;
+        A.transform.rotation = Quaternion.identity;
+        B.transform.position = p_b;
+        B.transform.rotation = Quaternion.identity;
+    }
+}
+```
+
+在Start方法中将A、B物体的初始位置赋给p_a和p_b，用于重置物体时使用，最后在OnGUI方法中定义了５
+个不同功能的Button。
+
+A物体的脚本（B物体的脚本与此类似，不再赘述。）
+
+```C#
+public class ATorC_ts : MonoBehaviour
+{
+    //开始接触
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("A物体的OnTriggerEnter被调用，被接触的物体为" + other.name);
+    }
+    //结束接触
+    void OnTriggerExit(Collider other)
+    {
+        Debug.Log("A物体的OnTriggerExit被调用，被接触的物体为" + other.name);
+    }
+    //保持接触
+    void OnTriggerStay(Collider other)
+    {
+        Debug.Log("A物体的OnTriggerStay被调用，被接触的物体为" + other.name);
+    }
+    //开始碰撞
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("A物体的OnCollisionEnter被调用，被碰撞的物体为" +
+        collision.gameObject.name);
+    }
+    //退出碰撞
+    void OnCollisionExit(Collision collision)
+    {
+        Debug.Log("A物体的OnCollisionExit被调用，被碰撞的物体为" +
+        collision.gameObject.name);
+    }
+    //保持碰撞
+    void OnCollisionStay(Collision collision)
+    {
+        Debug.Log("A物体的OnCollisionStay被调用，被碰撞的物体为" +
+        collision.gameObject.name);
+    }
+}
+```
+
+在这段代码中，只是在OnTriggerXXX类方法和OnCollisionXXX类方法中打印出A物体被接触或被碰撞后的相应信息。
 
 
 
