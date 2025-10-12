@@ -4976,17 +4976,455 @@ public class ATorC_ts : MonoBehaviour
 
 在这段代码中，只是在OnTriggerXXX类方法和OnCollisionXXX类方法中打印出A物体被接触或被碰撞后的相应信息。
 
-
-
-
-
-
-
-
-
 ## 11.Time类
 
+Time类是Unity中获取时间信息的接口类，只有静态属性。本章简要介绍了Time类的一些静态属性。
+
+### 11.1 Time类静态属性
+
+在Time类中，涉及的静态属性有realtimeSinceStartup、smoothDeltaTime和time属性，在介绍time
+属性时涉及了Time类的多个其他属性的使用。
+
+#### 11.1.1 realtimeSinceStartup：程序运行实时时间
+
+```
+基本语法 public static float realtimeSinceStartup { get; }
+```
+
+功能说明：返回从游戏启动到现在已运行的实时时间（只读），以秒为单位。通常可用Time.time代替使用，但realtimeSinceStartup的返回值不受timeScale属性变化的影响。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class RealtimeSinceStartup_ts : MonoBehaviour
+{
+    public Rigidbody rg;
+    void Start()
+    {
+        Debug.Log("Time.timeScale的默认时间：" + Time.timeScale);
+        //观察刚体在timeScale变化前后的移动速度
+        rg.velocity = Vector3.forward * 2.0f;
+        Time.timeScale = 0.5f;
+    }
+    void Update()
+    {
+        Debug.Log("Time.timeScale的当前值：" + Time.timeScale);
+        Debug.Log("Time.time:" + Time.time);
+        Debug.Log("Time.realtimeSinceStartup:" + Time.realtimeSinceStartup);
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "Time.timeScale=0.5f"))
+        {
+            Time.timeScale = 0.5f;
+        }
+        if (GUI.Button(new Rect(10.0f, 60.0f, 200.0f, 45.0f), "Time.timeScale=1.0f"))
+        {
+            Time.timeScale = 1.0f;
+        }
+    }
+}
+```
+
+​	在Start方法中给刚体rg一个初始速度，在OnGUI中定义了两个Button用来控制Time.timeScale的值，最后在Update方法中分别打印出了Time.timeScale、Time.time和Time.realtimeSinceStartup的值。
+
+#### 11.1.2 smoothDeltaTime：平滑时间间隔
+
+```
+基本语法 public static float smoothDeltaTime { get; }
+```
+
+功能说明：返回Time.deltaTime的平滑输出值（只读）。Time.smoothDeltaTime比Time.deltaTime的波幅震荡更平滑，通常Time.smoothDeltaTime的累加和比Time.deltaTime的累加和稍微大些。Time.smoothDeltaTime主要用于在非FixedUpdate方法中需要平滑过渡的计算。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothDeltaTime_ts : MonoBehaviour
+{
+    float a = 0, b = 0;
+    void Update()
+    {
+        float t1, t2;
+        t1 = Time.deltaTime;
+        t2 = Time.smoothDeltaTime;
+        Debug.Log("Time.deltaTime:" + t1);
+        Debug.Log("smoothDeltaTime:" + t2);
+        a += t1;
+        b += t2;
+        Debug.Log("Time.deltaTime的累加和:" + a + " smoothDeltaTime的累加和:" + b);
+    }
+}
+```
+
+在这段代码中，首先声明了两个变量a和b，然后在Update方法中将Time.deltaTime和Time.smoothDeltaTime的值赋给t1和t2，并将t1、t2的值累加到变量a、b中，最后分别打印出t1、t2、a、b这4个变量的值。
+
+#### 11.1.3 time：程序运行时间
+
+```
+基本语法 public static float time { get; }
+```
+
+功能说明：返回从游戏启动到现在的运行时间（只读），以秒为单位。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Time_ts : MonoBehaviour
+{
+    float t1 = 0.0f;
+    void Update()
+    {
+        // deltaTime属性用于返回从上一帧到现在所经历的时间（只读），以秒为单位
+        //由于Update()函数中的代码是以帧来执行的，其执行的时间间隔是不固定的
+        //当需要以秒为单位对某个物体进行变换时就需要和Time.deltaTime结合使用
+        t1 = Time.deltaTime;
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10.0f, 10.0f, 200.0f, 45.0f), "加载新场景"))
+        {
+            Application.LoadLevel("newScene01_unity");
+        }
+        GUI.Label(new Rect(10.0f, 60.0f, 300.0f, 45.0f), "当前游戏场景名字:" + Application.loadedLevelName);
+        GUI.Label(new Rect(10.0f, 110.0f, 300.0f, 45.0f), "当前游戏已运行时间Time.time:" +
+Time.time);
+        //属性timeSinceLevelLoad用于返回从最后关卡加载完成到现在所经历的时间（只读），以秒为单位
+        GUI.Label(new Rect(10.0f, 160.0f, 400.0f, 45.0f), "当前场景已运行时间Time.timeSinceLevelLoad：" + Time.timeSinceLevelLoad);
+        GUI.Label(new Rect(10.0f, 210.0f, 300.0f, 45.0f), "上一帧消耗的时间Time.deltaTime:"
+        + t1);
+        //属性fixedTime用于返回从游戏启动到现在以固定频率更新的时间（只读）
+        GUI.Label(new Rect(10.0f, 260.0f, 300.0f, 45.0f), "固定增量时间Time.fixedTime:"
++ Time.fixedTime);
+        //属性fixedDeltaTime用于返回以固定频率更新时，相邻两帧的时间间隔（只读）
+        //fixedDeltaTime的值可以通过导航菜单栏“Edit”→“ProjectSettings”→“Time”菜单项中的 “FixedTimestep”进行设置
+        GUI.Label(new Rect(10.0f, 310.0f, 400.0f, 45.0f), "上一帧消耗的固定增量时间Time.fixedDeltaTime:" + Time.fixedDeltaTime);
+        //属性frameCount用于返回从游戏启动到现在已经更新的频率总数（只读）
+        GUI.Label(new Rect(10.0f, 360.0f, 300.0f, 45.0f), "游戏已运行帧数Time.frameCount:" + Time.frameCount);
+    }
+}
+```
+
+在Update方法中将Time.deltaTime的返回值赋给t1，在OnGUI中使用GUI.Label方法在游戏界面中显示出了很多有关Time类的属性值，例如time属性、timeSinceLevelLoad属性、Time.frameCount属性等。
+
+### 11.2 Time类其他常用静态属性功能简介
+
+本小节简要介绍一些Time类的其他常用静态属性的功能，列举如下。
+
+- captureFramerate属性：用于设置或返回帧速率的值。当captureFramerate的值比0大时，时间会以每帧（1.0 / captureFramerate）秒前进，不考虑真实时间，例如Time.captureFramerate = 25，则游戏的帧速率为25帧/秒。
+- deltaTime属性：用于返回从上一帧到现在所经历的时间（只读），以秒为单位。
+- fixedDeltaTime属性：用于返回以固定频率更新时，相邻两帧的时间间隔（只读）。
+- fixedTime属性：用于返回从游戏启动到现在以固定频率更新的时间（只读）。
+- frameCount属性：用于返回从游戏启动到现在已经更新的频率总数（只读）。
+- maximumDeltaTime属性：用于设置或返回每帧更新可以消耗的最大时间，以秒为单位。可以通过导航菜单栏“Edit”→“ProjectSettings”→“Time”菜单项中的“MaximumAllowedTimestep”进行设置。当帧更新消耗的时间大于maximumDeltaTime时，物理和其他固定帧速率的更新将被降低，游戏运行会进入一种“迟缓”状态。
+- timeScale属性：用于控制游戏时间的流逝速度，默认值为1。通常可用使用此属性来控制
+    游戏的运行状态，例如暂停、快进等。
+- timeSinceLevelLoad属性：用于返回从最后关卡加载完成到现在所经历的时间（只读），以秒为单位。
+
 ## 12.Transform类
+
+​	Transform继承自Component，并实现了IEnumberable接口。Transform是GameObject必须拥有
+的一个组件，用来管理所在GameObject对象的坐标位置、旋转角度和大小缩放。由于Transform
+实现了IEnumberable接口，于是可以在程序中使用foreach()方法快速遍历子物体的Transform结
+构。
+
+```C#
+using UnityEngine;
+using System.Collections;
+//将所有子物体放大2*2*2=8倍，不包括自身。
+public class Foreach_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+    	foreach (Transform child in transform)
+        	child.localScale *= 2.0f;
+    }
+}
+```
+
+​	本章主要介绍了Transform类的一些实例属性和实例方法，最后对localScale和lossyScale功能以及一些与坐标系转换相关的API进行解释。
+
+### 12.1 Transform类实例属性
+
+​	在Transform类中，涉及的实例属性有eulerAngles、forward、hasChanged、localPosition、localToWorldMatrix、parent和worldToLocalMatrix属性，下面详细介绍这些属性。
+
+#### 12.1.1 eulerAngles：欧拉角
+
+```
+基本语法 public Vector3 eulerAngles { get; set; }
+```
+
+功能说明：返回或设置GameObject对象的欧拉角，说明如下。
+
+- Unity中使用四元数Quaternion来存储物体的旋转角度，无论是在Inspector面板中对Rotation设置，还是在脚本中对transform.eulerAngles赋值，在编译运行时都会把它们转换成Quaternion类型再计算。
+
+- 对transform.eulerAngles只能整体赋值，如transform.eulerAngles=new Vector(1.0f,2.0f,3.0f)，不可以对transform.eulerAngles的单独分量（如transform.eulerAngles.x）进行赋值。
+
+- transform.eulerAngles.x 返回值的范围为[0,90] 和[270,360);
+
+    transform.eulerAngles.y和transform.eulerAngles.z返回值的范围为[0 ,360)。
+
+- 对transform.eulerAngles进行赋值或获取都是相对世界坐标系而言的，若要相对transform的父物体进行角度的变换则需要使用属性localEulerAngles来设置。
+
+- 旋转顺序Z→X→Y：假设在代码中是：transform.eulerAngles=new Vector3(10.0f,20.0f,30.0f)，则GameObject对象会先沿着z轴旋转30度，再沿着x轴旋转10度，最后再沿着y轴旋转20度。注意不同的旋转执行顺序，物体的最终状态是不同的。
+
+#### 12.1.2 forward：z轴单位向量
+
+```
+基本语法 public Vector3 forward { get; set; }
+```
+
+功能说明：返回或设置transform自身坐标系中z轴方向的单位向量对应的世界坐标系中的单位向量。transform.forward即为transform.TransformDirection(new Vector3(0.0f, 0.0f, 1.0f))的简化方式。
+
+代码：下面演示Transform的right、up和forward属性的使用。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Forward_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        //先给transform一个任意的欧拉角，使得transform的局部坐标系和世界坐标系方向不一致
+        transform.eulerAngles = new Vector3(15.0f,30.0f,60.0f);
+        Debug.Log("right:"+transform.right);
+        //right:(0.5,0.8,-0.1)
+        Debug.Log("Dir:" + transform.TransformDirection(new Vector3(1.0f, 0.0f, 0.0f)));
+        //Dir:(0.5,0.8,-0.1)
+        Debug.Log("up:" + transform.up);
+        //up:(-0.7,0.5,0.5)
+        Debug.Log("Dir:" + transform.TransformDirection(new Vector3(0.0f, 1.0f, 0.0f)));
+       //Dir:(-0.7,0.5,0.5)
+        Debug.Log("forward:" + transform.forward);
+        //forward:(0.5,-0.3,0.8)
+        Debug.Log("Dir:" + transform.TransformDirection(new Vector3(0.0f, 0.0f, 1.0f)));
+        //Dir:(0.5,-0.3,0.8)
+    }
+}
+```
+
+给transform一个任意的欧拉角，使得transform的局部坐标系和世界坐标系方向不一致，然后分别打印出transform的right、up和forward值，并调用TransformDirection方法实现相同的功能.
+
+#### 12.1.3 hasChanged：transform组件是否被修改
+
+```
+基本语法 public bool hasChanged { get; set; }
+```
+
+功能说明：判断从上次设为false以来，其transform组件是否被修改过，例如当transform的position、rotation或scale属性被修改时transform.hasChanged将返回true。
+
+---
+
+提示：即使transform某个属性修改后的值与修改前的值相同，hasChanged的返回值仍然为true。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class HasChanged_ts : MonoBehaviour
+{
+    bool is_rotate = false;//物体旋转控制
+    // Update is called once per frame
+    void Update()
+    {
+        //当transform.hasChanged为true时打印相关信息
+        if (transform.hasChanged)
+        {
+            Debug.Log("The transform has changed!");
+            transform.hasChanged = false;
+        }
+        if (is_rotate)
+        {
+            transform.Rotate(Vector3.up * 15.0f * Time.deltaTime);
+        }
+    }
+    void OnGUI()
+    {
+        //使物体开始旋转，物体rotation被修改，hasChanged返回值为true
+        if (GUI.Button(new Rect(10.0f, 10.0f, 80.0f, 45.0f), "Rotate start"))
+        {
+            is_rotate = true;
+        }
+        //停止旋转，hasChanged返回值为false
+        if (GUI.Button(new Rect(10.0f, 65.0f, 80.0f, 45.0f), "Rotate stop"))
+        {
+            is_rotate = false;
+        }
+        //将transform的当前位置赋给transform.position，即transform的位置没有改变
+        //但是transform的position属性已经被修改，故transform.hasChanged返回值为true
+        if (GUI.Button(new Rect(10.0f, 125.0f, 80.0f, 45.0f), "use position"))
+        {
+            is_rotate = false;
+            transform.position = transform.position;
+        }
+    }	
+}
+```
+
+​		在OnGUI方法中定义了３个Button，分别用于改变物体的rotation和position。其中在修改transform.position时，position的值并没有改变，但是transform.hasChanged属性依然认为transform的position属性被重新赋值，从而返回true。
+
+#### 12.1.4 localPosition：局部坐标系位置
+
+```
+基本语法 public Vector3 localPosition { get; set; }
+```
+
+功能说明：设置或返回对象在局部坐标系中的位置，若无父级对象则和属性Transform.position 返回值相同。transform.localPosition的值受父级对象lossyScale的影响，当transform.localPosition的值增加1时，transform.position值的增量不一定是1，而是在相对父级坐标系中增加了父级的lossyScale倍大小的值。
+
+代码：下面通过实例演示属性localPosition的使用，在本实例演示中首先在场景中创建了３个立方体对象，它们的层级关系
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class LocalPosition_ts : MonoBehaviour 
+{
+	public Transform cube0, cube1;
+	void Start () 
+    {
+        Debug.Log("cube0 local position:" + cube0.localPosition);
+        Debug.Log("cube0 local scale:" + cube0.localScale);
+        Debug.Log("cube1 local position:"+cube1.localPosition);
+        Debug.Log("cube1 local scale:" + cube1.localScale);
+        Debug.Log("cube2 local position:" + transform.localPosition);
+        Debug.Log("cube2 world position:" + transform.position);
+	}
+}
+```
+
+在Start 方法中分别打印出了物体Cube0 和Cube1 的localposition和local scale值，以及物体Cube2的local position和world position值。
+
+#### 12.1.5 localToWorldMatrix：转换矩阵
+
+```
+基本语法 public Matrix4x4 localToWorldMatrix { get; }
+```
+
+功能说明：返回从transform局部坐标系向世界坐标系转换的Matrix4x4矩阵。
+
+---
+
+提示：一般情况下可以用方法TransformPoint (position : Vector3)来实现Vector3实例从transform局部坐标系向世界坐标系的转换。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class LocalToWorldMatrix_ts : MonoBehaviour 
+{
+    void Start()
+    {
+        //local_vector3为transform局部坐标系中的一个向量
+        Vector3 local_vector3 = new Vector3(1.0f, 2.0f, 3.0f);
+        Vector3 v1 = transform.localToWorldMatrix.MultiplyPoint3x4(local_vector3);
+        Debug.Log("transform position:" + transform.position);
+        Debug.Log("transform lossyScale:" + transform.lossyScale);
+        Debug.Log("local_vector3:" + local_vector3);
+        Debug.Log("local_vector3在世界坐标系中的向量为：" + v1);
+    }
+}
+```
+
+在Start中声明了一个Vector3变量local_vector3，用于表示transform局部坐标系中的一个向量，然后调用transform的localToWorldMatrix属性，并调用方法MultiplyPoint3x4求local_vector3在世界坐标系中的向量。
+
+#### 12.1.6 parent：父物体Transform
+
+```
+基本语法 public Transform parent { get; set; }
+```
+
+功能说明：返回父物体的Transform实例。transform.parent只能返回父一级对象的Transform。若父物体不存在，则返回null。若想返回transform的最顶层的父物体，可以使用transform.root属性。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Parent_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        Debug.Log("一级父物体名字:" + transform.parent);
+        Debug.Log("二级父物体名字:" + transform.parent.parent);
+        Debug.Log("三级父物体名字:" + transform.parent.parent.parent);
+        Debug.Log("最顶层父物体名字:" + transform.root);
+    }
+}
+```
+
+#### 12.1.7 worldToLocalMatrix：转换矩阵
+
+```
+基本语法 public Matrix4x4 worldToLocalMatrix { get; }
+```
+
+功能说明：返回物体从世界坐标系向transform自身坐标系转换的Matrix4x4矩阵。
+
+---
+
+提示：一般情况下可以用方法InverseTransformPoint (position : Vector3)来实现Vector3实例从世界坐标系向transform自身坐标系转换。
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class WorldToLocalMatrix_ts : MonoBehaviour 
+{
+    public Transform t1;
+    void Start()
+    {
+        //返回t1 相对transform的向量
+        Vector3 v1 = transform.worldToLocalMatrix.MultiplyPoint3x4(t1.position);
+        Debug.Log("transform position:"+transform.position);
+        Debug.Log("transform lossyScale:" + transform.lossyScale);
+        Debug.Log("t1 position:"+t1.position);
+        Debug.Log("t1 相对transform的向量为："+v1);
+    }
+}
+```
+
+在Start方法中调用transform的worldToLocalMatrix属性求解转换矩阵，并调用方法MultiplyPoint3x4求t1的坐标相对transform的向量。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 13.Vector2类
 

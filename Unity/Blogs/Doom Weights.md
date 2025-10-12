@@ -1,7 +1,6 @@
 ---
 title: Doom Weights
 date: 2024-08-21 18:44:34
-sticky: 13
 pic: /images/thumb/Doom Weights.png
 comments: true
 toc: true

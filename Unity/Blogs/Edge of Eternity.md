@@ -1,7 +1,6 @@
 ---
 title: Edge of Eternity
 date: 2024-07-17 9:44:34
-sticky: 12
 pic: /images/thumb/Edge of Eternity.png
 comments: true
 toc: true

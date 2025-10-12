@@ -1,11 +1,12 @@
 ---
 title: UnityHub Validation Failed下载编辑器错误，添加模块报错的解决方案
 date: 2025-08-10 07:46:35
+sticky: 13
 pic: /images/thumb/ValidationFailed.png
 comments: true
 toc: true
 categories:
-- Programming
+- Engine
 tags:
 - Unity
 ---

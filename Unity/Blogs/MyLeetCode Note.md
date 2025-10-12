@@ -6,7 +6,7 @@ pic: /images/thumb/MyLeetCode Note.webp
 comments: true
 toc: true
 categories:
-- Golang
+- Programming
 tags:
 - Golang
 ---
