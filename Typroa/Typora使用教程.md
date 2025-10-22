@@ -103,7 +103,24 @@ $$
 ```
 ---
 
+#### 11.Mermaid代码块
 
+```
+类型：甘特图
+```
+
+```Mermaid
+gantt
+    title Chapter1 开发甘特图
+    dateFormat YYYY-MM-DD
+    section 单流程内容
+        时间线与对话          :done, t1, 2025-10-15, 1d
+        摄像头机位与倒计时    :done, after t1, 1d
+        开始游戏（控制权+AI） :done, after t1, 1d
+    section 优化部分
+        特殊建筑搭建          :done, o1, 2025-10-18, 1d
+        道路布置              :todo, after o1, 1d
+```
 
 
 
