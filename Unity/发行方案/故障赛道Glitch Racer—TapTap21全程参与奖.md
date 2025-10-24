@@ -67,91 +67,61 @@ Chapter1
     - [ ] 二圈结束
         - [ ] 转换场景
     - [ ] 优化部分
+        - [ ] 重建赛道
         - [ ] 场景搭建
             - [x] 特殊建筑
             - [ ] 道路布置
         - [ ] 音效引入
-        - [ ] 优化手感
+        - [x] 优化手感
 
 Chapter2
 
 - [ ] 单流程
-    - [ ] 赛道
-    - [ ] 遮挡
-    - [ ] AI
-- [ ] 时间线
-    - [ ] 对话
-    - [ ] 摄像头机位
-    - [ ] 倒计时
+    - [x] 赛道
+    - [x] 遮挡
+        - [x] AI
+    - [x] 时间线
+        - [x] 对话
+        - [x] 摄像头机位
+        - [x] 倒计时
+    - [x] 开始游戏
+        - [x] 给予控制权
+        - [x] AI开始行使
+    - [x] 途径点
+        - [ ] 过圈效果
+            - [x] 穿梭效果
+            - [x] 对话
+            - [x] 改变场景
+            - [ ] 放回原位
+            - [ ] 改变天色
+    - [ ] 二圈结束
+        - [ ] 转换场景
+    - [ ] 优化部分
+        - [ ] 场景搭建
+            - [ ] 特殊建筑
+            - [ ] 道路布置
 
-#### 4.甘特图
-
-```mermaid
-gantt
-    title Chapter 1 开发进度甘特图
-    dateFormat YYYY-MM-DD
-
-    section 单流程内容
-        时间线与对话          :done, t1, 2025-10-15, 1d
-        摄像头机位与倒计时    :done, after t1, 1d
-        开始游戏（控制权+AI） :done, after t1, 1d
-        途径点与过圈效果      :active, after t1, 2d
-        引入故障              :todo, after t1, 1d
-        光线变化              :done, after t1, 0.5d
-        二圈结束（场景转换）  :todo, after t1, 1d
-
-    section 优化部分
-        特殊建筑搭建          :done, o1, 2025-10-18, 1d
-        道路布置              :todo, after o1, 1d
-        音效引入              :todo, after o1, 1d
-        手感优化              :todo, after o1, 1d
-
-```
-
-
-$$
-gantt
-    title Chapter 1 开发进度甘特图
-    dateFormat  YYYY-MM-DD
-    axisFormat  %m/%d
-    section 单流程内容
-    时间线与对话          :done,    t1, 2025-10-15, 1d
-    摄像头机位与倒计时    :done,    t2, after t1, 1d
-    开始游戏（控制权+AI） :done,    t3, after t2, 1d
-    途径点与过圈效果      :active,  t4, after t3, 2d
-    引入故障              :todo,    t5, after t4, 1d
-    光线变化              :done,    t6, after t4, 0.5d
-    二圈结束（场景转换）  :todo,    t7, after t5, 1d
-
-    section 优化部分
-    特殊建筑搭建          :done,    o1, 2025-10-18, 1d
-    道路布置              :todo,    o2, after o1, 1d
-    音效引入              :todo,    o3, after o2, 1d
-    手感优化              :todo,    o4, after o3, 1d
-$$
 
 
 #### 3.难点
 
-- [ ] 赛车系统
+- [x] 赛车系统
     - [x] 操控
         - [x] 基本控制
-        - [ ] 操控优化
-    - [ ] 途经点
+        - [x] 操控优化
+    - [x] 途经点
     - [x] 小地图
     - [ ] 场景搭建
-    - [ ] 圈数
+    - [x] 圈数
     - [x] 音效
 - [ ] 人物锤击系统
     - [ ] 基本功能
     - [ ] 锤击手感优化
-- [ ] 剧情系统
-    - [ ] 对话
+- [x] 剧情系统
+    - [x] 对话
     - [x] 剧情文本
 - [ ] 菜单系统
     - [ ] 设置菜单
-
-
 
 
 
@@ -228,3 +198,29 @@ BUG这个词也是有出处，1947年霍珀去维修电脑，发现导致电脑�
 对我来说，游戏开发就像在做梦。
 有些地方不完美，有些地方甚至会出BUG，但正是这些“错误”，让它变得更有生命力。
 ```
+
+#### 7.甘特图
+
+```mermaid
+gantt
+    title Chapter 1 开发进度甘特图
+    dateFormat YYYY-MM-DD
+
+    section 单流程内容
+        时间线与对话          :done, t1, 2025-10-15, 1d
+        摄像头机位与倒计时    :done, after t1, 1d
+        开始游戏（控制权+AI） :done, after t1, 1d
+        途径点与过圈效果      :active, after t1, 2d
+        引入故障              :todo, after t1, 1d
+        光线变化              :done, after t1, 0.5d
+        二圈结束（场景转换）  :todo, after t1, 1d
+
+    section 优化部分
+        特殊建筑搭建          :done, o1, 2025-10-18, 1d
+        道路布置              :todo, after o1, 1d
+        音效引入              :todo, after o1, 1d
+        手感优化              :todo, after o1, 1d
+
+```
+
+#### 
