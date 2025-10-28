@@ -103,26 +103,46 @@ $$
 ```
 ---
 
-#### 11.Mermaid代码块
+#### 11.Mermaid流程图
 
 ```
-类型：甘特图
+写法
+graph LR
+A[方形] -->B(圆角)
+B --> C{条件a}
+C -->|a=1| D[结果1]
+C -->|a=2| E[结果2]
+F[横向流程图]
+>>>>>>> e922ff1 (2510242)
+
+使用mermaid语言
 ```
 
-```Mermaid
+```mermaid
+graph LR
+A[方形] -->B(圆角)
+B --> C{条件a}
+C -->|a=1| D[结果1]
+C -->|a=2| E[结果2]
+F[横向流程图]
+```
+
+```mermaid
 gantt
-    title Chapter1 开发甘特图
-    dateFormat YYYY-MM-DD
-    section 单流程内容
-        时间线与对话          :done, t1, 2025-10-15, 1d
-        摄像头机位与倒计时    :done, after t1, 1d
-        开始游戏（控制权+AI） :done, after t1, 1d
-    section 优化部分
-        特殊建筑搭建          :done, o1, 2025-10-18, 1d
-        道路布置              :todo, after o1, 1d
+dateFormat  YYYY-MM-DD
+title Adding GANTT diagram to mermaid
+excludes weekdays 2014-01-10
+
+section A section
+Completed task            :done,    des1, 2014-01-06,2014-01-08
+Active task               :active,  des2, 2014-01-09, 3d
+Future task               :         des3, after des2, 5d
+Future task2               :         des4, after des3, 5d
 ```
 
+详细参见:https://mermaid.js.org/intro/
 
+详细参见:https://blog.csdn.net/2301_76682353/article/details/149486575
 
 
 #### 20.表格
