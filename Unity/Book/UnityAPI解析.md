@@ -5396,31 +5396,131 @@ public class WorldToLocalMatrix_ts : MonoBehaviour
 
 在Start方法中调用transform的worldToLocalMatrix属性求解转换矩阵，并调用方法MultiplyPoint3x4求t1的坐标相对transform的向量。
 
+### 12.2 Transform类实例方法
 
+在Transform类中，涉及的实例方法有`DetachChildren`、`GetChild`、`InverseTransformDirection` 、`InverseTransformPoint`、`IsChildOf`、`LookAt`、`Rotate `、`RotateAround `、`TransformDirection`、`TransformPoint`和`Translate`。
 
+#### 12.2.1 DetachChildren：分离物体层级关系
 
+```
+基本语法 public void DetachChildren();
+```
 
+功能说明：剥离子物体，将当前物体的根物体设置为无。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class DetachChildren_ts : MonoBehaviour
+{
+    void Start () 
+    {
+    	transform.DetachChildren();
+    }
+}
+```
 
+#### 12.2.2 GetChild：获取GameObject对象子类
 
+```
+基本语法  public Transform GetChild(int index);
+	    其中参数index为子物体索引值。
+```
 
+功能说明：返回transform的索引值为index的子类Transform实例。参数index的值要小于transform的childCount值。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class GetChild_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //transform的子物体数量
+        int ct = transform.childCount;
+        Debug.Log("子物体数量：" + ct);
+        for (int i = 0; i < ct; i++)
+        {
+            Debug.Log("索引为" + i + "的子物体名字：" + transform.GetChild(i).name);
+        }
+    }
+}
+```
 
+#### 12.2.3 InverseTransformDirection：坐标系转换
 
+```
+基本语法  (1)  public Vector3 InverseTransformDirection(Vector3 direction);
+			  其中参数direction为待转换的向量。
+		 (2) public Vector3 InverseTransformDirection(float x, float y, float z);
+```
 
+功能说明：将direction从世界坐标系转换到GameObject对象的局部坐标系。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class InverseTransformDirection_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //转换前向量
+        Vector3 world_v = new Vector3(10.0f, 20.0f, 30.0f);
+        //transform绕y轴旋转90度，使transform坐标系与世界坐标系方向不一致
+        transform.eulerAngles = new Vector3(0.0f, 90.0f, 0.0f);
+        Vector3 local_v = transform.InverseTransformDirection(world_v);
+        //打印transform的position，方法InverseTransformDirection与transform的position无关
+        Debug.Log("transform position:" + transform.position);
+        //打印transform的lossyScale，方法InverseTransformDirection与transform的lossyScale无关
+        Debug.Log("transform lossyScale:" + transform.lossyScale);
+        Debug.Log("world_v:" + world_v);
+        Debug.Log("local_v:" + local_v);
+    }
+}
+```
 
+在Start方法中，修改transform的欧拉角，使得transform自身坐标系与世界坐标系的x轴及z轴的方向不一致，接着调用方法InverseTransformDirection，将向量world_v从世界坐标系变换到transform的局部坐标系中。
 
+#### 12.2.4 InverseTransformPoint：点的相对坐标向量
 
+```
+基本语法 (1) public Vector3 InverseTransformPoint(Vector3 position);
+		(2) public Vector3 InverseTransformPoint(float x, float y, float z);
+```
 
+功能说明：返回参数position向量相对于GameObject对象局部坐标系的差向量，即返回向量position和向量transform.position的差值。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class InverseTransformPoint_ts : MonoBehaviour 
+{
+    Vector3 A = new Vector3(50.0f, 30.0f, 10.0f);
+    Vector3 B = Vector3.zero;
+    void Start()
+    {
+        B = transform.InverseTransformPoint(A);
+        Debug.Log("transform.position:" + transform.position);
+        Debug.Log("transform.lossyScale:" + transform.lossyScale);
+        Debug.Log("A:" + A);
+        Debug.Log("B:" + B);
+    }
+}
+```
 
+在Start中调用InverseTransformPoint求向量A相对于transform自身坐标系的差向量，并将返回值赋给B，最后打印出相关信息，如图12-13所示。由输出结果可知有以下运算关系：
 
-
+```
+B=(A-transform.position)/transform.lossyScale,
+```
 
 
 
