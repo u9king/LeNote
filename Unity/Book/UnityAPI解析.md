@@ -5426,7 +5426,7 @@ public class DetachChildren_ts : MonoBehaviour
 
 ```
 基本语法  public Transform GetChild(int index);
-	    其中参数index为子物体索引值。
+	    index为子物体索引值。
 ```
 
 功能说明：返回transform的索引值为index的子类Transform实例。参数index的值要小于transform的childCount值。
@@ -5455,7 +5455,7 @@ public class GetChild_ts : MonoBehaviour
 
 ```
 基本语法  (1)  public Vector3 InverseTransformDirection(Vector3 direction);
-			  其中参数direction为待转换的向量。
+			  direction为待转换的向量。
 		 (2) public Vector3 InverseTransformDirection(float x, float y, float z);
 ```
 
@@ -5516,19 +5516,1162 @@ public class InverseTransformPoint_ts : MonoBehaviour
 }
 ```
 
-在Start中调用InverseTransformPoint求向量A相对于transform自身坐标系的差向量，并将返回值赋给B，最后打印出相关信息，如图12-13所示。由输出结果可知有以下运算关系：
+在Start中调用InverseTransformPoint求向量A相对于transform自身坐标系的差向量，并将返回值赋给B。运算关系`B=(A-transform.position)/transform.lossyScal`
+
+#### 12.2.5 IsChildOf：是否为子物体
 
 ```
-B=(A-transform.position)/transform.lossyScale,
+基本语法 public bool IsChildOf(Transform parent);
+		其中参数parent为父物体的Transform实例。
 ```
 
+功能说明：判断transform对应的GameObject对象是否为参数parent的子物体。
 
+以下3种情况下都返回true值
 
+- A和B指向同一对象；
+- A是B的一级子物体；
+- A是B的多级子物体。
 
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class IsChildOf_ts : MonoBehaviour
+{
+    public Transform t1, t2, t3;
+    void Start()
+    {
+        Debug.Log("t1是否为其自身的子类：" + t1.IsChildOf(t1));
+        Debug.Log("t2是否为t1的子类：" + t2.IsChildOf(t1));
+        Debug.Log("t3是否为t1的子类：" + t3.IsChildOf(t1));
+    }
+}
+```
+
+#### 12.2.6 LookAt：物体朝向
+
+```
+基本语法 (1) public void LookAt(Transform target);
+		(2) public void LookAt(Vector3 worldPosition);
+		(3) public void LookAt(Transform target, Vector3 worldUp);
+		(4) public void LookAt(Vector3 worldPosition, Vector3 worldUp);
+		target：transform自身坐标系中z轴指向的目标
+		worldUp：transform自身坐标系中y轴最大限度指向的方向
+```
+
+功能说明：使得GameObject对象自身坐标系中的z轴指向target，y轴方向最大限度地指向worldUp方向。worldUp指的是世界坐标系中的方向。通常被用在Camera上，使得Camera的forward看向目标target。worldUp默认情况下等于Vector3.up，即类似于一个人笔直地站在地面看向前方。若自定义worldUp的方向，则GameObject对象的forward方向一直指向target，然后transform绕着自身坐标系的z轴即forward方向旋转到一个使得自身的y轴方向最接近worldUp的地方。
+
+代码：使一个点光源始终看向一个物体，在物体发生移动时点光源的方向会跟着调整。
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class LookAt_ts : MonoBehaviour
+{
+    public Transform tr_look;
+    void Update()
+    {
+        transform.LookAt(tr_look);
+        tr_look.RotateAround(Vector3.zero, Vector3.up, 60.0f * Time.deltaTime);
+    }
+}
+```
+
+声明一个Transform类型变量tr_look，用于指向场景中的物体，然后在Update方法中，让SpotLight一直LookAt物体tr_look，并让物体tr_look绕原点旋转。
+
+#### 12.2.7 Rotate：绕坐标轴旋转
+
+```
+基本语法 (1) public void Rotate(Vector3 eulerAngles);
+        (2) public void Rotate(Vector3 eulerAngles, Space relativeTo);
+        (3) public void Rotate(float xAngle, float yAngle, float zAngle);
+        (4) public void Rotate(float xAngle, float yAngle, float zAngle, Space relativeTo);
+		eulerAngles为transform要旋转的欧拉角
+		relativeTo为transform旋转时参考的坐标系，默认为Space.Self。
+```
+
+功能说明：使得transform实例在相对参数relativeTo的坐标系中旋转欧拉角eulerAngles。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Rotate1_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        //设置transform的欧拉角，使得transform自身坐标系和世界坐标系y轴方向不一致
+        transform.eulerAngles = new Vector3(30.0f, 0.0f, 0.0f);
+        transform.Rotate(new Vector3(0.0f,45.0f,0.0f),Space.Self);
+        Debug.Log("Space.Self:" + transform.eulerAngles);
+        //Space.Self:(20.7,49.1,22.2)
+        //设置transform的欧拉角，使得transform自身坐标系和世界坐标系y轴方向不一致
+        transform.eulerAngles = new Vector3(30.0f, 0.0f, 0.0f);
+        transform.Rotate(new Vector3(0.0f, 45.0f, 0.0f), Space.World);
+        Debug.Log("Space.World:" + transform.eulerAngles);
+        //Space.World:(30.0,45.0,0.0)
+        //设置transform的欧拉角，使得transform自身坐标系和世界坐标系y轴方向不一致
+        transform.eulerAngles = new Vector3(30.0f, 0.0f, 0.0f);
+        transform.Rotate(new Vector3(0.0f, 45.0f, 0.0f));
+        Debug.Log("默认坐标系："+transform.eulerAngles);
+        //默认坐标系:(20.7,49.1,22.2)
+    }
+}
+```
+
+Start方法中，首先使transform沿x轴旋转30度，使得transform自身坐标系和世界坐标系y轴方向不一致，然后调用Rotate方法使transform分别沿着自身坐标系、世界坐标系和默认坐标系的y轴旋转角45度，并打印出旋转后的transform欧拉角。
+
+#### 12.2.8 Rotate：绕某个向量旋转
+
+```
+基本语法 (1) public void Rotate(Vector3 axis, float angle);
+	    (2) public void Rotate(Vector3 axis, float angle, Space relativeTo);
+		axis为旋转轴方向	angle为旋转角度  relativeTo为参考坐标系，默认为Space.self
+```
+
+功能说明：使得GameObject对象在relativeTo坐标系中绕轴向量axis旋转angle度。若想使GameObject对象实例绕着某个物体旋转，请用Transform.RotateAround(point : Vector3, axis : Vector3, angle : float)方法。
+
+代码：
+
+```C#
+using System.Collections;
+public class Rotate2_ts : MonoBehaviour 
+{
+    void Start()
+    {
+        //设置transform的欧拉角，使得transform自身坐标系和世界坐标系y轴方向不一致
+        transform.eulerAngles = new Vector3(30.0f, 0.0f, 0.0f);
+        transform.Rotate(Vector3.up,45.0f, Space.Self);
+        Debug.Log("绕自身坐标系的y轴方向旋转45度:" + transform.eulerAngles);
+        //绕自身坐标系的y轴方向旋转45度:(20.7,49.1,22.2)
+        //设置transform的欧拉角，使得transform自身坐标系和世界坐标系y轴方向不一致
+        transform.eulerAngles = new Vector3(30.0f, 0.0f, 0.0f);
+        transform.Rotate(Vector3.up, 45.0f, Space.World);
+        Debug.Log("绕世界坐标系的y轴方向旋转45度:" + transform.eulerAngles);
+        //绕世界坐标系的y轴方向旋转45度:(30.0,45.0,0.0)
+        //设置transform的欧拉角，使得transform自身坐标系和世界坐标系y轴方向不一致
+        transform.eulerAngles = new Vector3(30.0f, 0.0f, 0.0f);
+        transform.Rotate(Vector3.up,45.0f);
+        Debug.Log("绕默认坐标系的y轴方向旋转45度：" + transform.eulerAngles);
+        //绕默认坐标系的y轴方向旋转45度:(20.7,49.1,22.2)
+    }
+}
+```
+
+Start方法中，首先使transform沿x轴旋转30度，使得transform自身坐标系和世界坐标系y轴方向不一致，然后调用Rotate方法使transform分别沿着自身坐标系、世界坐标系和默认坐标系的y轴旋转角45度，并打印出旋转后的transform欧拉角。
+
+#### 12.2.9 RotateAround：绕轴点旋转基
+
+```
+基本语法 (1) public void RotateAround(Vector3 axis, float angle);
+		(2) public void RotateAround(Vector3 point, Vector3 axis, float angle);
+		point为参考点坐标 axis为旋转轴方向  angle为旋转角度
+```
+
+功能说明：使得GameObject对象绕着point点的axis方向旋转angle度。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class RotateAround_ts : MonoBehaviour 
+{
+    public Transform point_r;
+    void Update () 
+    {
+    	transform.RotateAround(point_r.position ,Vector3.up,30.0f*Time.deltaTime);
+    }
+}
+```
+
+在Update方法中调用transform的RotateAround方法，使得transform对应GameObject对象绕着point_r所在位置的Vector3.up方向以每帧30.0f*Time.deltaTime的角度做圆周运动。
+
+#### 12.2.10 TransformDirection：坐标系转换
+
+```
+基本语法 (1) public Vector3 TransformDirection(Vector3 direction);
+		direction为待转换的Vector3实例向量
+		(2) public Vector3 TransformDirection(float x, float y, float z);
+```
+
+功能说明：将向量direction从transform局部坐标系转换到世界坐标系。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class TransformDirection_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector3 local_v = new Vector3(1.0f, 2.0f, 3.0f);
+        transform.eulerAngles = new Vector3(0.0f, 90.0f, 0.0f);
+        //将local_v从局部坐标系转到世界坐标系中
+        Vector3 world_v = transform.TransformDirection(local_v);
+        //transform的position值不影响变换结果
+        Debug.Log("transform position:" + transform.position);
+        //transform position:(30.0,10.0,20.0)
+        //transform的lossyScale值不影响变换结果
+        Debug.Log("transform lossyScale:" + transform.lossyScale);
+        Debug.Log("local_v:" + local_v);
+        Debug.Log("world_v:" + world_v);
+        //transform lossyScale:(2.0,2.0,4.0)
+        //local_v:(1.0,2.0,3.0)
+        //world_v:(3.0,2.0,-1.0)
+    }
+}
+```
+
+Start方法中，首先声明了一个Vector3变量local_v，然后修改transform的欧拉角，使得transform自身坐标系与世界坐标系的x轴及z轴方向不一致，接着调用方法TransformDirection将local_v从transform局部坐标系变换到世界坐标系。
+
+#### 12.2.11 TransformPoint：点的世界坐标位置
+
+```
+基本语法 (1) public Vector3 TransformPoint(Vector3 position);
+		position为transform局部坐标系的向量
+		(2) public Vector3 TransformPoint(float x, float y, float z);
+```
+
+功能说明：返回GameObject对象局部坐标系中向量position在世界坐标系中的位置。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class TransformPoint_ts : MonoBehaviour 
+{
+    Vector3 A = new Vector3(1.0f,2.0f,3.0f);
+    Vector3 B = Vector3.zero;
+    void Start () 
+    {
+        B = transform.TransformPoint(A);
+        Debug.Log("transform.position:" + transform.position);
+        Debug.Log("transform.lossyScale:" + transform.lossyScale);
+        Debug.Log("A:"+ A);
+        Debug.Log("B:"+ B);
+        //transform.position:(30.0,2.0,6.0)
+        //transform.lossyScale:(2.0,4.0,6.0)
+        //A:(1.0,2.0,3.0)
+        //B:(32.0,10.0,24.0)
+    }
+}
+```
+
+在Start方法中调用方法TransformPoint将向量A转换到transform的自身坐标系中，并将返回值赋给B。
+
+```
+B=transform.position+transform.lossyScale*A,
+```
+
+#### 12.2.12 Translate：相对坐标系移动
+
+```
+基本语法 (1) public void Translate(Vector3 translation);
+        (2) public void Translate(Vector3 translation, Space relativeTo);
+        (3) public void Translate(float x, float y, float z);
+        (4) public void Translate(float x, float y, float z, Space relativeTo);
+        translation为移动向量，包括方向和大小
+        relativeTo为参考坐标系空间，默认为Space.Self
+```
+
+功能说明：使得GameObject对象在参数relativeTo的坐标系空间中移动参数translation指定的向量。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Translate1_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        //沿y轴旋转30度，使得transform自身坐标系和世界坐标系x轴方向不一致
+        transform.eulerAngles = new Vector3(0.0f, 30.0f, 0.0f);
+        //坐标位置归零
+        transform.position = Vector3.zero;
+        transform.Translate(new Vector3(10.0f, 0.0f, 0.0f), Space.Self);
+        Debug.Log("沿自身坐标系x轴移动10个距离：" + transform.position);
+        //沿自身坐标系x轴移动10个距离:(8.7,0.0,-5.0)
+        //坐标位置归零
+        transform.position = Vector3.zero;
+        transform.Translate(new Vector3(10.0f, 0.0f, 0.0f), Space.World);
+        Debug.Log("沿世界坐标系x轴移动10个距离：" + transform.position);
+        //沿世界坐标系x轴移动10个距离：(10.0,0.0,0.0)
+        //坐标位置归零
+        transform.position = Vector3.zero;
+        transform.Translate(new Vector3(10.0f, 0.0f, 0.0f));
+        Debug.Log("沿默认坐标系x轴移动10个距离：" + transform.position);
+        //沿默认坐标系x轴移动10个距离：(8.7,0.0,-5.0)
+    }
+}
+```
+
+Start方法中，首先使transform沿y轴旋转30度，使得transform自身坐标系和世界坐标系x轴方向不一致，然后调用Translate方法，使transform分别沿着自身坐标系、世界坐标系和默认坐标系移动向量Vector(10.0f, 0.0f, 0.0f)。
+
+#### 12.2.13 Translate：相对其他物体移动
+
+```
+基本语法 (1) public void Translate(Vector3 translation, Transform relativeTo);
+	    (2) public void Translate(float x, float y, float z, Transform relativeTo);
+		translation为移动向量，包括方向和大小
+		relativeTo为移动参考物体，默认为Space.World
+```
+
+功能说明：使得GameObject对象在相对relativeTo的坐标系中移动向量translation。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Translate2_ts : MonoBehaviour 
+{
+    public Transform relativeTo;
+    void Start () 
+    {
+        //将relativeTo沿y轴旋转30度，使得relativeTo自身坐标系和世界坐标系x轴方向不一致
+        relativeTo.eulerAngles = new Vector3(0.0f, 30.0f, 0.0f);
+        //transform坐标位置归零
+        transform.position = Vector3.zero;
+        transform.Translate(new Vector3(10.0f, 0.0f, 0.0f), relativeTo);
+        Debug.Log("沿relativeTo坐标系x轴移动10个距离：" + transform.position);
+        //沿relativeTo坐标系x轴移动10个距离：(8.7,0.0,-5.0)
+        //坐标位置归零
+        transform.position = Vector3.zero;
+        transform.Translate(new Vector3(10.0f, 0.0f, 0.0f));
+        Debug.Log("沿默认坐标系x轴移动10个距离：" + transform.position);
+        //沿默认坐标系x轴移动10个距离：(10.0,0.0,0.0)
+    }
+}
+```
+
+在Start方法中修改relativeTo的欧拉角，使其与世界坐标系方向不一致，最后调用transform的Translate方法，分别在相对relativeTo坐标系和默认坐标系中移动向量Vector3(10.0f,0.0f, 0.0f)。
+
+### 12.3 关于localScale和lossyScale的功能注解
+
+对属性localScale和lossyScale的不当使用往往会使得GameObject对象产生错误的变形，对它们的变换及使用说明如下。
+
+- 当GameObject对象A为GameObject对象B的父物体时，父物体A的各个分量放缩值x、y、z的大小应该保持1∶1∶1的比例，否则当子物体B的Rotation值比例不为1∶1∶1时，B物体将会发生变形。图12-22为将父物体A的localScale值设为Vector3(4.0f,1.0f,1.0f)，子物体B的欧拉角为Vector（0.0f,0.0f,0.0f）时的状态。图12-23为将B的欧拉角变为Vector3（0.0f,40.0f,0.0f）后的状态，此时B的形状已经发生了严重的变形。
+- 设GameObject对象A为B的父物体，当A物体各个分量的放缩值保持1∶1∶1的比例时，子
+    物体B的lossyScale返回值即为B物体相对世界坐标系的放缩值，关系为`B.localScale= B.lossyScale/A.localScale`
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class LocalScaleOrLossyScale_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("父物体A放缩值：" + transform.parent.localScale);
+        Debug.Log("子物体B的全局有损放缩值：" + transform.lossyScale);
+        Debug.Log("子物体B的局部放缩值：" + transform.localScale);
+        //检验本注解部分的算法描述是否正确
+        if(transform.localScale.x == (transform.lossyScale.x / transform.parent.localScale.x) 
+           &&
+           transform.localScale.y == (transform.lossyScale.y / transform.parent.localScale.y) 
+           &&
+           transform.localScale.z == (transform.lossyScale.z / transform.parent.localScale.z))
+        {
+            Debug.Log("True");
+        }
+        else
+        {
+            Debug.Log("False");
+        }
+        //父物体A放缩值：(2.0,2.0,2.0)
+        //子物体B的全局有损放缩值：(2.0,4.0,8.0)
+        //子物体B的局部放缩值：(1.0,2.0,4.0)
+        //True
+    }
+}
+```
+
+Start方法中，首先分别打印出父物体A的放缩值、物体B的全局有损放缩值和物体B的局部放缩值，然后使用transform的各个分量值检验注解部分的算法描述是否正确。
+
+### 12.4 关于Transform 类中涉及空间变换的几个属性和方法的功能注解
+
+在Transform类中，涉及空间变换的属性和方法主要有`worldToLocalMatrix`、`localToWorldMatrix`、
+`TransformPoint`、`InverseTransformPoint`、`TransformDirection`和`InverseTransformDirection`，下
+面对它们之间的联系及各自的不同之处进行说明。
+
+本注解约定：由于这几个属性和方法都涉及世界坐标系和局部坐标系的变换，在绘制坐标系时约定世界坐标系的x、y、z轴分别标注为wx、wy、wz，局部坐标系的x、y、z轴分别标注为lx、ly、lz，当世界坐标系和局部坐标系的某个轴向相同时以括号标注，比如它们的y轴方向同向时便标注为wy(ly)。
+
+功能注解：
+
+- `worldToLocalMatrix`和`localToWorldMatrix`属于Transform类的只读属性。
+- 利用`worldToLocalMatrix`和`localToWorldMatrix`的返回值可以实现与方法`TransformPoint`和`InverseTransformPoint`类似的功能。`worldToLocalMatrix`、`localToWorldMatrix`、`TransformPoint`和`InverseTransformPoint`在空间转换方式上相似，都会受到局部坐标系即transform自身坐标系的位置（Position）和放缩值（Scale）的影响。而方法`TransformDirection`和`InverseTransformDirection`在空间转换方式上相似，它们不会受到局部坐标系即transform自身坐标系的位置和放缩值的影响。
+- 这几个属性或方法在空间转换时都会受到局部坐标系即transform自身坐标系中Rotation的影响，但它们各自受影响的方式不同。下面以GameObject对象仅绕Y轴旋转为例解释。
+
+TransformDirection的转换关系执行代码如下：`W=transform. TransformDirection(L);`
+
+图12-25中L(a,b,c)是GameObject对象局部坐标系中的坐标，d是GameObject对象绕y轴旋转的角度，h是向量oL在xoz平面的投影向量om和lx轴的夹角。图12-26中W(e,f,g)是L点执行转换后在世界坐标系中的位置，则有如下关系：
+
+模长`|oL|=|oW|;`
+分量值`e=acos(d+h)/cos(h);`
+分量值`f=b;`
+分量值`g=csin(d+h)/sin(h);`
+
+`InverseTransformDirection`的转换关系如图12-27和图12-28所示，执行代码如下：`L=transform. InverseTransformDirection(W);`
+
+图12-27中W(a,b,c)是在世界坐标系中的某个坐标，d是GameObject对象绕Y轴旋转的角度，h是向量oW在xoz平面的投影om和lx轴的夹角。图12-28中L(e,f,g)是W点执行转换后在GameObject对象局部坐标系中的位置，则有如下关系：
+
+模长`|oW|=|oL|;`
+分量值`e=acos(h)/cos(d+h);`
+分量值`f=b;`
+分量值`g=csin(h)/sin(d+h);`
+
+`TransformPoint`的转换关系如图12-29和图12-30所示，执行如下代码：`W=transform. TransformPoint(L);`
+
+图12-29中L(a,b,c)是GameObject对象局部坐标系中的坐标，p是GameObject对象的坐标位置Position，d是GameObject对象绕Y轴旋转的角度，h是向量oL在xoz平面的投影向量om和lx轴的夹角。图12-30中W(e,f,g)是L点执行转换后在世界坐标系中的位置，则有如下关系：
+
+```
+分量值e=p.x+a*transform.lossyscale*cos(d);
+分量值f=p.y+b*transform.lossyscaley;
+分量值g=p.z+c*transform.lossyscale*cos(d);
+```
+
+InverseTransformPoint的转换关系如图12-31和图12-32所示，执行如下代码：L=transform. InverseTransformPoint(W);
+
+图12-31中W(a,b,c)是世界坐标系中的坐标。图12-32中L(e,f,g)是W点执行转换后在GameObject对象局部坐标系中的位置，p是GameObject对象的世界坐标位置Position，d是GameObject对象绕Y轴旋转的角度，h是向量oL在xoz平面的投影向量om和lx轴的夹角。则有如下关系：
+
+```
+e=((a-p.x)/transform.lossyScale.x)*cos(d);
+f=(b-p.y)/transform.lossyScale.y;
+g=((c-p.z)/transform.lossyScale.z)*cos(d);
+```
+
+由于worldToLocalMatrix 和InverseTransformPoint 转换方式类似， localToWorldMatrix和TransformPoint转换方式类似，在此对localToWorldMatrix和worldToLocalMatrix的转换方式就不再赘述。
 
 ## 13.Vector2类
 
+Vector2类是Unity中用来存储二维向量或二维点坐标的结构体类型。本章主要介绍了Vector2类的一些实例方法、静态方法和运算符。
+
+### 13.1 Vector2类实例方法
+
+在Vector2类中，涉及的实例方法只有Normalize。由于Vector2的实例属性normalized与此方法功能相近，于是将它们放到一起介绍。
+
+#### 13.1.1 Normalize：单位化Vector2实例
+
+```
+基本语法 public void Normalize();
+```
+
+功能说明：单位化向量，将Vector2实例进行单位化处理。此方法改变了原始向量，无返回值。实例属normalized与此方法功能相同，但使用属性normalized来单位化向量时，不改变原始向量值，且有返回值。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Normalize_ts : MonoBehaviour 
+{
+    void Start()
+    {
+        Vector2 v1 = new Vector2(1.0f, 2.0f);
+        //使用属性来单位化，不改变原始向量值，有返回值
+        Vector2 v2 = v1.normalized;
+        Debug.Log("使用属性v2.normalized后v1的值：" + v1);
+        Debug.Log("使用属性v2.normalized后的返回值v2：" + v2);
+        //使用属性v2.normalized后v1的值：(1.0,2.0)
+        //使用属性v2.normalized后的返回值v2：(0.4,0.9)
+        //重置向量v1
+        v1.Set(1.0f, 2.0f);
+        //使用实例方法改变原始值，无返回值
+        v1.Normalize();
+        Debug.Log("使用实例方法v1.Normalize后v1的值：" + v1);
+        //使用实例方法v1.Normalize后v1的值：(0.4,0.9)
+    }
+}
+```
+
+Start方法中，使用实例属性normalized和实例方法Normalize对v1进行单位化。
+
+### 13.2 Vector2类静态方法
+
+在Vector2类中，涉及的静态方法有`Angle`、`ClampMagnitude`、`Lerp`、`MoveTowards`和`Scale`，由于静态方法Scale和Vector2实例方法中的Scale功能相近，于是将它们放到一起介绍。下面将详细介绍这些方法。
+
+#### 13.2.1 Angle：两个向量夹角
+
+```
+基本语法 public static float Angle(Vector2 from, Vector2 to);
+		from为起始向量  to为结束向量
+```
+
+功能说明：返回两个Vector2实例的夹角，单位为角度，返回值的取值范围为[0,180]，并且当from和to中至少有一个向量为Vector2.zero的时候返回值为90。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Angle_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("1:" + Vector2.Angle(new Vector2(1.0f, 0.0f), new Vector2(-1.0f, 0.0f)));
+        Debug.Log("2:" + Vector2.Angle(new Vector2(1.0f, 0.0f), new Vector2(-1.0f, -1.0f)));
+        Debug.Log("3:" + Vector2.Angle(new Vector2(0.0f, 0.0f), new Vector2(-1.0f, 0.0f)));
+        //1:180  2:135 3:90
+    }
+}
+```
+
+#### 13.2.2 ClampMagnitude：向量长度
+
+```
+基本语法 public static Vector2 ClampMagnitude(Vector2 vector, float maxLength);
+```
+
+功能说明：返回向量的长度，且最大不超过maxLength。
+
+说明如下：
+
+- 设有代码
+
+```
+Vector2 A = new Vector2(ax, ay);
+float b = maxL;
+Vector2 C = Vector2.ClampMagnitude(A, b);
+其中ax、ay和maxL为已知数值
+```
+
+则：
+$$
+C_x = a_x K,\\
+C_y = a_y K,\\
+K = 
+\left(
+\frac{b}{\sqrt{a_x^2 + a_y^2}} > 1 
+\; ? \; 1 \; : \; 
+\frac{b}{\sqrt{a_x^2 + a_y^2}}
+\right)\\
+当A为Vector2.zero时，返回值为二位零向量
+$$
+
+- 功能类似一个钟摆的摆动，|ax|代表沿着x轴的最大摆幅，|ay|代表沿着y轴的最大摆幅，而b值则代表着摆动的幅度。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ClampMagnitude_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector2 A = new Vector2(10.0f, 20.0f);
+        //K值大于1时返回A的初始值
+        float b = A.magnitude * 3.0f;
+        Vector2 C = Vector2.ClampMagnitude(A, b);
+        Debug.Log("K值大于1时返回A的初始值:" + C.ToString());//K值小于-1时返回A的初始值
+        //K值大于1时返回A的初始值:（10.0,20.0）
+        b = -A.magnitude * 3.0f;
+        C = Vector2.ClampMagnitude(A, b);
+        Debug.Log("K值小于-1时返回A的初始值:" + C.ToString());
+        //K值小于-1时返回A的初始值:（10.0,20.0）
+        //K值介于-1和1之间时按算法求值
+        b = A.magnitude * 0.7f;
+        C = Vector2.ClampMagnitude(A, b);
+        Debug.Log("K值介于-1和1之间时时按算法求值:" + C.ToString());
+        //K值介于-1和1之间时时按算法求值:（7.0,14.0）
+        //当A为零向量时返回值永远为零向量
+        A.Set(0.0f,0.0f);
+        b = A.magnitude * 0.7f;
+        C = Vector2.ClampMagnitude(A, b);
+        Debug.Log("当A为零向量时返回值永远为零向量:" + C.ToString());
+        //当A为零向量时返回值永远为零向量:（0.0,0.0）
+    }
+}
+```
+
+#### 13.2.3 Lerp：向量插值
+
+```
+基本语法 public static Vector2 Lerp(Vector2 from, Vector2 to, float t);
+		from为插值的起始向量，参数to为插值的结束向量，参数t为插值系数。
+```
+
+功能说明：求从参数from到参数to的插值向量。例如，设有代码：
+
+```C#
+Vector2 v1=Vector2.Lerp(new Vector2(a,b),new Vector2(c,d),e);
+```
+
+
+则代码执行后v1的分量值分别为
+$$
+v1.x = a*(1-e) + c*e\\
+v1.y = b*(1-e) + d*e\\
+其中e的有效范围为[0,1]，即e = e<0 ? 0 : e>1? 1 : e;
+$$
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Lerp_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector2 v1 = new Vector2(4.0f, 12.0f);
+        Vector2 v2 = new Vector2(9.0f, 20.0f);
+        Debug.Log("e<0时返回值为v1的值:" + Vector2.Lerp(v1, v2, -2.0f));
+        //e<0时返回值为v1的值:(4.0,12.0)
+        
+        Debug.Log("e>1时返回值为v2的值:" + Vector2.Lerp(v1, v2, 2.0f));
+        //e>1时返回值为v2的值:(9.0,20.0)
+        
+        Debug.Log("e>0且e<1时按插值算法求返回值:" + Vector2.Lerp(v1, v2, 0.7f));
+        //e>0且e<1时按插值算法求返回值:(7.5,17.6)
+    }
+}
+```
+
+Start方法中，首先声明了两个Vector2变量v1和v2，然后调用方法Lerp分别打印出当参数e<0、e>1和0<e<1时方法的返回值。
+
+#### 13.2.4 MoveTowards：向量插值
+
+```
+基本语法 public static Vector2 MoveTowards(Vector2 current, Vector2 target, float maxDista
+nceDelta);
+		current为移动起始点坐标  target为移动目标点
+		maxDistanceDelta为移动的参考系数。
+```
+
+功能说明：返回两个向量的插值，且最大插值不超过maxDistanceDelta，对其使用解释如下。
+
+- 设有以下代码：
+
+    ```
+    Vector2 A = new Vector2(ax, ay);
+    Vector2 B = new Vector2(bx, by);
+    float sp=maxDis;// maxDis为已知值
+    Vector2 C = Vector2.MoveTowards(A, B, sp);
+    ```
+
+    其中ax、bx、ay、by和sp为已知值。则向量C的计算方法为
+    $$
+    C = A + K*D = (ax + K * (bx - ax),ay + K*(by-ay));\\
+    其中，d=(dx,dy)=B-A，
+    K = 
+    \frac{sp}{\sqrt{d_x^2 + d_y^2}} > 1 
+    \; ? \; 1 \; : \; 
+    \frac{sp}{\sqrt{d_x^2 + d_y^2}}
+    $$
+
+- MoveTowards和Lerp方法的功能类似，但有一定的区别。同样是从一个向量A插值到向量B，MoveTowards要比Lerp的插值次数多，视觉效果上也更平滑，但是MoveTowards的计算更消耗时间。在我笔记本上的测试结果为：以万次计算MoveTowards的计算时间是Lerp的3倍多。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class MoveTowards_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector2 A = new Vector2(10.0f, 20.0f);
+        Vector2 B = new Vector2(30.0f, 40.0f);
+
+        float sp = (B - A).magnitude;
+        Vector2 C = Vector2.MoveTowards(A, B, sp);
+        Debug.Log("当K=1时返回B的值:" + C.ToString());
+        //当K=1时返回B的值：(30.0,40.0)
+
+        sp += 10.0f;
+        C = Vector2.MoveTowards(A, B, sp);
+        Debug.Log("当K>1时返回B的值:" + C.ToString());
+        //当K>1时返回B的值:(30.0,40.0)
+
+        sp = 0.0f;
+        C = Vector2.MoveTowards(A, B, sp);
+        Debug.Log("当K=0时返回A的值:" + C.ToString());
+        //当K=0时返回A的值:(10.0,20.0)
+
+        sp = -10.0f;
+        C = Vector2.MoveTowards(A, B, sp);
+        Debug.Log("当K<0时按算法计算:" + C.ToString());
+        //当K<0时按算法计算:(2.9,12.9)
+
+        sp = (B - A).magnitude * 0.7f;
+        C = Vector2.MoveTowards(A, B, sp);
+        Debug.Log("当K>0且K<1时按算法计算:" + C.ToString());
+        //当K>0且K<1时按算法计算:(24.0,34.0)
+    }
+}
+```
+
+分别演示了当K取不同范围值时方法MoveTowards的返回值。
+
+#### 13.2.5 Scale：向量放缩
+
+```
+基本语法 public static Vector2 Scale(Vector2 a, Vector2 b);
+	    a、b为两个二维向量，不分前后次序。
+```
+
+功能说明：返回向量a按向量b进行放缩后的值，例如，设Vector2 v2=Vector2.Scale(new Vector2(x1,y1),new Vector2(x2,y2))，则v2.x=x1*x2，v2.y=y1*y2，即求向量a和向量b的乘积。
+
+---
+
+提示：注意此方法和实例方法中Scale用法的区别，例如，设有代码：
+
+```
+Vector2 v2=new Vector2(x1,y1);
+v2.scale(new Vector(x2,y2));
+则v2现在的分量值分别为： v2.x == x1*x2; v2.y == y1*y2;
+```
+
+---
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Scale_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector2 v2 = new Vector2(1.0f, 2.0f);
+        //实例方法会改变原始向量v2的值，无返回值
+        v2.Scale(new Vector2(2.0f, 3.0f));
+        Debug.Log("使用实例方法v2.Scale后v2值：" + v2);
+        //使用实例方法v2.Scale后v2值：(2.0,6.0)
+        
+        //使用Set方法重设v2
+        v2.Set(1.0f, 2.0f);
+        //静态方法不会改变原始向量的值，其返回值为放缩后的向量
+        Vector2 v3 = Vector2.Scale(v2, new Vector2(4.0f, 6.0f));
+        Debug.Log("使用静态方法Vector2.Scale后v2值：" + v2);
+        Debug.Log("使用静态方法Vector2.Scale后v3值：" + v3);
+        //使用静态方法Vector2.Scale后v2值：(1.0,2.0)
+        //使用静态方法Vector2.Scale后v3值：(4.0,12.0)    
+    }
+}
+```
+
+使用Vector2的实例方法Scale和静态方法Scale对v2进行放缩。
+
+### 13.3 Vector2类运算符
+
+在Vector2类中，涉及的运算符有相等（“==”）运算符，下面简要介绍这个运算符。
+
+```
+operator == (lhs : Vector2, rhs : Vector2)
+```
+
+功能说明：判断两个向量lhs和rhs是否相等。不仅当lhs和rhs的分量值都相同时返回true，而且当lhs和rhs的各个分量值虽然不同但足够接近时也会返回true。经本机测试，当lhs和rhs的各个分量的小数点后六位相同或后五位相同第六位也足够接近的情况下返回true。例如：
+
+```
+当lhs=(1.123453,3.123453)，rhs=(1.123459,3.123459)时，lhs==rhs会返回true；
+当lhs=(1.123451,3.123451)，rhs=(1.123459,3.123459)时，lhs==rhs会返回false。
+```
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class EqualOrNot_ts : MonoBehaviour
+{
+    void Start()
+    {
+        //A、B小数点后五位相等，第六位足够接近时返回true
+        Vector2 A = new Vector2(1.123453f, 3.123453f);
+        Vector2 B = new Vector2(1.123459f, 3.123459f);
+        Debug.Log("First:" + (A == B));
+        //First:True
+        //A、B小数点后五位相等，但第六位不够接近时也可能返回false
+        A = new Vector2(1.123451f, 3.123451f);
+        Debug.Log("Second:" + (A == B));
+        //Second:False
+        //A、B小数点后六位相等时一定返回true
+        A = new Vector2(1.1234560f, 3.1234560f);
+        B = new Vector2(1.1234569f, 3.1234569f);
+        Debug.Log("Third:" + (A == B));
+        //Third:True
+    }
+}
+```
+
+在这段代码的Start方法中，分别演示了当向量A、B的各个分量值在不同接近程度的情况下，运算符“==”的返回值。
+
 ## 14.Vector3类
+
+Vector3类属于结构体类型，用来表示Unity中的三维向量或三维坐标点。本章主要介绍了Vector3类的一些实例属性、实例方法、静态方法和运算符，并在本章最后对两组功能相近的API进行了注解。
+
+### 14.1 Vector3类实例属性
+
+在Vector3类中，涉及的实例属性有normalized和sqrMagnitude。由于Vector3的实例方法Normalized()和实例属性normalized的功能相近，所以将它们放到一起介绍。
+
+#### 14.1.1 normalized：单位化向量
+
+```
+基本语法 public Vector3 normalized { get; }
+```
+
+功能说明：获取Vector3实例的单位向量，即返回向量的方向与原向量方向相同，而模长变为1。注意此属性和实例方法Normalized()的区别。设A、C均为Vector3实例，则
+
+- `C = A.normalized`是将向量A的单位向量赋给向量C，而向量A自身未变。
+- `A. Normalize()`会将向量A进行单位化处理，使得原向量A变成了单位向量。
+- `C = Vector3.Normalize(A)`的结果与`C = A.normalized`相同，因此编程中常用代码`C = A.normalized`。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Normalized_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector3 v1 = new Vector3(1.0f, 2.0f, 3.0f);
+        Vector3 v2 = v1.normalized;
+        //使用v2 = v1.normalized后v1的值不会改变，而v2的值为v1的单位向量
+        Debug.Log("v2 = v1.normalized后v1的值：" + v1);		//(1.0,2.0,3.0)
+        Debug.Log("v2 = v1.normalized后v2的值：" + v2);	    //(0.3,0.5,0.8)
+        //"v2 = Vector3.Normalize(v1)"与"v2 = v1.normalized"实现功能相同，但不常用
+        v2 = Vector3.Normalize(v1);
+        Debug.Log("v2 = Vector3.Normalize(v1)后v1的值：" + v1);   //(1.0,2.0,3.0)
+        Debug.Log("v2 = Vector3.Normalize(v1)后v2的值：" + v2);   //(0.3,0.5,0.8)
+        //v1.Normalize()等于将v1自身进行了单位化处理，v1变成了新的向量
+        v1.Normalize();
+        Debug.Log("v1.Normalize()后v1的值：" + v1);  //(0.3,0.5,0.8)
+    }
+}
+```
+
+使用实例属性normalized、静态方法Normalize和实例方法Normalize对v1进行单位化。
+
+#### 14.1.2 sqrMagnitude：模长平方
+
+```
+基本语法 public float sqrMagnitude { get; }
+```
+
+功能说明：返回Vector3实例模长的平方值，即x2+y2+z2的值。由于计算开方值比较消耗计算机资源，在非必需的情况下可以考虑用属性sqrMagnitude代替属性magnitude，例如比较两个向量长度的大小等。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SqrMagnitude_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        Vector3 v1 = new Vector3(3.0f,4.0f,5.0f);
+        Vector3 v2 = new Vector3(1.0f, 2.0f, 8.0f);
+        //属性magnitude用于求Vector3实例的模长
+        Debug.Log("向量v1的长度："+v1.magnitude);		//7.071068
+        Debug.Log("向量v2的长度："+v2.magnitude);		//8.306623
+        float f1 = v1.sqrMagnitude;
+        float f2 = v2.sqrMagnitude;
+        Debug.Log("v1模长的平方值：" + f1 + " v2模长的平方值：" + f2);
+        //v1模长的平方值:50 v2模长的平方值:69
+        if(f1 == f2)
+        {
+        	Debug.Log("向量v1和v2的模长一样大！");
+        }
+        else if (f1 > f2)
+        {
+        	Debug.Log("向量v1的模长比较大！");
+        }
+        else
+        {
+        	Debug.Log("向量v2的模长比较大！");
+        }
+    }
+}
+```
+
+使用属性magnitude和sqrMagnitude求向量v1、v2的模长和模长的平方值。
+
+### 14.2 Vector3类实例方法
+
+在Vector3类中涉及的实例方法只有Scale方法，由于Vector3的静态方法Scale与实例方法scale的功能相近。
+
+#### 14.2.1 Scale：向量放缩
+
+```
+基本语法 public void Scale(Vector3 scale);
+	    scale为参考向量。
+```
+
+功能说明：对Vector3实例按参考向量scale进行放缩。注意此方法和静态方法Scale(a:Vector3, b:Vector3)的区别。设有三维向量v1=(x1,y1,z1)和v2=(x2,y2,z2)，则
+
+- 执行代码v1.Scale(v2)后v2不变，v1的值变为：v1.x=x1*x2，v1.y=y1*y2，v1.z=z1*z2。
+- 执行代码Vector3 v3= Vector3.Scale(v1, v2) 后v1 和v2不变，v3的值变为：v3.x=x1*x2，v3.y=y1*y2，v3.z=z1*z2。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Scale_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector3 v1 = new Vector3(1.0f, 2.0f, 3.0f);
+        Vector3 v2 = new Vector3(4.0f, 5.0f, 6.0f);
+        //使用v1.Scale(v2)将使向量v1按向量v2进行放缩，无返回值
+        v1.Scale(v2);
+        Debug.Log("使用v1.Scale(v2)后v1的值：" + v1.ToString());	//(4.0,10.0,18.0)
+        Debug.Log("使用v1.Scale(v2)后v2的值：" + v2.ToString());  //(4.0,5.0,6.0)
+        //重设v1
+        v1.Set(1.0f, 2.0f, 3.0f);
+        //使用v3 = Vector3.Scale(v1, v2)将会返回向量v1按向量v2进行放缩后的向量v3
+        //v1、v2不会改变
+        Vector3 v3 = Vector3.Scale(v1, v2);
+        Debug.Log("使用v3=Vector3.Scale(v1,v2)后v1的值：" + v1.ToString());  //(1.0,2.0,3.0)
+        Debug.Log("使用v3=Vector3.Scale(v1,v2)后v2的值：" + v2.ToString());  //(4.0,5.0,6.0)
+        Debug.Log("使用v3=Vector3.Scale(v1,v2)后v3的值：" + v3.ToString());  //(4.0,10.0,18.0)
+    }
+}
+```
+
+使用实例方法和类方法对Vector3实例进行放缩的使用方法。在使用实例方法进行放缩后，变量v1的值改变了。但是在使用类方法放缩后，变量v1和v2的值没有改变，而是将放缩后的值被赋给了新的变量v3。实例方法无返回值，但会改变初始值，类方法不改变初始值，但会占用一个新的变量。这两种方法各有优劣，在程序开发中到底采用哪种方式需要根据实际情况而定。
+
+### 14.3 Vector3类静态方法
+
+在Vector3类中，涉及的静态方法有`Angle`、`ClampMagnitude`、`Cross`、`Dot`、`Lerp`、`MoveTowards`、`OrthoNormalize`、`Project`、`RotateTowards`、`Scale`、`Slerp`和`SmoothDamp`。由于OrthoNormalize的两个重载方法的功能及使用区别较大，因此分两次进行介绍。
+
+#### 14.3.1 Angle：求两个向量夹角
+
+```
+基本语法 public static float Angle(Vector3 from, Vector3 to);
+```
+
+功能说明：返回向量from和to的夹角，单位为角度，返回值的范围为[0,180]，且当from和to中至少有一个为Vector.zero时，方法返回值为90。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Angle_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("1:" + Vector3.Angle(Vector3.right, -Vector3.right));		//1:180
+        Debug.Log("2:" + Vector3.Angle(Vector3.right, -(Vector3.right + Vector3.up)));  //2:135
+        Debug.Log("3:" + Vector3.Angle(Vector3.right, Vector3.zero));		//3:90
+    }
+}
+```
+
+在这段代码的Start方法中，依次打印出了3种不同情况下Vector静态方法Angle的返回值。
+
+#### 14.3.2 ClampMagnitude：向量长度
+
+```
+基本语法 public static Vector3 ClampMagnitude(Vector3 vector, float maxLength);
+```
+
+功能说明：返回向量vector的一个同方向向量，其模长受maxLength的限制，对其使用说明如下。
+
+- 返回向量的方向和vector方向相同。
+- 当maxLength大于vector的模长时，返回向量与vector相同。
+- 当maxLength小于vector的模长时，返回向量的模长等于maxLength，但方向与vector相同。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class ClampMagnitude_ts : MonoBehaviour 
+{
+    void Start () 
+    {
+        Vector3 ts = new Vector3(1.0f,2.0f,3.0f);
+        Debug.Log("ts的单位向量为："+ts.normalized+" ts模长为："+ts.magnitude);
+        //ts的单位向量为:(0.3,0.5,0.8) ts模长为:3.741657
+        //当f值大于ts模长时，ClampMagnitude返回向量的模长为ts模长
+        Debug.Log("当f值大于ts模长时：");  
+        float f = ts.magnitude + 1.0f;
+        Vector3 ov = Vector3.ClampMagnitude(ts,f);
+        Debug.Log("ov向量:" + ov.ToString()+"其单位向量为："+ov.normalized + " ov的模长为:" + ov.magnitude);
+        //ov向量:(1,0，2.0,3.0)其单位向量为:(0,3,0.5,0.8)ov的模长为:3.741657
+        //当f值小于ts模长时，ClampMagnitude返回向量的模长为f
+        Debug.Log("当f值小于ts模长时：");
+        f = ts.magnitude - 1.0f;
+        ov = Vector3.ClampMagnitude(ts,f);
+        Debug.Log("ov向量:" + ov.ToString() + "其单位向量为：" + ov.normalized + " ov的模长为:" + ov.magnitude);
+        //ov向量:(0,7,1.5,2.2)其单位向量为:(0,3,0.5,0.8)ov的模长为:2.741657
+    }
+}
+```
+
+当变量f值大于ts模长和小于ts模长时方法ClampMagnitude的返回值。
+
+#### 14.3.3 Cross：向量叉乘
+
+```
+基本语法 public static Vector3 Cross(Vector3 lhs, Vector3 rhs);
+```
+
+功能说明：求两个向量的叉乘。例如，设a、b和c均为Vector3实例，则执行程序代码c=Vector3.Cross(a,b);即为计算向量a和b的叉乘，即c=axb。设向量a与b的夹角为e，则有如下性质：
+
+- `c⊥a`，`c⊥b`；
+- 模长`|c|=|a|*|b|sin(e)`；
+- a、b和c满足右手法则，即四指指向b的方向，然后向a的方向旋转，大拇指指向的方向就是c的方向，所以向量a、b和c是有一定次序关系的，即`axb=-bxa`。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Cross_ts : MonoBehaviour 
+{
+    public Transform A, B;
+    Vector3 A_v, B_v;
+    Vector3 C_v = Vector3.zero;
+    void Update()
+    {
+        A_v = A.position;
+        B_v = B.position;
+        C_v = Vector3.Cross(A_v,B_v);
+        //绘制从原点到各个坐标点的直线，以便观察
+        Debug.DrawLine(Vector3.zero, A_v , Color.green);
+        Debug.DrawLine(Vector3.zero, B_v, Color.yellow);
+        Debug.DrawLine(Vector3.zero, C_v, Color.red);
+    }
+}
+```
+
+在Update方法中调用方法Cross将变量A_v和B_v的叉乘结果赋给变量C_v，最后分别绘制出从世界坐标系原点到向量A_v、B_v和C_v坐标点的直线。
+
+#### 14.3.4 Dot：向量点乘
+
+```
+基本语法 public static float Dot(Vector3 lhs, Vector3 rhs);
+```
+
+功能说明：返回参数lhs和rhs的点乘。例如，设a和b均为Vector3实例，c为float类型数值，a与b的夹角度数为e，则执行程序代码`c=Vector3.Dot(a,b);`即为计算向量a和b的点乘，即`c=a·b=|a|*|b|cos(e)`。当返回值c>0时e∈(0,90)，当返回值c<0时e∈(90,180)。在实际开发中，通常利用点乘来确定两个物体的相对位置关系，例如敌人相对主角的位置关系
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Dot_ts : MonoBehaviour 
+{
+    public Transform A, B;
+    Vector3 A_lv, AB_v;
+    string str = "";
+    void Update()
+    {
+        //将A的自身坐标系的forward向量转向世界坐标系中
+        A_lv = A.TransformDirection(Vector3.forward);
+        //A到B的差向量
+        AB_v = B.position-A.position;
+        float f = Vector3.Dot(A_lv, AB_v);
+        if(f>0)
+        {
+            str = "B在A自身坐标系的前方";
+        }
+        else if (f < 0)
+        {
+            str = "B在A自身坐标系的后方";
+        }
+        else 
+        {
+            str = "B在A自身坐标系的正左方或右方";
+        }
+        //旋转A物体使得A的自身forward方向不断改变
+        //虽然A、B的世界坐标都未改变，且在世界坐标系中A和B的位置关系没有改变
+        //但在A的自身坐标系中B的相对位置在不断改变
+        A.Rotate(new Vector3(0.0f,1.0f,0.0f));
+    }
+    //在界面上实时显示物体A、B的相对位置关系
+    void OnGUI()
+    {
+        GUI.Label(new Rect(10.0f,10.0f,200.0f,60.0f),str);
+    }
+}
+```
+
+在Update方法中调用Dot方法，将向量A_lv和AB_v的点乘结果赋给局部变量f，最后通过f值来判断场景中物体A和B的相对位置关系。。
+
+#### 14.3.5 Lerp：向量插值
+
+```
+基本语法 public static Vector3 Lerp(Vector3 from, Vector3 to, float t);
+		from为插值起始点坐标，参数to为插值结束点坐标，参数t为插值系数。
+```
+
+功能说明：返回一个从参数from到to的线性插值向量。例如，设有Vector3实例A、B、C和float类型数值t，则当程序执行如下代码后
+C=Vector3.Lerp(A,B,t);
+
+- 当t≤0时，向量C=A；
+- 当t≥1时，向量C=B；
+- 当0<t<1时，向量C=A+(B-A)*t。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Lerp_ts : MonoBehaviour
+{
+    public Transform start_T;//起始点位置物体
+    public Transform end_T;//结束点位置物体
+    Vector3 start_v, end_v;//起始和结束的两个Vector3
+    float speed = 0.2f;//控制移动速度
+    float last_time;//控制插值系数范围
+    void Start()
+    {
+        start_v = start_T.position;
+        end_v = end_T.position;
+        last_time = Time.time;
+    }
+    void Update()
+    {
+        //利用插值改变物体位置坐标达到运动目的
+        transform.position = Vector3.Lerp(start_v, end_v, (Time.time - last_time) * speed);
+        if (transform.position == end_v)
+        {
+            //对调起始和结束点坐标
+            transform.position = start_v;
+            start_v = end_v;
+            end_v = transform.position;
+            transform.position = start_v;
+            last_time = Time.time;
+        }
+    }
+}
+```
+
+在Update方法中调用方法Lerp，并将其返回值赋给transform的position，使得GameObject对象发生移动。
+
+#### 14.3.6 MoveTowards：向量插值
+
+```
+基本语法 public static Vector3 MoveTowards(Vector3 current, Vector3 target, float maxDistanceDelta);
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 15.游戏实例——坚守阵地
 
