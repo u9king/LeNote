@@ -6659,19 +6659,582 @@ public class Lerp_ts : MonoBehaviour
 基本语法 public static Vector3 MoveTowards(Vector3 current, Vector3 target, float maxDistanceDelta);
 ```
 
+功能说明：返回一个从参数current到参数target的插值向量。例如，设有Vector3实例`A=(ax,ay,az)`、`B=(bx,by,bz)`和`C=(cx,cy,cz)`，向量A和B的差值为`D(dx,dy,dz)`，即`D=B-A`。sp为float类型值，则执行程序
 
+```
+C=Vector3. MoveTowards(A,B,sp);
+```
 
+$$
+C=Vector3. MoveTowards(A,B,sp);后,\\
+向量C为：C = A +k*D,其中k = sp > {\sqrt{d_x^2 + d_y^2+ d_z^2}}?1:\frac{sp}{\sqrt{d_x^2 + d_y^2+ d_z^2}}
+$$
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class MoveTowards_ts : MonoBehaviour 
+{
+    public Transform from_T, to_T;Vector3 from_v, to_v;
+    Vector3 moves = Vector3.zero;
+    float speed = 0.5f;
+    void Start()
+    {
+        //初始化起始位置
+        from_v = from_T.position;
+        to_v = to_T.position;
+    }
+    void Update()
+    {
+        //在向量差值to_v-from_v的模长时间内slerps从from_v移动到to_v
+        moves = Vector3.MoveTowards(from_v, to_v, Time.time * speed);
+        //绘制从原点到slerps的红线，并保留100秒以便观察
+        //运行时只能在scene视图中查看
+        Debug.DrawLine(Vector3.zero, moves, Color.red, 100.0f);
+    }
+}
+```
 
+在Start方法中对其初始化，然后在方法Update中将方法Vector3.MoveTowards的返回值赋给moves，最后绘制一条从世界坐标系原点到moves的直线。
 
+#### 14.3.7 OrthoNormalize：两个坐标轴的正交化
 
+```
+基本语法 public static void OrthoNormalize(ref Vector3 normal, ref Vector3 tangent);
+```
 
+功能说明：对向量normal进行单位化处理，并对向量tangent进行正交化处理。
 
+例如，设有Vector3实例v1和v2），则执行如下程序代码后`Vector3.OrthoNormalize (ref v1, ref v2);`向量v1和v2都发生了改变。设向量v1在执行代码后值为v3，v2在执行代码后值为v4，则原始v1、v2和变换后的v3、v4的关系如图14-8所示，它们关系如下。
 
+- 向量v3=v1.normalized；
+- 向量v4与v3垂直，且v4模长为1；
+- 向量v1、v2、v3和v4虽然都为三维向量，但它们在同一平面上。
 
+![](https://gitee.com/u9king/ImageHostingService/raw/caf92e2aabfb07a0915872159bd850bd759569f4/Unity/Book/OrthoNormalize%E7%A4%BA%E6%84%8F%E5%9B%BE.png)
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+public class OrthoNormalize_ts : MonoBehaviour 
+{
+    public Transform one_T, two_T;
+    Vector3 one_v, two_v;
+    Vector3 one_l, two_l;
+    void Start()
+    {
+        //初始化起始位置
+        one_v = one_T.position;
+        two_v = two_T.position;
+        //记录初始化位置
+        one_l = one_v;
+        two_l = two_v;
+    }
+    void Update()
+    {
+        Vector3.OrthoNormalize(ref one_v,ref two_v);
+        //绘制原始向量和OrthoNormalize处理后的向量
+        Debug.DrawLine(Vector3.zero, one_l, Color.black);
+        Debug.DrawLine(Vector3.zero, two_l, Color.white);
+        Debug.DrawLine(Vector3.zero, one_v, Color.red);
+        Debug.DrawLine(Vector3.zero, two_v, Color.yellow);
+    }
+}
+```
+
+在Start方法中对其初始化，然后在Update方法中调用方法OrthoNormalize，来对变量one_v和two_v进行正交化处理，最后根据正交化前后变量的值绘制出4条直线。
+
+![](https://gitee.com/u9king/ImageHostingService/raw/master/Unity/Book/OrthoNormalize%E7%9A%84%E5%AE%9E%E4%BE%8B%E6%BC%94%E7%A4%BA%E7%BB%93%E6%9E%9C.png)
+
+#### 14.3.8 OrthoNormalize：3 个坐标轴的正交化
+
+```
+基本语法 public static void OrthoNormalize(ref Vector3 normal, ref Vector3 tangent, ref Vector3 binormal);
+```
+
+功能说明：对向量normal进行单位化处理，并对向量tangent和binormal进行正交化处理。
+
+- normal及tangent的功能和变化与方法OrthoNormalize (ref normal : Vector3, ref tangent : Vector3)中的相同。
+- 向量binormal垂直于由向量normal和tangent组成的平面，且向量binormal变换前后的夹角小于90度，即执行OrthoNormalize之后，binormal的方向可能垂直于由normal和tangent组成的平面的正面也可能是负面，到底垂直于哪个面由初始binormal的方向决定。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class OrthoNormalize2_ts : MonoBehaviour 
+{
+    public Transform one_T, two_T, three_T;
+    Vector3 one_v, two_v, three_v;
+    Vector3 one_l, two_l, three_l;
+    void Start()
+    {
+        //初始化起始位置
+        one_v = one_T.position;
+        two_v = two_T.position;
+        three_v = three_T.position;
+        //保持初始值
+        one_l = one_v;
+        two_l = two_v;
+        three_l = three_v;
+    }
+    void Update()
+    {
+        Vector3.OrthoNormalize(ref one_v, ref two_v,ref three_v);
+        //绘制原始向量和OrthoNormalize处理后的向量
+        Debug.DrawLine(Vector3.zero, one_l, Color.black);
+        Debug.DrawLine(Vector3.zero, two_l, Color.white);
+        Debug.DrawLine(Vector3.zero, three_l, Color.green);
+        Debug.DrawLine(Vector3.zero, one_v, Color.red);
+        Debug.DrawLine(Vector3.zero, two_v, Color.yellow);
+        Debug.DrawLine(Vector3.zero, three_v, Color.blue);
+    }
+}
+```
+
+在Update方法中调用方法OrthoNormalize，对变量one_v、two_v和three_v进行正交化处理，最后根据正交化前后变量的值绘制出6条直线。
+
+#### 14.3.9 Project：投影向量
+
+```
+基本语法 public static Vector3 Project(Vector3 vector, Vector3 onNormal);
+```
+
+功能说明：此方法用于返回向量vector在向量onNormal上的投影向量。如图14-11所示，执行以下程序代码`projects = Vector3.Project(from_T.position, to_T.position);`后，projects为from_T在to_T方向上的投影向量。另外，向量to_T无须为单位向量·
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Project_ts : MonoBehaviour 
+{
+    public Transform from_T, to_T;
+    Vector3 projects = Vector3.zero;
+    void Update()
+    {
+        projects = Vector3.Project(from_T.position, to_T.position);
+        //绘制从世界坐标系原点到各个物体的直线
+        Debug.DrawLine(Vector3.zero, projects, Color.black);
+        Debug.DrawLine(Vector3.zero, from_T.position, Color.red);
+        Debug.DrawLine(Vector3.zero, to_T.position, Color.yellow);
+    }
+}
+```
+
+在Update方法中调用方法Project，求向量from_T.position在向量to_T.position上的投影向量，并将投影向量赋给变量projects。最后绘制从世界坐标系原点到各个物体坐标点及投影向量坐标点的直线。
+
+#### 14.3.10 Reflect：反射向量
+
+```
+基本语法 public static Vector3 Reflect(Vector3 inDirection, Vector3 inNormal);
+其中参数inDirection为入射向量，参数inNormal为镜面向量。
+```
+
+功能说明：返回向量inDirection的反射向量。
+
+- 参数inNormal向量必须为单位向量，否则入射角和反射角不相等。
+- 当inNormal取反时（即-inNormal），反射向量不受影响。
+- 入射向量、反射向量和镜面向量共面。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Reflect_ts : MonoBehaviour
+{
+    public Transform A, B;
+    //A_v为镜面向量，B_v为入射向量
+    Vector3 A_v, B_v;
+    //R_v为反射向量
+    Vector3 R_v = Vector3.zero;
+    void Update()
+    {
+        //将镜面向量进行单位化处理，否则反射向量不一定为镜面反射
+        A_v = A.position.normalized;
+        B_v = B.position;
+        R_v = Vector3.Reflect(B_v, A_v);
+        Debug.DrawLine(-A_v * 1.5f, A_v *1.5f, Color.black);
+        Debug.DrawLine(Vector3.zero, B_v, Color.yellow);
+        Debug.DrawLine(Vector3.zero, R_v, Color.red);
+    }
+}
+```
+
+在Update方法中调用方法Reflect，将变量A_v和B_v的反射向量赋给变量R_v，最后分别绘制出镜面向量和从世界坐标系原点到向量A_v和B_v坐标点的直线。
+
+#### 14.3.11 RotateTowards：球形插值
+
+```
+基本语法 public static Vector3 RotateTowards(Vector3 current, Vector3 target, float maxRadiansDelta, float maxMagnitudeDelta);
+		current为起始点坐标  target为目标点坐标，
+		maxRadiansDelta为角度旋转系数  maxMagnitudeDelta为模长系数
+```
+
+功能说明：返回从参数current到target的球形旋转插值向量，此方法可控制插值向
+量的角度和模长。例如，设有Vector3实例A、B和C， 有float类型数值R和L，向量A
+和B夹角的弧度为e，则执行以下程序代码后
+
+```
+C=Vector3. RotateTowards(A,B,R,L);
+```
+
+- 当R∈[0,e]时，向量C和A的弧度为R，即当R从0增加到e时，向量C与A的角度也会线性增加到e。向量C的模长为向量A的模长加上L的值，即|C|=|A|+L。
+- 当R<0时，向量C会沿着从A到B的反方向旋转。
+- 当R>e时，参数R以e来计算角度，即R大于e时C与B的方向相同。
+- 总之，R值决定了向量C的方向，而L影响了C的模长，无论L取值多少，当R>e时向量C与B的方向总是相同的。
+- 向量A、B和C在同一平面上。
+
+代码：
+
+```C#
+public class RotateTowards_ts : MonoBehaviour
+{
+    public Transform from_T, to_T;
+    Vector3 from_v, to_v;
+    Vector3 rotates = Vector3.zero;
+    float speed = 0.2f;
+    float l;
+    void Start()
+    {
+        //初始化起始位置
+        from_v = from_T.position;
+        to_v = to_T.position;
+        //l取值为0时，rotates会以from_v的模长运动到to_v方向
+        // l = 0.0f;
+        //l取值为(to_v - from_v).sqrMagnitude时，rotates会以to_v的模长运动到to_v方向
+        l = (to_v - from_v).sqrMagnitude;
+    }
+    void Update()
+    {
+        //在1/speed时间内rotates从from_v移动到to_v
+        rotates = Vector3.RotateTowards(from_v, to_v, Time.time*speed,l);
+        //绘制从原点到slerps的红线，并保留100秒以便观察
+        //运行时只能在scene视图中查看
+        Debug.DrawLine(Vector3.zero, rotates, Color.red, 100.0f);
+    }
+}
+```
+
+在Update中将方法Vector3.RotateTowards的返回值赋给rotates，最后绘制一条从世界坐标系原点到rotates的直线。
+
+#### 14.3.12 Scale：向量放缩
+
+```
+基本语法 public static Vector3 Scale(Vector3 a, Vector3 b);
+```
+
+功能说明：返回向量a和b的乘积。注意此方法和实例方法Scale (scale : Vector3)的区别。例如，设有Vector3实例v1=(x1,y1,z1)和v2=(x2,y2,z2)，则：
+
+- 执行代码v1.Scale(v2)后v2不变，v1的值变为v1.x=x1*x2，v1.y=y1*y2，v1.z=z1*z2。
+- 执行代码Vector3 v3= Vector3.Scale(v1, v2)后v1和v2不变，v3的各个分量值变为
+    v3.x=x1*x2，v3.y=y1*y2，v3.z=z1*z2。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Scale_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector3 v1 = new Vector3(1.0f, 2.0f, 3.0f);
+        Vector3 v2 = new Vector3(4.0f, 5.0f, 6.0f);
+        //使用v1.Scale(v2)将使向量v1按向量v2进行放缩，无返回值
+        v1.Scale(v2);
+        Debug.Log("使用v1.Scale(v2)后v1的值：" + v1.ToString());
+        Debug.Log("使用v1.Scale(v2)后v2的值：" + v2.ToString());
+        //重设v1
+        v1.Set(1.0f, 2.0f, 3.0f);
+        //使用v3 = Vector3.Scale(v1, v2)将会返回向量v1按向量v2进行放缩后的向量v3
+        //v1、v2不会改变
+        Vector3 v3 = Vector3.Scale(v1, v2);
+        Debug.Log("使用v3=Vector3.Scale(v1,v2)后v1的值：" + v1.ToString());
+        Debug.Log("使用v3=Vector3.Scale(v1,v2)后v2的值：" + v2.ToString());
+        Debug.Log("使用v3=Vector3.Scale(v1,v2)后v3的值：" + v3.ToString());
+    }
+}
+```
+
+分别演示了实例方法scale和静态方法scale对变量v1和v2的使用。
+
+#### 14.3.13 Slerp：球形插值
+
+```
+基本语法 public static Vector3 Slerp(Vector3 from, Vector3 to, float t);
+        from为插值起始点坐标   to为插值结束点坐标   t为插值系数。
+```
+
+功能说明：此方法用于返回从参数from点到参数to点的球形插值向量。例如，设现有Vector3实例A和B，则执行如下程序代码后
+
+```
+Vector3 C=Vector3. Slerp (from, to, t);
+```
+
+- 当t≤0时，向量C=A；
+
+- 当t≥1时，向量C=B；
+
+- 当t从0增加到1时，向量C会从起始点A绕着A×B（即向量A和B的叉乘）的方向匀
+    速移动到向量B，此处的匀速是指角度旋转的匀速，即向量C与B的夹角`k=e*(1-t)`。而向量C的模长计算公式则为：
+    $$
+    |C| = \sqrt{a_x^2 +a_y^2 +a_z^2} + (\sqrt{b_x^2 +b_y^2 +b_z^2} -\sqrt{a_x^2 +a_y^2 +a_z^2}) *t
+    $$
+    这样便可以确定向量C了
+
+- 当向量A和B中某个分量的值都为0时，比如它们的y轴分量都为0，即ay=by=0时，则A将绕着y轴在xz平面匀速旋转向B移动，并且在移动过程中C.y的值始终为0。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class Slerp_ts : MonoBehaviour 
+{
+    public Transform from_T, to_T;
+    Vector3 from_v, to_v;
+    Vector3 slerps = Vector3.zero;
+    float speed = 0.1f;
+    void Start () 
+    {
+        //初始化起始位置
+        from_v = from_T.position;
+        to_v = to_T.position;
+    }
+    void Update () 
+    {
+        //在1/speed时间内slerps从from_v移动到to_v
+        slerps = Vector3.Slerp(from_v,to_v,Time.time*speed);
+        //绘制从原点到slerps的红线，并保留100秒以便观察
+        //运行时只能在scene视图中查看
+        Debug.DrawLine(Vector3.zero,slerps,Color.red,100.0f);
+    }
+}
+```
+
+在Update中将方法Vector3.Slerp的返回值赋给slerps，最后绘制一条从世界坐标系原点到slerps的直线。
+
+#### 14.3.14 SmoothDamp：阻尼移动
+
+```
+基本语法 (1) public static Vector3 SmoothDamp(Vector3 current, Vector3 target, ref Vector3 currentVelocity, float smoothTime);
+		(2) public static Vector3 SmoothDamp(Vector3 current, Vector3 target, ref Vector3 currentVelocity, float smoothTime, float maxSpeed);
+		(3) public static Vector3 SmoothDamp(Vector3 current, Vector3 target, ref Vector3 currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
+		current为起点坐标	target为终点坐标
+		currentVelocity为当前帧移动向量
+		smoothTime为接近目标时的阻尼强度
+		maxSpeed为最大移动速度， 默认值为无穷大
+		deltaTime 为控制当前帧实际移动的距离， 即为maxSpeed*deltaTime，默认值为Time.deltaTime。
+```
+
+功能说明：模拟GameObject对象从current点到target点之间的阻尼运动。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class SmoothDamp_ts : MonoBehaviour 
+{
+    public Transform from_T, to_T;
+    public float smoothTime, maxSpeed,delta_time;
+    Vector3 to_v;
+    Vector3 speed = Vector3.zero;
+    void Start()
+    {
+        //初始化起始位置
+        transform.position = from_T.position;
+        to_v = to_T.position;
+        //初始化系数
+        smoothTime = 1.5f;
+        maxSpeed = 10.0f;
+        delta_time = 1.0f;
+    }
+    void Update()
+    {
+        transform.position = Vector3.SmoothDamp(transform.position, to_v, ref speed, smoothTime, maxSpeed, Time.deltaTime * delta_time);
+    }
+}
+```
+
+在Update中调用方法SmoothDamp，并将返回值赋给transform的position，用GameObject对象来模拟阻尼运动。
+
+### 14.4 Vector3类运算符
+
+在Vector3类中，涉及的运算符主要有相等（“==”）运算符，下面简要介绍这个运算符。`operator == (lhs : Vector3, rhs : Vector3)`
+
+功能说明：判断向量lhs和rhs是否足够接近或相等。当参数中的向量lhs和rhs不相等但足够接近时也会返回true。当lhs和rhs的各个分量的小数点后五位相同时就可能返回true，当lhs和rhs的各个分量的小数点后六位都相同时则一定返回true。
+
+代码：
+
+```C#
+using UnityEngine;
+using System.Collections;
+public class EqualOrNot_ts : MonoBehaviour
+{
+    void Start()
+    {
+        Vector3 v1 = new Vector3(1.123451f, 2.123451f, 3.123451f);
+        Vector3 v2 = new Vector3(1.123452f, 2.123452f, 3.123452f);
+        if (v1 == v2)  //true
+        {
+            Debug.Log("v1==v2");
+        }
+        else
+        {
+            Debug.Log("v1!=v2");
+        }
+    }
+}
+```
+
+向量v1和v2虽然不相同但分量值大小非常接近，然后使用运算符“==”来判断向量v1和v2是否相等。
+
+### 14.5 关于Vector3.Lerp和Vector3.MoveTowards的功能注解
+
+- 相同点：它们的运动轨迹都为直线。
+- 不同点：Lerp (from , to, t)方法中t的有效范围为[0,1]。当t<0时，参数t按0计算，当t>1时，参数t按1计算。当t≥1时，返回向量和向量to相同，t值的有效范围与from和to的取值无关。而方法MoveTowards (current, target, maxDistanceDelta)中maxDistanceDelta的有效范围为（∞,|target-current|]，当maxDistanceDelta与模长|target-current|相等时，返回向量才和target相同，即maxDistanceDelta的有效范围与current和target的取值有关。
+
+### 14.6 关于Vector3.RotateTowards和Vector3.Slerp的功能注解
+
+- 相同点：它们的移动轨迹都为弧形。
+- 不同点：Slerp (from, to, t)方法的返回向量的模的大小是根据向量from和to的模的大小自动均匀放缩的，并且当t≥1时返回值坐标一定会和to相同。其返回向量的运动轨迹是个弧形但不一定为圆形，除非from和to的模长相等。
+
+RotateTowards (current, target, maxRadiansDelta, maxMagnitudeDelta)方法的返回向量的模的大小是由current 的模长和maxMagnitudeDelta 共同决定的。如果在运动过程中current 和maxMagnitudeDelta保持不变，则返回向量的模长将保持不变，即做匀速圆周运动。所以返回向量点的移动轨迹不能保证从current点到target点，但无论模长如何，当maxRadiansDelta大于或等于current和target夹角的弧度值时，返回向量的方向将和target相同。
 
 ## 15.游戏实例——坚守阵地
+
+本章以一个游戏实例来描述使用Unity开发游戏的过程和一些API的用法。本章分为游戏概述、建模与导入、程序脚本和制作简单小地图4个部分。
+
+### 15.1 游戏概述
+
+本游戏是模拟第一人称的射击游戏，在游戏中玩家需要通过控制机枪来消灭不断进攻的坦克，当机枪的生命值低于0时游戏结束。
+本游戏分为Game01、Game02和Game这3个场景。
+
+各场景功能说明
+
+|            |                         游戏场景说明                         |
+| :--------: | :----------------------------------------------------------: |
+| **场景名** |                          **说 明**                           |
+|   Game01   |          游戏开始界面，点击“Enter”键加载Game02场景           |
+|   Game02   | 游戏中场景，在本场景中玩家通过键盘和鼠标来控制机枪消灭坦克，当机枪被坦克炮弹击毁<br/>（即生命值小于0）时本局游戏结束，进入Game03场景 |
+|   Game03   | 游戏结束界面，点击“Enter”键加载Game02场景重新开始游戏，点击“Q”键退出游戏 |
+
+游戏操作说明
+
+|          |                        游戏操作说明表                        |
+| :------: | :----------------------------------------------------------: |
+|  操 作   |                            说 明                             |
+|    A     | 按下键盘上的“A”键，机枪会绕着y轴方向逆时针持续旋转，直到抬起“A”键结束 |
+|    D     | 按下键盘上的“D”键，机枪会绕着y轴方向顺时针持续旋转，直到抬起“D”键结束 |
+|    W     | 按下键盘上的“W”键，机枪会绕着x轴方向顺时针持续旋转，但其上仰角度不会超过30度 |
+|    S     | 按下键盘上的“S”键，机枪会绕着x轴方向逆时针持续旋转，但其下仰角度不会超过25度 |
+| 鼠标左键 | 每按下一次鼠标左键便会发射一颗子弹，如果子弹在5秒钟内未击中任何目标则自动销毁 |
+| 鼠标右键 | 每按下一次鼠标右键补一次血，同时会消耗300积分。当积分低于300或机枪处于满血状态时点击无效 |
+
+各文件夹说明。
+
+|      名称       |                      作用                       |
+| :-------------: | :---------------------------------------------: |
+|    Detonator    |                一个爆炸效果插件                 |
+|    material     |                存放自建的材质球                 |
+|     prefabs     |               存放自建的预制组件                |
+|     scripts     |               存放自建的脚本文件                |
+|    something    | 存放一些原始资源，例如模型的FBX文件、贴图文件等 |
+| Standard Assets |              系统自带的标准资源库               |
+
+### 15.2 建模与导入
+
+在游戏开发中，编程和建模是不同的人。建模人员往往需要和编程人员确定模型应该怎样打组以及某些特殊部件的坐标轴应该怎么设置。一个合理的模型不仅能提高编程人员的开发效率，往往还会影响到游戏开发完后的运行效率。
+
+|              |                         游戏模型说明                         |
+| :----------: | :----------------------------------------------------------: |
+| **模型名称** |                           **说明**                           |
+|   机枪模型   | 由于在操作机枪的时候枪管和底座是分开的，于是在对机枪模型打组的时候，可以分为枪管（pg）和底座（instance_1）两部分，如图15-5所示。当把机枪模型导入Unity后，需要再为其添加一个空对象（jq_kh_point）、一个跟随相机（M_Camera）和小地图标记（maptag），并把它们都放到枪管的下面作为其子类，其中jq_kh_point用来确定机枪子弹的实例化位置。这些做好后，把它们做成一个预制组件（prefabs）。另外需要注意的是，由于枪管是绕着底座旋转的，所以需要把枪管的坐标轴位置放到底座的正上方 |
+|   坦克模型   | 坦克模型同样分为炮管（pg）和底座（zuojia）两部分，如图15-7所示。模型导入Unity后，同样需要为其添加一个空对象（pd_point）作为炮管的子类，此处放在了其子类的子类下面。另外，还需要为坦克添加一个血条模型和一个小地图标记作为坦克的子类 |
+|  兵工厂模型  | 兵工厂用来生产坦克，在实例化坦克时注意不能让坦克模型和兵工厂模型发生穿透。可以在模型中添加一个空对象来确定实例化坦克的坐标，也可在脚本中设置 |
+| 机枪子弹模型 | 本游戏中以系统自带的球体作为机枪子弹模型，调整大小及材质后制成预制组件放于prefabs文件夹下 |
+| 坦克炮弹模型 | 本游戏中以系统自带的球体作为坦克炮弹模型，调整大小及材质后制成预制组件放于prefabs文件夹下 |
+| 坦克血条模型 | 血条的制作有多种方式，本游戏中用材质贴图的偏移来模拟坦克血量的变化。首先制作一张材质贴图，然后新建一个材质球（xt），并把血条贴图作为材质球的贴图，接着设置材质球Tiling的x值为0.5，最后把材质球拖到plane上即可。游戏中通过脚本控制贴图的偏移量来模拟坦克的血量变化 |
+
+模型导入完成后，还需要为它们添加一些组件，例如Collider、Rigidbody等，这里额外说明一下Collider的添加。对于从外部导入的模型，一般为其添加的Collider为Mesh Collider（Component→Physics→Mesh Collider），添加后要勾选Convex，否则可能会无效。对于一些比较复杂的模型，由于其自适应的碰撞器面数较多，因此会给程序运行带来较大的负担。对于一些精度要求不高的模型，可以为其添加比较简单的碰撞器，例如本游戏中为机枪炮管添加了一个简单的Box Collider。
+
+### 15.3 程序脚本
+
+本游戏中有9个脚本
+
+|                  |                         游戏脚本说明                         |
+| :--------------: | :----------------------------------------------------------: |
+|   **脚本名称**   |                         **脚本功能**                         |
+|    Factory.cs    |               兵工厂脚本，用于坦克的实例化控制               |
+|    Game01.cs     |      场景1的控制脚本，用于控制游戏的开始和新场景的加载       |
+|    Game03.cs     |        场景3的控制脚本，用于控制游戏的重新开始和退出         |
+|  Gamesetting.cs  | 游戏的设置脚本，用于控制游戏数据的加载、游戏对象的初始化以及一些全局控制变量的设置 |
+|    Jiqiang.cs    |     机枪操作的控制脚本，用于控制机枪的旋转、开火及补血等     |
+|   Jq_bullet.cs   |       机枪子弹脚本，用于控制机枪子弹的碰撞、爆炸及销毁       |
+| Set_game_data.cs |       制作游戏数据的脚本，用于制作不同关卡中的游戏数据       |
+|      Tk.cs       |             坦克控制脚本，用于控制坦克的所有行为             |
+|   Tk_bullet.cs   |       坦克子弹脚本，用于控制坦克子弹的碰撞、爆炸及销毁       |
+
+#### 15.3.1 Factory.cs
+
+该脚本用于控制兵工厂对坦克的实例化。由于只有当当前游戏中坦克的数量小于坦克最大值时才需要实例化，所以脚本中去掉了Update方法，用InvokeRepeating方法来实现所需的功能。另外，为防止实例化的坦克模型和兵工厂模型发生穿透现象，需要对实例化的位置进行调整。
+
+代码：
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
