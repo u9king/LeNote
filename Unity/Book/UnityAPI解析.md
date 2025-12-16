@@ -7188,9 +7188,37 @@ RotateTowards (current, target, maxRadiansDelta, maxMagnitudeDelta)方法的返�
 
 代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+/**
+* 兵工厂，用于生产坦克
+* */
+public class Factory : MonoBehaviour
+{
+    public Transform tks;//声明坦克对象
+    private Vector3 creat_tk_position;//声明坦克位置
+    void Start()
+    {
+        //坦克实例化的位置与兵工厂的位置发生一定的偏移，以免模型之间发生穿透
+        creat_tk_position = this.transform.position + new Vector3(10.0f, 4.0f, 10.0f);
+        //游戏启动后2秒，开始调用方法creat_tk，以后每隔10秒调用一次此方法
+        InvokeRepeating("creat_tk", 2.0f, 10.0f);
+    }
+    //实例化坦克
+    private void creat_tk()
+    {
+        //当游戏中坦克数量少于游戏设置的最大坦克数量时，实例化一辆新坦克
+        if (Gamesetting.num_tk < Gamesetting.tk_max_num)
+        {
+            Gamesetting.num_tk++;
+            Instantiate(tks, creat_tk_position, Quaternion.identity);
+        }
+    }
+}
+```
 
-
-
+声明了一个Transform类型的公共变量tks，用于指向游戏中坦克的预制组件，然后声明和实例化了坦克的实例化位置，最后根据Gamesetting中的tk_max_num值实例化相应数量的坦克。
 
 
 
