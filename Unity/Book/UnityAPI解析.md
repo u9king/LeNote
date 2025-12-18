@@ -7218,37 +7218,649 @@ public class Factory : MonoBehaviour
 }
 ```
 
-声明了一个Transform类型的公共变量tks，用于指向游戏中坦克的预制组件，然后声明和实例化了坦克的实例化位置，最后根据Gamesetting中的tk_max_num值实例化相应数量的坦克。
+#### 15.3.2 Game01.cs
 
+该脚本用于控制游戏的开始和新场景的加载，对于新场景的加载，可以根据实际项目需求选择不同的方式加载，包括同步和异步加载方式。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+/**
+* 场景1即游戏开始前的控制代码
+* */
+public class Game01 : MonoBehaviour
+{
+    public Texture2D picture_bg;//背景图片
+    public Texture2D progress_f, progress_b;//进度条前后图片
+    float progress_length = 1;//进度条的实时长度
+    bool is_press_enter = false;//是否按下enter键开始加载新场景
+    float bg_x = 0.0f;//背景图片的x轴坐标，用于控制其向右移动
+    float add_frame01 = 1.0f;
+    float add_frame02 = 1.0f;
+    bool is_load_over = false;
+    //异步加载场景2，仅专业版可用
+    //如果非异步加载，可以使用Application.LoadLevelAdditive(1);
+    //异步加载通常用在加载资源较多比较消耗时间的情况下
+    IEnumerator Start()
+    {
+        AsyncOperation async = Application.LoadLevelAdditiveAsync("Game02");
+        //异步加载中
+        Debug.Log("1:" + async.isDone);//是否加载完成
+        Debug.Log("2:" + async.progress);//加载进度，范围0-1
+        yield return async;
+        //加载完成后
+        Debug.Log("3:" + async.isDone);
+        Debug.Log("4:" + async.progress);
+        is_load_over = async.isDone;
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            Debug.Log("您按下了Return键");
+            //非异步加载索引值为1的场景，不改变当前场景的内容
+            //Application.LoadLevelAdditive(1);
+            is_press_enter = true;
+        }
+        if (is_press_enter)
+        {
+            progress_length += add_frame01;
+            add_frame01++;
+        }
+        if (progress_length >= 500 && is_load_over)
+        {
+            is_press_enter = false;
+            bg_x += add_frame02;
+            add_frame02 += 3;
+        }
+        //当背景图片移出屏幕后，游戏开始
+        if (bg_x > Screen.width)
+        {
+            //记录游戏开始时间
+            Gamesetting.begin_time = Time.timeSinceLevelLoad;
+            Gamesetting.which_step = 0;
+            Destroy(this.gameObject);
+        }
+    }
+    //绘制背景及进度条
+    void OnGUI()
+    {
+        GUI.DrawTexture(new Rect(bg_x, 0.0f, Screen.width, Screen.height), picture_bg);
+        if (is_press_enter)
+        {
+            GUI.DrawTexture(new Rect((Screen.width - 500) / 2, Screen.height - 50.0f, progress_length,
+            15.0f), progress_f);
+            GUI.DrawTexture(new Rect((Screen.width - 500) / 2, Screen.height - 50.0f, 500.0f, 15.0f),
+            progress_b);
+        }
+    }
+}
+```
 
+在这段代码中，演示了异步加载场景的方法，当玩家按下Enter键后开始加载新场景，通过控制progress_f的宽度值progress_length来模拟进度条的加载。
 
+#### 15.3.3 Gamesetting.cs
 
+该脚本用来控制游戏数据的加载、游戏对象的初始化以及一些全局控制变量的设置。实际游戏的开发通常要求场景中每个物体的参数都是可变的，以便使用相同的资源修改不同的参数来制作更多的关卡。在本游戏的Game02原始场景中，只有地形、灯光和小地图摄像机，而其他对象（像机枪、坦克和兵工厂）都需要根据关卡数据进行临时的实例化。关卡数据的加载及对象的实例化
+代码：
 
+```C#
+/**
+* 读取相应关卡的初始化数据
+* path：读取文件的路径
+* name：读取文件的名称
+* _num:关卡值
+**/
+private void LoadFile(string path, string name, int _num)
+{
+    string num = _num.ToString();
+    string[] strs;
+    //使用流的形式读取
+    StreamReader sr = null;
+    try
+    {
+        sr = File.OpenText(path + "//" + name);
+        Debug.Log(path);
+    }
+    catch (System.Exception e)
+    {
+        //路径与名称未找到文件，则直接返回空
+        //return null;
+        Debug.Log("cann't find data file!" + e.Message);
+    }
+    string line = sr.ReadLine();
+    do
+    {
+        strs = line.Split(',');
+    } while (strs[0] != num && (line = sr.ReadLine()) != null);
+    Debug.Log("guan qia zhi:" + strs[0]);
+    //关闭流
+    sr.Close();
+    //销毁流
+    sr.Dispose();
+    //机枪的初始化位置
+    string[] strs_child = strs[1].Split(' ');
+    local_jq = new Vector3(float.Parse(strs_child[0]), float.Parse(strs_child[1]),
+    float.Parse(strs_child[2]));
+    //机枪的初始化生命值
+    jq_values = int.Parse(strs[2]);
+    //机枪实例化
+    Instantiate(tran_jq, local_jq, Quaternion.identity);
+    //初始实例化坦克数量
+    num_tk = int.Parse(strs[3]);
+    //坦克的初始化生命值
+    tk_values = int.Parse(strs[4]);
+    //兵工厂的初始化生命值
+    factory_values = int.Parse(strs[6]);
+    //兵工厂的初始化位置
+    strs_child = strs[5].Split(' ');
+    //兵工厂数量
+    int tp = strs_child.Length / 3;
+    factory_num = tp;
+    Vector3[] local_factory = new Vector3[tp];
+    for (int i = 0; i < tp; i++)
+    {
+        local_factory[i] = new Vector3(float.Parse(strs_child[i * 3]), float.Parse(strs_child
+        [i * 3 + 1]), float.Parse(strs_child[i * 3 + 2]));
+        //兵工厂实例化
+        Instantiate(tran_factory, local_factory[i], Quaternion.identity);
+    }
+    //坦克数量最大值
+    tk_max_num = int.Parse(strs[7]);
+}
+```
 
+本实例游戏开始启动时，会根据关卡数据的num_tk值实例化相应数量的坦克，这些坦克的位置是随机分布在地形上的，但是要防止在实例化时出现一些不合常理的情况，例如坦克实例化的位置在山顶上，或实例化的位置离机枪位置太近。为防止坦克掉到山顶上，本程序先在地形上空向下（即负Y轴方向）发射一条射线，根据射线的长度来判断坦克着陆点是否合适，相关代码如下所示。
 
+```C#
+/**
+* 初始实例化坦克
+* */
+private void initial_tkVec()
+{
+    Vector3 temp_vec;
+    RaycastHit hit;
+    Object go;
+    Ray ray;
+    float x, z;
+    float _x, _z;
+    //记录机枪的x、z坐标
+    _x = tran_jq.position.x;
+    _z = tran_jq.position.z;
+    int count_temp = 0;
+    while (count_temp < num_tk)
+    {
+        //获得在地图范围内的随机位置
+        x = Random.Range(bj_pyl, ter_width - bj_pyl);
+        z = Random.Range(bj_pyl, ter_length - bj_pyl);
+        temp_vec = new Vector3(x, position_csh_y, z);
+        //从随机确定的位置向-y轴发射一条射线
+        ray = new Ray(temp_vec, new Vector3(0.0f, -1.0f, 0.0f));
+        Physics.Raycast(ray, out hit, ter_height + 100);
+        //判断位置是否合适
+        //当位置距离机枪足够远，并且没落在山顶上时即认为位置合适
+        if ((x - _x) * (x - _x) + (z - _z) * (z - _z) > length_to_jq && hit.distance > length_to_terrain)
+        {
+            Vector3 v3 = hit.point;
+            v3.y = v3.y + 5;
+            //实例化坦克
+            go = Instantiate(tran_tk, v3, Quaternion.identity);
+            go.name = "tk_" + tk_cur_num;
+            tk_cur_num = tk_cur_num + 1;
+            count_temp++;
+        }
+    }
+}
+```
 
+本脚本中还有一些全局变量的设置，例如控制游戏启动变量which_step、机枪积分的实时值money、每局游戏坦克数量的最大值tk_max_num等，具体内容请查看项目工程代码。
 
+#### 15.3.4 Jiqiang.cs
 
+该脚本用于控制机枪的旋转、开火及补血等。机枪虽然可以进行左右360度的旋转，但其上下却不能做360度的旋转。在代码中，需要注意Input.GetKeyDown()和Input.GetKey()的区别，前者在按键按下时只响应一次，而后者在按键按下时会持续响应。在实例化子弹时，为了让子弹沿着枪管的方向飞行，需要设置其rotation为枪管自身的rotation，即transform.rotationd的值。
+代码：
 
+```C#
+void Update()
+{
+    //W：机枪上转
+    if (Input.GetKey(KeyCode.W) && angle_down_up < 30.0f)
+    {
+        Debug.Log("您按下了W键" + angle_down_up);
+        angle_down_up += frame_angel_du;
+        //机枪上下旋转的参考坐标系为自身坐标系，即默认值space.self
+        transform.Rotate(Vector3.right, -frame_angel_du);
+    }
+    //S：机枪下转
+    if (Input.GetKey(KeyCode.S) && angle_down_up > -25.0f)
+    {
+        Debug.Log("您按下了S键" + angle_down_up);
+        angle_down_up -= frame_angel_du;
+        transform.Rotate(Vector3.right, frame_angel_du);
+    }
+    //A：机枪左转
+    if (Input.GetKey(KeyCode.A))
+    {
+        Debug.Log("您按下了A键");
+        //机枪左右旋转的参考坐标系要为世界坐标系
+        //否则在上下旋转后再进行左右旋转时会变形
+        transform.Rotate(Vector3.up, -frame_angel_lr, Space.World);
+    }
+    //D：机枪右转
+    if (Input.GetKey(KeyCode.D))
+    {
+        Debug.Log("您按下了D键");
+        transform.Rotate(Vector3.up, frame_angel_lr, Space.World);
+    }
+    //鼠标左键开火
+    if (Input.GetMouseButtonDown(0))
+    {
+        Debug.Log("您按下了鼠标左键");
+        Instantiate(jq_pd, jq_kh_point.position, transform.rotation);
+    }
+    //鼠标右键补血
+    if (Input.GetMouseButtonDown(1))
+    {
+        Debug.Log("您按下了鼠标右键");
+        if (Gamesetting.money >= 300 && current_value < 300)
+        {
+            Gamesetting.money -= 300;
+            current_value = Gamesetting.jq_values;
+            xt_length = ((float)current_value / Gamesetting.jq_values) * 300.0f;
+        }
+    }
+}
+```
 
+在这段代码中，通过调用Input.GetKey方法控制机枪的上下左右旋转，并通过Input.GetMouseButtonDown方法控制机枪的开火及补血。
 
+#### 15.3.5 Jq_bullet.cs
 
+该脚本用于控制机枪子弹的碰撞、爆炸及销毁，其代码如下所示。Tk_bullet.cs脚本用于控制坦克炮弹的碰撞、爆炸及销毁。
 
+代码：
 
+```C#
+using UnityEngine;
+using System.Collections;
+/**
+* 机枪子弹
+* */
+public class Jq_bullet : MonoBehaviour
+{
+    public Transform tk_exp;//爆炸效果组件
+    float this_time = 0.0f;
+    void Start()
+    {
+        this_time = Time.time;
+    }
+    void Update()
+    {
+        //如果子弹4秒内未打到物体，则自动销毁，避免内存浪费
+        if (Time.time - this_time > 4.0f)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+    void FixedUpdate()
+    {
+        //子弹以每秒100米的速度向局部forward方向运动
+        transform.rigidbody.velocity = transform.TransformDirection(Vector3.forward * 100);
+    }
+    void OnTriggerEnter(Collider otherObject)
+    {
+        //爆炸效果及销毁对象
+        Instantiate(tk_exp, transform.position, Quaternion.identity);
+        Destroy(this.gameObject);
+    }
+}
+```
 
+在这段代码中，使用Time.time控制子弹的最长生存时间，用transform的TransformDirection方法控制子弹的飞行方向，并在OnTriggerEnter方法中实例化爆炸组件和控制子弹的销毁。
 
+#### 15.3.6 Set_game_data.cs
 
+该脚本用于制作不同关卡中的游戏数据，这些数据包括机枪实例化的位置、机枪的生命值、初始化坦克的数量等。运行此脚本便可以在项目工程的Assets目录下生成关卡数据文件。需要注意的是，当把工程导出为可执行文件时，需要把关卡数据文件复制到游戏的资源文件夹中，否则游戏运行时会因找不到数据文件而无法实例化游戏场景。
 
+代码：
 
+```C#
+using System.Collections;
+using System.IO;
+using System.Text;
+//设置和生成游戏关卡数据
+public class Set_game_data : MonoBehaviour
+{
+    StringBuilder sb = new StringBuilder("", 256);
+    //关卡值
+    string num = "1";
+    //机枪位置
+    string jiqiang = "";
+    //机枪生命值
+    string jqsmz = "222";
+    //初始化坦克数量
+    string tks = "12";
+    //坦克生命值
+    string tkz = "111";
+    //兵工厂位置
+    string bgc = "";
+    //兵工厂生命值
+    string bgcz = "333";
+    //最大坦克数量
+    string max_tk_num = "15";
+    void Start()
+    {
+        getDate();
+        appends();
+        //路径、文件名、信息
+        CreateFile(Application.dataPath, "FileName", sb.ToString());
+    }
+    //一般而言，机枪和兵工厂的位置需要在地图上选取合适的位置
+    //制作关卡游戏数据之前，请先把机枪和兵工厂拖拽到地图上的合适位置
+    private void getDate()
+    {
+        GameObject fsj1 = GameObject.FindGameObjectWithTag("jq");
+        GameObject[] bgc1 = GameObject.FindGameObjectsWithTag("bgc");
+        GameObject go;
+        for (int i = 0; i < bgc1.Length; i++)
+        {
+            go = bgc1[i];
+            bgc += go.transform.position.x + " " + go.transform.position.y + " " +
+            go.transform.position.z;
+            if (i != bgc1.Length - 1)
+            {
+                bgc += " ";
+            }
+        }
+        jiqiang = fsj1.transform.position.x + " " + fsj1.transform.position.y + " " + fsj1.transform.
+        position.z;
+    }
+    //拼接数据
+    private void appends()
+    {
+        sb.Append(num);
+        sb.Append(",");
+        sb.Append(jiqiang);
+        sb.Append(",");
+        sb.Append(jqsmz);
+        sb.Append(",");
+        sb.Append(tks);
+        sb.Append(",");
+        sb.Append(tkz);
+        sb.Append(",");
+        sb.Append(bgc);
+        sb.Append(",");
+        sb.Append(bgcz);
+        sb.Append(",");
+        sb.Append(max_tk_num);
+    }
+    /**
+    * path：文件创建目录
+    * name：文件的名称
+    * _info：写入的内容
+    */
+    void CreateFile(string path, string name, string info)
+    {
+        //文件流信息
+        StreamWriter sw;
+        FileInfo t = new FileInfo(path + "//" + name);
+        //输出数据存放路径
+        Debug.Log(path);
+        if (!t.Exists)
+        {
+            //如果此文件不存在，则创建一个新的文件
+            sw = t.CreateText();
+        }
+        else
+        {
+            //如果此文件存在，则打开
+            sw = t.AppendText();
+        }
+        //以行的形式写入信息
+        sw.WriteLine(info);
+        //关闭流
+        sw.Close();
+        //销毁流
+        sw.Dispose();
+    }
+}
+```
 
+在这段代码中，首先声明了很多需要自定义的变量，并在方法getDate()中获取一些必要的数据，请参考代码注释，然后在appends()方法中拼接数据，最后在CreateFile()方法中将数据输出到指定的文件中。
 
+#### 15.3.7 TK.cs
 
+该脚本用于控制坦克的所有行为。坦克的所有行为可以用一个简单的有限状态机来表示，如表15-5所示，第一列为转换前状态名称，第一行为转换后状态名称。
 
+<center><b>表15-5 坦克行为的有限状态转换表</b></center>
 
+|            |            |          |              |                    |              |
+| ---------- | ---------- | -------- | ------------ | ------------------ | ------------ |
+| 转换状态   | 游戏未开始 | 调整方向 | 前进         | 调整炮管           | 发射炮弹     |
+| 游戏未开始 |            | 游戏开始 |              |                    |              |
+| 调整方向   |            |          | 方向调整完毕 |                    |              |
+| 前进       |            | 前进遇阻 |              | 机枪进入坦克射程内 |              |
+| 调整炮管   |            |          |              |                    | 炮管调整完毕 |
+| 发射炮弹   |            |          |              | 坦克发生位移       |              |
 
+坦克调整方向的代码片段如下所示。
 
+```C#
+//调整方向
+private void step_zero()
+{
+    Vector3 vt = Vector3.MoveTowards(transform.forward, (tk_aim - transform.position).normalized,
+    Time.time * 0.001f);
+    float _x = (v3_temp.x - vt.x) * (v3_temp.x - vt.x) + (v3_temp.z - vt.z) * (v3_temp.z - vt.z);
+    v3_temp = vt;
+    vt = vt.normalized;
+    zero_count++;
+    if (_x != 0.0f && zero_count < zero_count_max)
+    {
+        transform.forward = vt;
+    }
+    else
+    {
+        which_step = 1;
+        turnRightOrLeft();
+        zero_count = 0;
+    }
+}
+```
+
+在这段代码中，用Vector3的MoveTowards方法将坦克transform的forward方向转到指向机枪所在位置的方向。当单帧旋转角度为0时停止旋转，坦克开始前进。当坦克角度偏转过大或单位时间内位移过小时都认为坦克遇阻，需要调整坦克的前进方向。
+
+代码：
+
+```C#
+//前进-update
+private void step_first_update()
+{
+    //坦克侧翻时需要矫正
+    if (this.transform.up.y < 0)
+    {
+        this.transform.up = new Vector3(this.transform.up.x, 2.0f - this.transform.up.y, this.transform.up.z);
+    }
+
+    float f1 = Vector3.Angle(transform.forward, Vector3.up);
+    float f2 = Vector3.Angle(transform.right, Vector3.up);
+
+    //当坡度太陡时认为坦克遇阻，此处z轴偏移不得大于44度，x轴偏移不得大于30度
+    if (f1 < 46.0f || f1 > 134 || f2 < 60 || f2 > 120)
+    {
+        first_is_stop = true;
+    }
+
+    //坦克每隔first_correct_count_max帧调整一次前进方向
+    if (first_correct_count < first_correct_count_max)
+    {
+        first_correct_count++;
+    }
+    else
+    {
+        first_go_v3 = tk_aim - this.transform.position;
+        first_go_v3 = (first_go_v3.normalized - this.transform.forward) / 64;
+        first_is_rotate_count = 64;
+        first_correct_count = 0;
+        first_is_stop = false;
+        first_is_stop_count = 0;
+        first_last_count = 0;
+        first_last_point = first_current_point;
+    }
+
+    //调整方向
+    if (first_is_rotate_count > 0)
+    {
+        this.transform.forward += first_go_v3;
+        first_is_rotate_count--;
+        first_correct_count = 0;
+    }
+
+    //遇阻后方向调整
+    if (first_is_stop)
+    {
+        if (first_is_turn_right)
+        {
+            transform.Rotate(Vector3.up, first_frame_angle, Space.Self);
+        }
+        else
+        {
+            transform.Rotate(Vector3.down, first_frame_angle, Space.Self);
+        }
+
+        first_is_stop_count++;
+
+        //调整角度大于50度后结束
+        if (first_is_stop_count * first_frame_angle > 50)
+        {
+            first_is_stop = false;
+            first_is_stop_count = 0;
+            first_last_count = 0;
+            first_last_point = first_current_point;
+        }
+        first_correct_count = 0;
+    }
+}
+
+//前进-FixedUpdate
+private void step_first_fixedUpdate()
+{
+    //如果坦克未遇阻
+    if (!first_is_stop)
+    {
+        //每隔first_check_wait时间检测一次坦克前进距离
+        if (first_last_count < first_check_wait)
+        {
+            first_last_count++;
+            transform.Translate(transform.forward * tk_speed, Space.World);
+        }
+        else
+        {
+            first_current_point = transform.position;
+            first_len_last = first_current_point - first_last_point;
+
+            //当前进距离过小时认为坦克遇阻
+            if (first_len_last.x * first_len_last.x + first_len_last.z * first_len_last.z < min_len)
+            {
+                first_is_stop = true;
+            }
+            else
+            {
+                first_is_stop = false;
+                first_last_count = 0;
+                first_last_point = first_current_point;
+                first_is_stop_count = 0;
+            }
+        }
+    }
+}
+```
+
+这段代码用来控制坦克的自动前进，分别处理了以下几种情况：
+
+- 当坦克侧翻时即transform的up方向为负时需要矫正；
+- 当坦克遇上过于陡峭的坡度时需要调整方向；
+- 当坦克在一定时间内前进的距离过小时（例如遇到墙壁之类的障碍物），认为坦克遇阻，需要调整方向；
+- 当坦克在未遇阻情况下每前进一段时间，需要检验一次前进方向。
+
+当机枪进入坦克的有效射程时，坦克停止前进，需要调整炮管瞄准机枪，调整炮管的代码片段如下所示。
+
+```C#
+//调整炮管
+private void step_second()
+{
+    Vector3 vt = Vector3.MoveTowards(tk_pg.transform.forward, (tk_pgaim -
+    tk_pg.transform.position).normalized, Time.time * 0.001f);
+    float _x = (v3_temp.x - vt.x) * (v3_temp.x - vt.x) + (v3_temp.z - vt.z) * (v3_temp.z - vt.z);
+    //当相邻两帧不再有角度调整时，炮管调整结束
+    if (_x != 0.0f)
+    {
+        v3_temp = vt;
+        tk_pg.transform.forward = vt.normalized;
+    }
+    else
+    {
+        v3_temp = Vector3.zero;
+        which_step = 3;
+    }
+}
+```
+
+在这段代码中，使用Vector3.MoveTowards方法来调整坦克炮管的旋转，直到坦克炮管瞄准机枪，即当相邻两帧不再有角度调整时，炮管调整结束，接下来坦克就向机枪发射炮弹，试图摧毁机枪。发射炮弹时，需要注意实例化子弹的rotation值，为了让炮弹沿着炮管方向飞行，需要用炮管的rotation值即tk_pg.transform.rotation作为炮弹的rotation值。发射炮弹的代码片段如下所示。
+
+```C#
+//发射炮弹
+private void step_third()
+{
+    if (third_time < tk_fire_wait)
+    {
+        third_time += Time.deltaTime;
+    }
+    else
+    {
+        //实例化炮弹
+        Instantiate(tk_bullet, tk_fire_point.position, tk_pg.transform.rotation);
+        third_time = 0.0f;
+    }
+}
+```
+
+这段代码用于控制坦克炮弹的发射，坦克每隔tk_fire_wait秒发射一次炮弹，用tk_fire_point.position作为实例化炮弹的位置，用tk_pg.transform.rotation作为实例化炮弹的rotation值。当坦克受到机枪攻击后会掉血，有关坦克血条的代码片段如下所示。
+
+```C#
+//计算血条值
+private void caculate_xt_value()
+{
+    xt_value = ((float)tk_value / Gamesetting.tk_values) * 0.5f;
+    xt_value = xt_value > 0.5f ? 0.5f : xt_value;
+    tk_xt.renderer.material.SetTextureOffset("_MainTex", new Vector2(xt_value, 0.0f));
+}
+//计算血条的朝向，使血条始终朝向摄像机
+private void caculate_xt_foward()
+{
+    Vector3 dot = Vector3.zero;
+    dot.x = Camera.main.transform.eulerAngles.x - 90.0f;
+    dot.y = Camera.main.transform.eulerAngles.y;
+    tk_xt.transform.eulerAngles = dot;
+}
+```
+
+这段代码用来控制血条的值和血条的朝向，此处使用材质的纹理偏移（material.SetTextureOffset）来模拟坦克血条的变化。为使血条始终朝向摄像机，需要使得血条的y轴欧拉角与摄像机的y轴eulerAngles相等，再调节血条的x轴欧拉角，使血条始终朝向摄像机。
+
+### 15.4 制作简单小地图
+
+接下来为本实例制作一个简单的小地图，以便于玩家在游戏运行过程中实时观察周围的情况。首先添加一个用于显示小地图的摄像机，命名为Camera_map，然后对Camera_map设置如下。
+
+1. 设置ClearFlags为Depth Only，以便于消去小地图的杂边；
+2. 设置CullingMask为maplayer和terrainlayer，以便于按层有选择的渲染；
+3. 设置投影矩阵（Projection）为正交投影（orthographic）；
+4. 设置Viewport Rect为适当值，使得小地图位于右下角；
+5. 设置Depth值为0，其值要大于跟随相机的Depth值。
+
+然后把坦克、机枪和兵工厂需要在小地图中显示的部分（即模型中的maptag物体）的层选择为maplayer，而在跟随相机（jiqiang→pg→M_Camera）中，CullingMask选项不要选择maplayer。另外，需要删除在小地图中显示部件的Collider组件（如果存在的话），以免发生错误碰撞，例如坦克模型、机枪模型中的小地图标记中的Collider组件。
+最后需要说明的是，当把项目导出为单独的exe文件时，需要把关卡数据文件“FileName”复制到exe的资源文件夹下，否则程序在加载场景Game02时无法运行。
 
 
 
