@@ -72,6 +72,30 @@
 
 推荐放在BeginPlay然后才是ConstructFunc
 
+#### 3.2.3 AI移动(AIMoveTo)
+
+> 解释:移动AI到区域
+>
+> 组件:AIMoveTo
+
+备注:需要配合Navmesh才能使用，Destination和TargetActor填一个就行，建议Acceptance填个100cm左右，
+
+#### 3.2.4 棋子感知(PawnSensing)
+
+> 解释:实现AI 基础感知能力的组件,赋予了AI眼睛和耳朵发现玩家或其他物体
+>
+> 组件:StaticMesh下创建DyanmicMT然后使用Set Vector Parameter Value函数实现
+
+#### 3.2.5 旋转优化(Orient Rotation to Movement)
+
+> 解释:使用内置功能使朝向与移动方向对齐，即优化瞬间旋转变为缓慢旋转为目标方向
+>
+> 组件:关闭Pawn的ControlRotationYaw，然后打开CharacterMoveComp的Orient RotationToMovement的开关
+
+
+
+
+
 
 
 ### 3.3 时间
@@ -84,7 +108,13 @@
 
 
 
+### 3.4 建模
 
+#### 3.4.1 编辑轴心(Edit Pivot)
+
+> 解释:导入的模型需要对轴心进行永久调整，临时修改可以参考Alt+鼠标中键
+>
+> 组件:建模模式->XForm->EditPivot
 
 
 
