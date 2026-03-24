@@ -1,4 +1,4 @@
-# 游明星空2025年STEAM白皮书—解读
+游明星空2025年STEAM白皮书—解读
 
 > 链接:[2025年STEAM白皮书](https://www.gamersky.com/zhuanti/whitepaper/?shareRef=App_iOS#1-steam-2025%E5%B9%B4%E5%BA%A6%E6%A6%82%E5%86%B5)
 
@@ -203,11 +203,12 @@
 ​	2025年热销新游TAG的国内外差异和喜好并没有太大差异。**动作冒险**玩法再一次被检验，同时多人合作玩法在国内外也还是小型独立游戏厂商炙手可热。
 ​	同时，我们还统计了头部新游的价格，整体来说200-300元无论是国区玩家还是整个Steam全球市场都是接受程度相对较高的一档，只不过国区玩家的低价趋向仍然强于全球玩家。
 
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-12.webp" style="zoom:50%;" />
+<div style="display: flex; gap: 10px;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-12.webp" style="width: 50%;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-9.webp" style="width: 50%;">
+</div>
 
 ​	我们统计了2025年国区用户库存价值情况，2000元以下的国区玩家占到总量的约三分之一。
-
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-9.webp" style="zoom:50%;" />
 
 #### 1.4 Steam2025硬件现状
 
@@ -220,73 +221,82 @@
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-11.webp" style="zoom:50%;" />
 
-​	不过，我们还是能看到一些新的趋势。随着Win11系统的换装与普及，其在Steam玩家中的占比从去年年底的54%增长到了66.6%，而在系统内存方面，虽然16GB占比40.77%，但32GB的配置也有36.57%的规模。
+​	随着Win11系统的换装与普及，其在Steam玩家中的占比从去年年底的54%增长到了66.6%，在系统内存方面，虽然16GB占比40.77%，但32GB的配置也有36.57%的规模。	硬盘小于1TB的玩家比例已经低于50%。
 
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-10.webp" style="zoom:50%;" />
+<div style="display: flex; gap: 10px;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-10.webp" style="width: 50%;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-35.webp" style="width: 50%;">
+</div>	
 
-​	整机硬盘大小上，小于1TB的玩家比例已经低于50%。而随着2025年年末Al浪潮兴起所导致的内存与硬盘短缺，可以预见的是，在相当长的一段时间内，内存与硬盘的分布趋势将很难发生变化。
+​	显卡方面，RTX3060最常用显卡的地位依旧坚挺，保持着4.25%的使用率。其他只有RTX5070替代了RTX2060。N卡依旧以74%这个与去年一致占比牢牢把持着领先地位，而A卡与Intel的占比也仅出现了1%幅度的变动，三家显卡在2025年的态势可谓相对稳定。
 
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-35.webp" style="zoom:50%;" />
+<div style="display: flex; gap: 10px;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-33.webp" style="width: 50%;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-32.webp" style="width: 50%;">
+</div>	
 
-​	显卡方面，RTX3060最常用显卡的地位依旧坚挺，保持着4.25%的使用率。而在这些显卡中，除了新出的RTX5070替代了RTX2060的之外，其他诸如RTX3060、RTX4060等显卡依旧都是去年的熟面孔。
+​	40系N卡成为2025年使用率最高的显卡系列。50系相对于40系显卡更贵，性能有限。并且没有顶级游戏的出现，导致玩家们没有更换设备的意愿。
 
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-33.webp" style="zoom:50%;" />
+<div style="display: flex; gap: 10px;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-30.webp" style="width: 50%;">  
+    <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-31.webp" style="width: 50%;">
+</div>	
 
-​	N卡依旧以74%这个与去年一致占比牢牢把持着领先地位，而A卡与Intel的占比也仅出现了1%幅度的变动，三家显卡在2025年的态势可谓相对稳定。
+#### 1.5 Steam2025政策变动
 
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-32.webp" style="zoom:50%;" />
+​	2025年，Steam进一步优化用户的使用体验。从商店页面的视觉重构，到评测的语言区域筛选机制，Steam都在努力通过更现代化的展示与更精准的匹配，让每个玩家均能寻找到自己心仪的游戏。然而支付渠道的突变与商业化规则的收紧，也为开发者们带来了全新的挑战。
 
-​	而在占比最多的N卡里，40系显卡险胜30系，成为2025年使用率最高的显卡系列。而新上市的50系显卡虽然没有再现当年30系上市时的火爆场景，不过在占比上，其已经取代20系的地位，成为了仅次于40系与30系的显卡系列。
-
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-30.webp" style="zoom:50%;" />
-
-​	虽然2025年N卡推出了自己新的50系显卡系列，但对于大多数Steam玩家来说，这个新系列并没有成为他们更换显卡的理由。
-
-<img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-31.webp" style="zoom:50%;" />
-
-​	50系相对于40系显卡更贵，性能有限。并且没有顶级游戏的出现，导致玩家们没有更换设备的意愿。
-
-#### 1.5 Steam 2025政策变动
-
-​	2025年，Steam在巩固自己市场地位的同时，也致力于进一步优化用户的使用体验。从商店页面的视觉重构，到评测的语言区域筛选机制，Steam都在努力通过更现代化的展示与更精准的匹配，让每个玩家均能寻找到自己心仪的游戏。然而支付渠道的突变与商业化规则的收紧，也为开发者们带来了全新的挑战。我们将在此进一步分析、解读这些变化，望能对从业者们有所帮助。
+- 商店页面的视觉重构
+- 评测的语言区域筛选机制
+- 支付渠道的突变
+- 商业化规则的收紧
 
 ##### 1.5.1 商店页的更新升级
 
-​	Steam为了更符合时下用户的功能需求，从2025年7月开始逐步推进了一次商店页的重大更新。这次更新主要集中在UI部分的改进。首页和商店页面被整体加宽，大多数页面宽度从原本的940像素扩大到了1200像素，Valve认为这是一个很好的平衡点，既可以展示更多内容，又不会让页面显得拥堵。
+​	Steam首页和商店页面被整体加宽，页面宽度从940px扩大到了1200px。
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-34.webp" style="zoom:50%;" />
 
-​	作为每个用户打开Steam后的首个入口，首页部分的改动无疑会对玩家发现游戏的方式产生重大影响。具体而言，为了实现更高效的引导和信息集中展示，首页原本左侧的导航栏和顶部的导航菜单被进行了合并，在保留原有功能的同时，将用户更可能关注的重要功能用显眼的卡片展示，例如”热销商品”特卖活动”等。
+​	导航栏和导航菜单被合并，用卡片展示热销商品和特卖活动。
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-29.webp" style="zoom:50%;" />
 
-​	搜索面板也同样得到了升级。它如今会展示当前的热门搜索项，并会记录下你最近查看过的游戏商店页，以方便用户快速返回。它还允许你直接搜索开发商页面，或是直接按分类标签浏览。
+​	搜索升级为展示热门搜索内容，并记录下历史浏览以便返回。开放搜索开发商页面，或是按分类标签浏览。
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-26.webp" style="zoom:50%;" />
 
-​	新导航栏同样可以更容易地集成Steam上一些新增的功能，例如11月左右上线的”游戏个性化日历”—它会根据用户喜好，在日历上生成一份未来发售的新游推荐表，比传统的探索队列更加直观、实用。
+​	导航栏新功能游戏个性化日历—会根据用户喜好，在日历上生成一份未来发售的新游推荐表。
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-28.webp" style="zoom:50%;" />
 
-​	这种简化将玩家们所需要的入口做了进一步的整合，同时致力于实现更精准的用户匹配，让小众、独立游戏也能更容易被喜欢它们的玩家所发掘，以集中服务于向玩家推荐游戏，同时也为厂商开辟了更多的曝光渠道。
-​	细化到商店页面，它也上线了新的播放器，以代替UI老旧且载入缓慢的原版播放器。现在它除了默认模式外，还支持影院模式与全屏模式，这两个模式不仅作用于预告片，对图片同样适用。
-​	Steam对商店页下方描述文本中的GIF图像也进行了升级，允许上传包括MP4、WEBP等更多高质量格式，并为其提供了新的播放器。Steam会将它们自动在后台转码成高质量的轻量化格式，并允许用户随时点击暂停。
+​	Steam更新播放器，支持影院模式与全屏模式。Steam还升级了下方描述文本中的GIF图像，允许上传包括MP4、WEBP等高质量格式，后台自动转码完毕后允许用户随时点击暂停。
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-25.webp" style="zoom:50%;" />
 
-​	这给予了厂商更大的空间、更高的分辨率来展示游戏的关键美术素材，对于一些以美术为卖点的游戏是重大利好，会容易影响到玩家”凭眼缘”来关注一款游戏。它也更容易让玩家在浏览描述时，能凭借图像更快速掌握到游戏的概念与玩法。反之，如果玩家难以理解游戏内容，他们往往会选择跳过这款游戏而非加入愿望单。
-​	另一点值得注意的改动，是Steam新增了更多展示开发商主页的区块。除了上文提及到的搜索结果之外，如今在购物车中的结算窗口也会显示开发商页面，便于用户在购买厂商的其中一款游戏时予以关注，从而对旗下的更多游戏产生兴趣。因此，在玩家心中建设一个牢固的品牌形象也变得更加重要。
+​	Steam新增了展示开发商主页的区块，帮助厂商在玩家心中建设品牌形象。
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-24.webp" style="zoom:50%;" />
 
 ##### 1.5.2 评测筛选机制的改动
 
-​	Steam最早从2017年开始，就一直致力于解决评测区存在的"评测轰炸”问题，先前推出的"排除跑题评测“功能也是为此应运而生。其最终目的，是确保用户能在购买游戏时做出明智的选择。
-​	于是在2025年8月，Steam推出了一项按语言显示用户评价的新功能。每个至少有2000篇评测，且用户使用主语言数超过200篇评测的游戏，都会优先显示用户所在语言区的评测，例如对大多数中国玩家来说，你会优先看到”简体中文评测”的好评率。
+​	Steam最早从2017年开始，就一直致力于解决**评测轰炸**问题，比如先前推出的**排除跑题评测**。其最终目的是确保用户能在购买游戏时做出明智的选择。
+
+2025年Steam推出了一项按语言显示用户评价的新功能，
+
+- 按语言分开，显示用户评价
+- 符合条件会优先显示用户所在语言区的评测
+  - 至少有2000篇评测
+  - 使用主语言数超过200篇评测的游戏
 
 <img src="https://image.gamersky.com/webimg13/zhuanti/WhitePaper/2025/image-27.webp" style="zoom:50%;" />
 
-​	这一新功能，会更直接体现特定区域玩家对某款游戏的整体偏好。如果某个区域玩家更倾向于差评，那么负面评论的影响就会被进一步放大，也更难被庞大的基数稀释掉。反之，来自某个区域的好评也可能在多半差评中脱颖而出。但对于厂商来说，更加需要关注的明显是前者，它会导致特定区域的销量下滑，并且会在一些条件下影响游戏在这些区域Steam商店的曝光率和可见性。
+​	
+
+
+
+
+
+这一新功能，会更直接体现特定区域玩家对某款游戏的整体偏好。如果某个区域玩家更倾向于差评，那么负面评论的影响就会被进一步放大，也更难被庞大的基数稀释掉。反之，来自某个区域的好评也可能在多半差评中脱颖而出。但对于厂商来说，更加需要关注的明显是前者，它会导致特定区域的销量下滑，并且会在一些条件下影响游戏在这些区域Steam商店的曝光率和可见性。
 ​	这就对厂商在不同区域的本地化水准提出了更高的要求。诸如翻译、服务器质量如何，定价是否符合当地玩家的购买力标准，是否尊重当地的政策法规、文化传统等问题，都会被更清晰地反映到游戏对应的区域好评率上。
 ​	同时，厂商也需要建立更加健全的玩家社区相关机制。许多玩家的差评诉求在于自己的声音没有途径被反馈给厂商，而建立对应渠道并持续监控特定区域玩家的需求，便可以缓解这一状况。
 ​	为了及时关注到不同群体满意度的问题，数据分析也变得更加重要，而Steam2025年也对应更新了一些新的后台统计项。现在Steam的收入报告得到了进一步改进，允许你在应用落地页查看所有过往折扣，并且显示每个折扣期的销售数据。此外，Steam后台的UTM追踪数据里，也新增了指向Steam上各类地区性活动、特卖活动、主题活动，以及展示等活动的相关参数，允许你通过报告来分析这些渠道的流量和具体转换量。

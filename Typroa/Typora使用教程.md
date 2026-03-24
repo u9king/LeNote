@@ -75,6 +75,16 @@ $\textcolor{red}{内容}$
 
 其中vw是Viewport Width的缩写，100vw让图片宽度等于整个视口宽度，这样图片就能够根据视窗调整大小
 
+```
+写法
+<div style="display: flex; gap: 10px;">  
+    <img src="image1.webp" style="width: 50%;">  
+    <img src="image2.webp" style="width: 50%;">
+</div>
+```
+
+图片左右分布并且中间有10px的间距
+
 参考:https://www.typora.net/460.html
 
 #### 8.公式
