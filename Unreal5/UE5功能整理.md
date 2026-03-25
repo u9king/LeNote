@@ -78,7 +78,9 @@
 >
 > 组件:AIMoveTo
 
-备注:需要配合Navmesh才能使用，Destination和TargetActor填一个就行，建议Acceptance填个100cm左右，
+备注:需要配合Navmesh才能使用，Destination和TargetActor填一个就行，建议Acceptance填个100cm左右
+
+在项目设置中可以设置NavMesh的单元格大小，高度等具体细节。
 
 #### 3.2.4 棋子感知(PawnSensing)
 
