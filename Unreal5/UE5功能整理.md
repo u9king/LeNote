@@ -120,6 +120,29 @@
 
 
 
+### 3.5 人物
+
+#### 3.5.1 人物输入(Input)
+
+> 一句：虚幻通过在输入层将 $W/S$ 拌合至 $Y$ 轴，牺牲了局部直觉，换取了全局（手柄/键盘/UI）在横纵语义上的统一。
+>
+> 解释:首先虚幻是左右系，所以X是世界坐标的前方。但是为了统一2/3D游戏X是左右，Y是上下的行业统一坐标系和Z为上的直觉，所以在输入层面会有一点反直觉，WS是Y,AD是X。然后用Y去连接控制器的前向，用X去连接控制器的左右。最后能够统一到世界坐标中，所以这种反常仅存在输入映射这一环中。
+
+```mermaid
+graph LR
+A(ActionValueX) -->B
+B(GetControlRotation) --> C
+C(GetRightVector) --> D(AddMovementInput)
+
+E(ActionValueY)-->F
+F(GetControlRotation)-->G
+G(GetForwardVector)-->D
+```
+
+
+
+
+
 ## 4.引擎
 
 ### 4.1 通用
