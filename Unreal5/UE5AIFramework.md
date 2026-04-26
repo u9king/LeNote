@@ -1,33 +1,31 @@
-# UE5动画
+# UE5AIFramework
 
 > | 序号 | 课程                                         | 作者       | 链接                                                         | 备注                                                         |
 > | ---- | -------------------------------------------- | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 > | 1    | Introduction to Materials in Unreal Engine 5 | Mao Mao    | [Udemy](https://www.udemy.com/course/introduction-to-materials-in-unreal-engine-5/) | [b站](https://www.bilibili.com/video/BV1kvDsBAEGz?spm_id_from=333.788.videopod.episodes&vd_source=9a146b8fa39d5ea05ce3a524dcff45d4) |
 > | 2    | PBR材质底层原理讲解                          | 嗜睡的猫咪 | [b站](https://www.bilibili.com/video/BV1oY4y1t717)           |                                                              |
 
-#### 1.混合空间
+#### 1.行为树
 
-Snap to Grid 对齐到网格
+流控制
 
-#### 2.八叉树
+#### 2.黑板
 
-#### 3.正向移动
+为什么黑板没法直接获取变量内容啊？
 
-#### 4.根运动
+#### 3.组件AIPerception
 
-#### 5.插槽
+OnTargetPerceptionUpdated
 
-#### 6.蒙太奇
+#### 4.组件AIperceptionTimuliSource
 
-蒙太奇我扫描要插槽才能动？
+#### 5.任务Task
 
-#### 7.状态机
+每个任务都要单独创建？
 
-#### 8.Motion Warping
+#### 6.装饰器Decoration
 
-在播放动画的同时，动态地拉伸或旋转角色的位姿，确保动作能精准地对齐目标点。
+#### 7.AIController
 
-Motion Warping 通常是配合Root Motion（根运动）使用的：
+自带的PathFollowingComponent是干什么的？
 
-1. 动画本身自带位移（Root Motion）。
-2. Motion Warping 在蓝条区间内，对这个 Root Motion 进行微小的加权偏移（Offset）。
