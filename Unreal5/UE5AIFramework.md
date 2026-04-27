@@ -13,6 +13,8 @@
 
 为什么黑板没法直接获取变量内容啊？
 
+LiteralName字面名称是什么？
+
 #### 3.组件AIPerception
 
 OnTargetPerceptionUpdated
