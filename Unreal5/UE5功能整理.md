@@ -139,7 +139,11 @@ F(GetControlRotation)-->G
 G(GetForwardVector)-->D
 ```
 
+#### 3.5.2 吸附地面
 
+> 一句：帮助PlayerStart或者胶囊体吸附在地面上
+>
+> 快捷键：fn + end
 
 
 

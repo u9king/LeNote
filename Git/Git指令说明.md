@@ -43,3 +43,59 @@ git count-objects -vH
 git gc --prune=now --aggressive
 ```
 
+#### 6.查询状态
+
+```
+git status
+```
+
+#### 7.克隆仓库
+
+```
+git clone XXXXX
+```
+
+#### 8.查看分支
+
+```
+//-r 表示远程仓库所有分支  //-a 表示远程和本地的所有分支
+git branch -r
+git branch -a
+```
+
+#### 9.创建分支
+
+```
+git checkout -b <branch-name>
+```
+
+#### 10.切换分支
+
+```
+git checkout <branch-name>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
