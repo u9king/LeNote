@@ -19,6 +19,21 @@ LiteralName字面名称是什么？
 
 OnTargetPerceptionUpdated
 
+##### 3.1 Senses Config感官配置
+
+- AI视觉配置AI Sight Config
+  - 视线半径Sight Radius
+  - 丢失视野半径Lose Sight Radius
+  - 周边视觉半角PeripheralVisionHalfAngle
+  - 按阵营检测Dectection By Affiliation
+    - 检测敌人Detect Enemies
+    - 检测中立单位Detect Neutrals
+    - 检测友军Detect Friendlies
+
+
+
+
+
 #### 4.组件AIperceptionTimuliSource
 
 #### 5.任务Task
@@ -31,3 +46,12 @@ OnTargetPerceptionUpdated
 
 自带的PathFollowingComponent是干什么的？
 
+#### 8.显示AIPerception范围
+
+> 按下：‘ + 4
+
+可以显示AIPerception的视野范围
+
+#### 9.导航网格边界体积NavMeshBoundsVolume
+
+> 快捷键：P 开关显示

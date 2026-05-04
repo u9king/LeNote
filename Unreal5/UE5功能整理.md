@@ -72,29 +72,92 @@
 >
 > 组件:蓝图->Set Actor Location给PlayerStart即可
 
+#### 3.1.5 时间缩放Time Dilation
+
+> 解释:设置时间缩放，子弹时间，击杀效果，结算特效
+>
+> 组件:蓝图->Set Global Time Dilation
+
+#### 3.1.6 相机振动Camera Shake
+
+> 解释:相机振动
+>
+> 组件:蓝图->Play World Camera Shake
+>
+> 前提:创建一个CamerShakeBase的蓝图
+
+建议设置：Perlin噪点摄像机晃动模式，Location位置乘数都填7，Timing填入2s，节点Play World Camera Shake填入50000cm范围
+
+#### 3.1.7 范围伤害Apply Radial Damage
+
+> 解释:范围伤害
+>
+> 组件:蓝图->Apply Radial Damage
+>
 
 
 
 
-#### 3.1.5 时间速率Slow Motion
+
+
+
+
+
+#### 3.1.9 时间速率Slow Motion
 
 > 解释:调整的是全局的时间膨胀系数，物理模拟加快，动画播放加快，DeltaTime变大
 >
 > 组件:在UE5的cmd窗口中输入slomo 5 (其中5倍表示倍率)
 
-#### 
 
 
 
 
 
-### 3.2 碰撞体
 
-#### 3.2.1 碰撞体可见性(Rendering Hidden in Game)
+### 3.2 机关/障碍物
+
+#### 3.2.1 物理模拟Set Simulate Phyics
+
+> 解释：由物理系统接管组件，前提是图元组件
+>
+> 组件：蓝图->Set Simulate Physics
+>
+> 前提：需要物体是由多组件，多mesh组成
+
+注释：适合实现人物的布娃娃死亡动画，或者物体的破碎效果
+
+
+
+#### 3.2.2 破碎Destruction
+
+> 解释：物体四散分离，类似破碎
+>
+> 方法一：能用SimulatePhysics就用这个，可以避免使用破碎系统
+>
+> 前提：需要物体是由多组件，多mesh组成
+
+
+
+
+
+#### 3.2.3 碰撞体可见性(Rendering Hidden in Game)
 
 > 解释:碰撞体范围是否在场景中可见
 >
 > 组件:Rendering -> Hidden in Game
+
+
+
+#### 3.2.4 碰撞预设Set Collision Profile Name
+
+> 解释：切换物体的碰撞预设
+>
+> 组件：蓝图->Set Collision Profile Name
+
+直接修改Primitive Component的碰撞设置,
+
+注：在Project Settings-> Engine -> Collision -> Preset中可以查看所有预设
 
 
 
@@ -131,6 +194,8 @@
 > 解释:实现AI 基础感知能力的组件,赋予了AI眼睛和耳朵发现玩家或其他物体
 >
 > 组件:StaticMesh下创建DyanmicMT然后使用Set Vector Parameter Value函数实现
+
+注释：`按下 ’ + 4`可以显示AIPerception的视野范围
 
 #### 3.3.5 旋转优化(Orient Rotation to Movement)
 

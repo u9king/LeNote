@@ -46,6 +46,7 @@ git gc --prune=now --aggressive
 #### 6.查询状态
 
 ```
+//查看当前分支
 git status
 ```
 
