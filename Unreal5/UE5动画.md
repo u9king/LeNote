@@ -83,7 +83,40 @@ Automatic Rule Based on Sequence Player in State
 
 
 
-#### 8.Motion Warping
+#### 8.Motion Warping动作扭曲
+
+> 解释：一套动画偏移系统
+>
+> 功能：在播放动画蒙太奇Montage时，动态地调整动画的根位移Root Motion，使角色能精准地到达目标点。
+
+操作步骤
+
+- 将动作设置为根骨骼运动
+- 创建动画蒙太奇
+- 在蒙太奇中打好通知状态MotionWrapping，让动作扭曲系统何时进行接管
+- 点开通知状态，设置Warp Target Name的名称
+- 在蓝图中调用节点Add or Update Warp Target传入组件名称，位置，旋转来实现
+
+注：在涉及到与高度相关的动画时，需要在MotionWrapping中关闭lgnore ZAxis
+
+
+
+疑问：攀爬向前漂移问题
+
+攀爬后向前滑步的问题是非常经典的 Motion Warping坑点，坐标给对了，目标也对齐了，但角色爬上去之后依然像“溜冰”一样往前滑出了一大段距离。
+
+可能原因
+
+- Warp Target 和 Root Motion之间的时间关系，也就是warp之后root接管向前走
+- 动画资产本身的Authored Offset
+
+出现这个问题，根本原因在于你对 。
+
+
+
+
+
+
 
 在播放动画的同时，动态地拉伸或旋转角色的位姿，确保动作能精准地对齐目标点。
 
