@@ -266,16 +266,38 @@ LiteralName字面名称是什么？
 
 OnTargetPerceptionUpdated
 
-##### 3.1 Senses Config感官配置
+Senses Config感官配置
 
-- AI视觉配置AI Sight Config
-  - 视线半径Sight Radius
-  - 丢失视野半径Lose Sight Radius
-  - 周边视觉半角PeripheralVisionHalfAngle
-  - 按阵营检测Dectection By Affiliation
-    - 检测敌人Detect Enemies
-    - 检测中立单位Detect Neutrals
-    - 检测友军Detect Friendlies
+| AI视力配置                 | AI监听配置     | AI触摸配置 | AI预感感官配置 |
+| -------------------------- | -------------- | ---------- | -------------- |
+| More ActionsAI伤害感官配置 | AI团队感官配置 |            |                |
+
+
+
+#### 3.1 AI视野配置 AI Sight Config
+
+AI视觉配置AI Sight Config
+
+- 视线半径 Sight Radius
+- 丢失视野半径 Lose Sight Radius
+- 周边视觉半角 PeripheralVisionHalfAngle
+- 按阵营检测 Dectection By Affiliation
+    - 检测敌人 Detect Enemies
+    - 检测中立单位 Detect Neutrals
+    - 检测友军 Detect Friendlies
+- 最大年龄 Max Age
+
+
+
+#### 3.3 AI预感感官配置 AI Prediction sense config
+
+功能：预测玩家接下来的位置
+
+
+
+
+
+
 
 
 
@@ -289,7 +311,7 @@ OnTargetPerceptionUpdated
 
 
 
-
+Task 只负责「流程、条件、触发」；
 
 
 
@@ -305,9 +327,36 @@ OnTargetPerceptionUpdated
 
 
 
-#### 6.1 Cooldown
+#### 6.1 冷却 Cooldown
 
 冷却时间
+
+
+
+
+
+#### 6.2 基于黑板的条件 BlackBoard Based Condition
+
+
+
+##### 6.2.1 观察者中止 Observer Aborts
+
+功能：条件变化时，要终止哪些分支。控制流概念
+
+On Result Change：仅当条件的最终结果（True/False）变化时，才触发终止（性能更高）。
+
+On Value Change：只要黑板键的值变了，就触发终止（更灵敏，但性能消耗略高）。
+
+|      **选项**      |     翻译     | 概念 | **通俗解释**                                     |
+| :----------------: | :----------: | ---- | ------------------------------------------------ |
+|      **None**      |    不中止    | 被动 | 只在运行到时检查，之后不中断                     |
+|      **Self**      |   中止自身   | 自杀 | 如果条件不成立，立刻停止自身，返回控制权给父节点 |
+| **Lower Priority** | 中止低优先级 | 抢占 | 如果条件满足，停止低优先级，并运行自身           |
+|      **Both**      |   中止两者   | 兼备 | 兼具Self和LowerPriority                          |
+
+
+
+#### 6.3 循环 Loop
 
 
 
@@ -317,21 +366,26 @@ OnTargetPerceptionUpdated
 
 #### 7.服务Service
 
-Task 只负责「流程、条件、触发」；
+功能：改属性、改状态
 
-服务只负责「改属性、改状态」，各司其职。
+特点：
+
+- 只要Service所在的分支是激活状态,它就会一直运行,持续更新目标位置
+- 性能优化，同功能挂父节点，可以设置时间间隔和偏差
 
 
 
-为什么不写在 Task 里？（核心区别）
 
-如果你把“寻找目标”的逻辑写在 `Task_Attack` 里，会产生以下几个问题：
+
+为什么不写在 Task 里？
+
+如果你把寻找目标的逻辑写在 Task_Attack`里，会产生以下几个问题：
 
 A. 生命周期与并发性
 
 - Task： 只有当行为树运行到这个 Task 时，逻辑才会执行。如果 Task 结束了（比如攻击动画播完了），逻辑就停止了。
 - Service： 只要 Service 所在的分支（Branch）是激活状态，它就会一直运行。
-    - *场景：* 当 AI 在执行“移动到目标”这个 Task 时，挂在父节点上的 Service 可以持续更新目标位置。如果目标跑了，Service 更新黑板，左边的装饰器（条件）就能立刻发现并中止当前的移动 Task。
+    - 场景： 当 AI 在执行移动到目标这个Task时，挂在父节点上的 Service可以持续更新目标位置。如果目标跑了，Service 更新黑板，左边的装饰器（条件）就能立刻发现并中止当前的移动 Task。
 
 B. 逻辑复用（DRY原则）
 

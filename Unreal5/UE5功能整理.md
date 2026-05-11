@@ -246,7 +246,7 @@ G(GetForwardVector)-->D
 
 ### 4.1 通用
 
-#### 4.1.1 重定向器Redirectors
+#### 4.1.1 重定向器 Redirectors
 
 > 解释:当你移动或者重命名资源时UE不会直接断开旧引用，而是在原位置生成一个 Redirector，把旧路径指向新路径。
 >
@@ -254,11 +254,19 @@ G(GetForwardVector)-->D
 
 修复方案：复制完成后，右键文件夹点击Fix Up Redirectors in Folder后仍需要手动删除
 
-#### 4.1.2 反射捕获重构Reflection Captures Rebuilt
+#### 4.1.2 反射捕获重构 Reflection Captures Rebuilt
 
 > 解释:启动SwarmAgent执行场景中光线追踪计算，计算阴影半影还有烘焙光照贴图。
 >
 > 组件:构建选项卡 -> 仅构建光照
+
+#### 4.1.3 帧率内存显示 Show Frame Rate and Memory
+
+> 解释:在编辑器上打开帧率内存显示
+>
+> 组件:编辑器偏好 -> 性能 ->显示帧率和内存 Show Frame Rate and Memory
+
+
 
 
 
