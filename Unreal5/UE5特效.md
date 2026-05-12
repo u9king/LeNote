@@ -87,7 +87,51 @@
 
 
 
-### 3.模块
+### 3.模块 Modules
+
+#### 3.0 系统属性 System Propertites
+
+##### 3.0.1 系统 System
+
+|           属性           |     翻译     | 备注                   |
+| :----------------------: | :----------: | ---------------------- |
+|       Effect Type        |              |                        |
+|       Fixed Bounds       |   固定边界   | 整个系统的固定边界     |
+| Initial Streaming Bounds |              |                        |
+|       Determinism        |    确定性    |                        |
+|       Warmup Time        |   预热时间   |                        |
+|  Fixed Tick Delta Time   | 固定时间间隔 | 在总线执行，而不是异步 |
+
+##### 3.0.2 渲染 Rendering
+
+- 阴影 Default Cast Shadows
+- 贴花 Default Receives Decals
+- 渲染深度 Default Render CustomDepth
+
+##### 3.0.3 性能 Performance
+
+- Bake Rapid Iteration Parameters During Edit
+- Bake Rapid Iteration Parameters
+- Compress Attributes
+- Trim Attributes During Edit
+- Trim Attributes
+- Ignore Particle Reads for Attribute Trim
+- Disable Debug Switches During Edit
+- Disable Debug Switches
+- Require Current Frame Data
+- Allow System State Fast Path
+- 最大池数量 Max Pool Size
+- Pool Prime Size
+
+##### 3.0.4 系统状态 System State
+
+- Inactive Response
+- 循环模式 Loop Behavior
+- 循环时长 Loop Duration
+- Recalculate Duration Each Loop
+- 循环延迟 Loop Delay
+
+
 
 #### 3.1 属性 Propertites
 
@@ -118,36 +162,86 @@
 
 选择CPU和GPU的地方
 
-
-
-
-
-
-
-
-
 ##### 3.0.5 计算边界模式 Calculate Bounds Mode
-
-
-
-
 
 GPU模拟需要固定边界，超出这个小盒子就会被剔除遮挡
 
-
-
 ##### 3.0.6 需要持久化ID Requires Persistent IDs
+
+不开ID可重用
 
 ##### 3.0.7 发射器依赖关系 Emitter Dependencies
 
-
-
-
-
-
-
 本地空间LocalSpace：可以让粒子跟随发射器移动
 
+##### 3.0.8 阶段按钮 Stage
+
+高级部分
+
+Event Handler时间处理
+
+Generic Simulation Stage 通用模拟阶段
+
+
+
+#### 3.1 生成[模块] Spawning [Module]
+
+##### 3.1.1 生成速率 Spawn Rate
+
+- 生成速率 Spawn Rate：单位每秒多少个粒子
+- 生成概率Spawn Probability ：这一帧是否生成粒子
+- 生成分组 Spawn Group ：
+
+##### 3.1.2 瞬间爆发式生成 Spawn Burst Instantaneous
+
+- 生成数量 Spawn Count：
+- 生成时间 Spawn Time：
+- 生成概率 Spawn Probability：这一帧是否生成粒子
+- 循环次数限制 Loop Count Limit：
+
+##### 3.1.3 每单位生成 Spawn Per Unit
+
+- 生成间距 Spawn Spacing：每移动XX单位/厘米，生成一次粒子
+- 最大移动阈值 Max Movement Threshold：超过阈值不生成
+- 移动容差 Movement Tolerance：超过这个距离才生成，微小左右移动不生成
+- 生成概率 Spawn Probability：这一帧是否生成粒子
+
+##### 3.1.4 每帧生成 Spawn Per Frame
+
+- 生成数量 Spawn Count
+- 生成概率 Spawn Probability
+- 生成开关 Spawn
+- 生成分组 Spawn Group
+
+新功能，可能有些问题，和生成速率基本一样，不过是会依赖帧率，帧率越高生成粒子越多
+
+##### 3.1.5 从其他发射器生成 Spawn Particles from Other Emitter
+
+配合发射器解释
+
+##### 3.1.6 从网格中生成粒子 Spawn Particles in Grid
+
+##### 3.1.7 从顶点动画工具变形目标生成 Spawn MS Vertex Animation Tools Morph Target
+
+高级功能
+
+
+
+#### 3.2 位置[模块] Location [Module]
+
+##### 3.2.1 形状位置 Shape Location
+
+- 图元形状 Shape Primitive  
+    - 球体 Sphere
+        - 球体半径 Sphere Radius
+        - 球体分布 Sphere Distribution 
+            - 随机 Random：随机分布在球体
+            - 直接 Direct：基于物体的UV ,0.5是球的赤道，配合SpawnRate可以生成圆环，
+            - 均匀 Uniform：仅对爆发生成器可用，用斐波那契函数生成
+        - 球体表面分布 Sphere Surface Distribution：1为全部在表面，0为完整体积
+        - 半球分布 Hemisphere Distribution：0~1之间，通过网格体的UV完成的
+- Distribution 分布
+- Transform 变换
 
 
 
@@ -156,11 +250,6 @@ GPU模拟需要固定边界，超出这个小盒子就会被剔除遮挡
 
 
 
-
-
-
-
-#### 3.1 生成速率 Spawn Rate
 
 
 
@@ -197,7 +286,7 @@ GPU模拟需要固定边界，超出这个小盒子就会被剔除遮挡
 
 
 
-#### 3.8 形状位置 Shape Location
+#### 
 
 
 
@@ -329,5 +418,5 @@ GPU模拟需要固定边界，超出这个小盒子就会被剔除遮挡
 
 
 
-
+#### 4.5 自定义深度
 

@@ -287,6 +287,17 @@ AI视觉配置AI Sight Config
     - 检测友军 Detect Friendlies
 - 最大年龄 Max Age
 
+#### 3.2 AI听力配置 AI Hearing config
+
+功能：听力感知
+
+- 听力范围 Hearing Range ：
+- 最大年龄 Max Age：
+
+
+
+需要配合节点Make Noise使用
+
 
 
 #### 3.3 AI预感感官配置 AI Prediction sense config
@@ -295,9 +306,19 @@ AI视觉配置AI Sight Config
 
 
 
+#### 3.4 AI伤害感官配置 Al Damage sense config
+
+功能：接受伤害来源判断
+
+需要配合节点Report Damage Event使用
 
 
 
+#### 3.5 AI触觉配置 AI Touch config
+
+功能：接受触觉来源
+
+需要配合节点Report Touch Event使用
 
 
 
