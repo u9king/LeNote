@@ -240,6 +240,37 @@ Generic Simulation Stage 通用模拟阶段
             - 均匀 Uniform：仅对爆发生成器可用，用斐波那契函数生成
         - 球体表面分布 Sphere Surface Distribution：1为全部在表面，0为完整体积
         - 半球分布 Hemisphere Distribution：0~1之间，通过网格体的UV完成的
+    - 圆柱体 Cylinder
+        - 圆柱体中心 Cylinder Height Midpoint：中心点0为底，1为顶
+        - 表面厚度 Surface Only Band Thickness：0为表面，与球体相反
+        - 半圆生成X Hemicircle X：在X方向仅生成一半
+        - 半圆生成Y Hemicircle Y：在Y方向仅生成一半
+        - 开启旋转体轮廓 Enable Lathe Profile：用曲线控制圆柱体宽度
+    - 立方体/平面 Box/Plane
+        - 表面厚度 Surface Only Band Thickness：0为表面，与球体相反
+    - 圆环 Torus
+        - 大半径 Large Radius：圆环外半径
+        - 控制柄半径 Handle Radius：圆环的管道的粗细
+        - 表面分布  Surface Distribution：1为全部在表面，0为完整体积
+    - 环 / 圆盘 Ring/Disc
+        - 圆盘覆盖率Disc Coverage：0是外边缘，1是全部
+    - 圆锥 Cone
+        - Cone Surface Distribution 圆锥表面分布：0是外边缘，1是全部
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 - Distribution 分布
 - Transform 变换
 
