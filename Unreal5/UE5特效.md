@@ -338,25 +338,19 @@ Generic Simulation Stage 通用模拟阶段
         - 原点偏移 Origin Offset：调整朝某一方向移动
     - 圆锥中 In Cone
 
+注：速度可以在Update中实时修改，来模拟越来越大
+
 ##### 3.3.2 继承速度 Inherit Velocity
 
 - 继承速度值缩放 Inherited Velocity Amount Scale ：描述速度的向量，可以归一化
 - 继承速度限制 Inherited Velocity Speed Limit
 - 源速度阈值 Source Speed Threshold
 
-
-
-
-
 ##### 3.3.3 缩放速度 Scale Velocity
 
+在Update中可以调用
+
 归一化范围内的速度设置
-
-
-
-
-
-
 
 #### 3.4 力[模块] Force [Module]
 
