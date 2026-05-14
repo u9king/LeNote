@@ -221,6 +221,15 @@ Generic Simulation Stage 通用模拟阶段
 
 ##### 3.1.6 从网格中生成粒子 Spawn Particles in Grid
 
+- X数量 X Count：X轴方向上的数量
+- Y数量 Y Count：Y轴方向上的数量
+- Z数量 Z Count：Z轴方向上的数量
+- 生成时间 Spawn Time：
+
+
+
+
+
 ##### 3.1.7 从顶点动画工具变形目标生成 Spawn MS Vertex Animation Tools Morph Target
 
 高级功能
@@ -257,23 +266,91 @@ Generic Simulation Stage 通用模拟阶段
     - 圆锥 Cone
         - Cone Surface Distribution 圆锥表面分布：0是外边缘，1是全部
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - Distribution 分布
 - Transform 变换
 
+##### 3.2.2 网格位置 Grid Location
+
+需要配合Spawn Particles in Grid来使用
+
+- 尺寸定义 Dimensions Definition
+    - 每格内边距 Padding Per Cell：
+        - XYZ尺寸 XYZ Dimensions：定义网格间距
+    - 边界框尺寸 Bounding Box Size：
+- 标准化偏移 Normalize Offsets ：开启可以后输入网格偏移的格子数量，不开启输入实际距离
+- 网格内随机偏移 Randomize Placement Within Cell
+- 偏移 Offset
+
+##### 3.2.3 抖动位置 Jitter Position
+
+- 抖动值 Jitter Amount：专业术语，形容抖动幅度
+- 抖动偏移 Jitter Offset：
+- 抖动延迟 Jitter Delay：需要在更新阶段才能起作用，每隔一段时间抖动一次
+
+##### 3.2.4 系统位置 System Location
+
+如果没有设置位置，默认就会使用System Location
+
+- 偏移Offset：
+
+##### 3.2.5 静态网格位置 Static Mesh Location
+
+- 在Mesh中
+    - 必要：打开允许CPU访问，可以通过Fix按钮自动修复
+    - 可选：针对非均匀的静态网格，可以开启均匀分布采样，和GPU采样
+        - 支持均匀分布采样 Support Uniformly Distributed Sampling
+        - 支持GPU均匀分布采样 Support Gpu Uniformly Distributed Sampling
+- 网格采样种类 Mesh Sampling Type：
+    - 三角形 Triangles
+    - 插槽 Sockets
+    - 顶点 Vertices
+- 允许材质槽 Allowed Material Slots：需要配合网格采样的过滤模式才能使用，需要网格本身含有不同材质槽，举例Triangle Sampling Mode：Random (Section Filter)
+- 源模式 Source Mode
+    - 默认 Default
+    - 源 Source
+    - 附加到父级 Attach Parent：可以根据父级的Mesh来生成粒子
+    - 只有默认网格 Default Mesh OnlyMesh
+    -  网格参数绑定 Mesh Parameter Binding
+
+##### 3.2.6 骨骼网格位置 Skeletal Mesh Location
+
+- 源模式 Source Mode
+    - 默认 Default
+    - 源 Source
+    - 附加到父级 Attach Parent：可以根据父级的Mesh来生成粒子
+- 采样区域Sampling Regions:需要现在SKM上设置SampleRegion这里对应填入名称，还需要开启过滤采样区域
+- 网格采样种类 Mesh Sampling Type
+    - 骨骼(骨头) Skeleton (Bones)：仅在骨骼处生成粒子
+    - 骨骼(插槽) Skeleton (Sockets)：
+    - 骨骼(骨头和插槽) Skeleton (Bones and Sockets)：
+    - 表面(三角形) Surface (Triangles)：在骨架表面生成粒子
+    - 表面(顶点) Surface (Vertices)：
+
+#### 3.3 速度[模块] Velocity [Module]
+
+##### 3.3.1 添加速度 Add Velocity
+
+- Velocity Mode 速度模式
+    - 线性 Linear
+        - Velocity 速度
+        - Velocity Speed Scale 速度缩放
+    - 从点 From Point
+        - 原点偏移 Origin Offset：调整朝某一方向移动
+    - 圆锥中 In Cone
+
+##### 3.3.2 继承速度 Inherit Velocity
+
+- 继承速度值缩放 Inherited Velocity Amount Scale ：描述速度的向量，可以归一化
+- 继承速度限制 Inherited Velocity Speed Limit
+- 源速度阈值 Source Speed Threshold
+
+
+
+
+
+##### 3.3.3 缩放速度 Scale Velocity
+
+归一化范围内的速度设置
 
 
 
@@ -281,10 +358,17 @@ Generic Simulation Stage 通用模拟阶段
 
 
 
+#### 3.4 力[模块] Force [Module]
+
+##### 3.4.1 涡流力 Vortex Force
+
+- 涡流力值 Vortex Force Amount：涡流强度
+- 涡流轴 Vortex Axis：
+- 涡流轴坐标空间 Vortex Axis Coordinate Space：本地，世界，模拟
+- Vortex Influence Position
+- Write to Intrinsic Parameters
 
 
-
-#### 3.2 添加速度 Add Velocity
 
 
 
@@ -312,12 +396,6 @@ Generic Simulation Stage 通用模拟阶段
 #### 3.6 发射状态 EmitterState
 
 
-
-#### 
-
-
-
-#### 
 
 
 
@@ -357,11 +435,21 @@ Generic Simulation Stage 通用模拟阶段
 
 
 
+#### 3.17 直接设置新或者已有参数 Set new or existing parameter directly
+
+可以用底层参数复现模块的工作原理
+
+斜体重命名
 
 
 
 
 
+
+
+
+
+#### 3.99 渲染器 Render
 
 
 
