@@ -19,6 +19,8 @@
 
 快捷键：全选 +  2
 
+#### 0.4 尼亚加拉模块编辑器 Niagara Module Script
+
 
 
 
@@ -354,7 +356,28 @@ Generic Simulation Stage 通用模拟阶段
 
 #### 3.4 力[模块] Force [Module]
 
-##### 3.4.1 涡流力 Vortex Force
+##### 3.4.1 应用初始力 Apply Initial Forces
+
+##### 3.4.2 加速度力 Acceleration Force
+
+##### 3.4.3 重力 Gravity Force
+
+与加速度力相同，就是一个特定值的加速度
+
+##### 3.4.4 线性力 Linear Force
+
+- 力 Force
+- 坐标空间 Coordinate Space
+- 写入参数 Write to Intrinsic Parameters
+
+##### 3.4.5 卷曲噪声力 Curl Noise Force
+
+- 噪声强度 Noise Strength
+- 噪声频率 Noise Frequency
+- 卷曲噪声遮罩 Mask Curl Noise ： 在角度内才施加力
+    - 卷曲噪声锥形遮罩角度 Curl Noise Cone Mask Angle
+
+##### 3.4.6 涡流力 Vortex Force
 
 - 涡流力值 Vortex Force Amount：涡流强度
 - 涡流轴 Vortex Axis：
@@ -362,11 +385,32 @@ Generic Simulation Stage 通用模拟阶段
 - Vortex Influence Position
 - Write to Intrinsic Parameters
 
+##### 3.4.7 风力 Wind Force
+
+- 风速 Wind Speed
+- 风速缩放 Wind Speed Scale
+- 湍流模式 Turbulence Mode ：卷曲噪声
+    - 直接设置 Direct Set
+    - Speed Range
+- 启用地面遮罩 Use Ground Mask：靠地平面和CPU实现
 
 
 
 
-#### 3.3 重力 Gravity Force
+
+
+
+
+
+##### 3.4.7 解决力和速度 Solve Forces and Velocity
+
+基于物理力，引擎时间差 算出物体该移动多远
+
+##### 3.4.8 限制力 Limit Force
+
+限制力的最大不会超过
+
+
 
 
 
@@ -397,15 +441,11 @@ Generic Simulation Stage 通用模拟阶段
 
 
 
-#### 3.10 风力 Wind Force
-
-
-
 #### 3.11 空气阻力 Aerodynamic Drag
 
 
 
-#### 3.12 解决力和速度 Solve Forces and Velocity
+#### 
 
 
 
