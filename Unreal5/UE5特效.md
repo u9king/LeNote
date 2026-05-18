@@ -69,7 +69,7 @@
 
 
 
-### 2.后处理PossProcess
+### 
 
 
 
@@ -79,7 +79,7 @@
 
 
 
-### 3.模块
+### 2.模块
 
 #### 3.0 属性 Propertites
 
@@ -131,6 +131,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+### 3.后处理PostProcess
+
+#### 3.0 镜头
+
+#### 3.1 动态景深 Mobile Depth of Field
+
+#### 3.2 泛光 Bloom
+
+#### 3.3 曝光 Exposure
+
+#### 3.4 色差 Chromatic Aberration
+
+#### 3.5 脏污遮罩 Dirt Mask
+
+#### 3.6 相机 Camera
+
+#### 3.7 局部曝光 Local Exposure
+
+#### 3.8 镜头光晕 Lens Flares
+
+#### 3.9 图片效果 Image Effects
+
+#### 3.10 景深Depth of Field
 
 
 
