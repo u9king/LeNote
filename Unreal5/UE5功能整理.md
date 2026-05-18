@@ -46,13 +46,13 @@
 
 ### 3.1 全局
 
-#### 3.1.1 重开关卡Open Level
+#### 3.1.1 重开关卡 Open Level
 
 > 解释:重开关卡，通过名字/引用
 >
 > 组件:蓝图->OpenLevel(by Name/by Object Reference)
 
-#### 3.1.2 暂停游戏Pause Game
+#### 3.1.2 暂停游戏 Pause Game
 
 > 解释:暂停游戏
 >
@@ -60,25 +60,25 @@
 
 备注:暂停游戏情况下没法检测输入，需要在IA_Pause中打开暂停触发`Trigger when Paused`
 
-#### 3.1.3 退出游戏Quit Game
+#### 3.1.3 退出游戏 Quit Game
 
 > 解释:退出游戏
 >
 > 组件:蓝图->Quit Game
 
-#### 3.1.4 返回出生地Reborn
+#### 3.1.4 返回出生地 Reborn
 
 > 解释:返回出生地
 >
 > 组件:蓝图->Set Actor Location给PlayerStart即可
 
-#### 3.1.5 时间缩放Time Dilation
+#### 3.1.5 时间缩放 Time Dilation
 
 > 解释:设置时间缩放，子弹时间，击杀效果，结算特效
 >
 > 组件:蓝图->Set Global Time Dilation
 
-#### 3.1.6 相机振动Camera Shake
+#### 3.1.6 相机振动 Camera Shake
 
 > 解释:相机振动
 >
@@ -88,20 +88,20 @@
 
 建议设置：Perlin噪点摄像机晃动模式，Location位置乘数都填7，Timing填入2s，节点Play World Camera Shake填入50000cm范围
 
-#### 3.1.7 范围伤害Apply Radial Damage
+#### 3.1.7 范围伤害 Apply Radial Damage
 
 > 解释:范围伤害
 >
 > 组件:蓝图->Apply Radial Damage
 >
 
+#### 3.1.8 镜头滞后感 Camera Lag
 
+> 解释:延迟摄像机产生滞后感
+>
+> 组件:蓝图->弹簧臂 SpringArm ->滞后 Lag
 
-
-
-
-
-
+推荐数值：相机延迟速度值为7，相机旋转延迟速度为7
 
 #### 3.1.9 时间速率Slow Motion
 
@@ -109,9 +109,13 @@
 >
 > 组件:在UE5的cmd窗口中输入slomo 5 (其中5倍表示倍率)
 
+#### 3.1.10 运动模糊 Motion Blur
 
+> 解释:快速移动镜头时是否出现模糊
+>
+> 组件:ProjectSetting->Rendering->Motion Blur
 
-
+开启可能产生晕3D的效果
 
 
 
@@ -246,7 +250,7 @@ G(GetForwardVector)-->D
 
 ### 4.1 通用
 
-#### 4.1.1 重定向器Redirectors
+#### 4.1.1 重定向器 Redirectors
 
 > 解释:当你移动或者重命名资源时UE不会直接断开旧引用，而是在原位置生成一个 Redirector，把旧路径指向新路径。
 >
@@ -254,11 +258,31 @@ G(GetForwardVector)-->D
 
 修复方案：复制完成后，右键文件夹点击Fix Up Redirectors in Folder后仍需要手动删除
 
-#### 4.1.2 反射捕获重构Reflection Captures Rebuilt
+#### 4.1.2 反射捕获重构 Reflection Captures Rebuilt
 
 > 解释:启动SwarmAgent执行场景中光线追踪计算，计算阴影半影还有烘焙光照贴图。
 >
 > 组件:构建选项卡 -> 仅构建光照
+
+#### 4.1.3 帧率内存显示 Show Frame Rate and Memory
+
+> 解释:在编辑器上打开帧率内存显示
+>
+> 组件:编辑器偏好 -> 性能 ->显示帧率和内存 Show Frame Rate and Memory
+
+### 4.2 快捷键
+
+#### 4.2.1 全局画面
+
+> 解释:在编辑器中开启全局画面
+>
+> 快捷键：F10
+
+
+
+
+
+
 
 
 

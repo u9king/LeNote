@@ -1,15 +1,15 @@
 # UE5AIFramework
 
-> | 序号 | 课程                                         | 作者       | 链接                                                         | 备注                                                         |
-> | ---- | -------------------------------------------- | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-> | 1    | Introduction to Materials in Unreal Engine 5 | Mao Mao    | [Udemy](https://www.udemy.com/course/introduction-to-materials-in-unreal-engine-5/) | [b站](https://www.bilibili.com/video/BV1kvDsBAEGz?spm_id_from=333.788.videopod.episodes&vd_source=9a146b8fa39d5ea05ce3a524dcff45d4) |
-> | 2    | PBR材质底层原理讲解                          | 嗜睡的猫咪 | [b站](https://www.bilibili.com/video/BV1oY4y1t717)           |                                                              |
+> | 序号 | 课程                                         | 作者         | 链接                                                         | 备注                                                         |
+> | ---- | -------------------------------------------- | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+> | 1    | Introduction to Materials in Unreal Engine 5 | Mao Mao      | [Udemy](https://www.udemy.com/course/introduction-to-materials-in-unreal-engine-5/) | [b站](https://www.bilibili.com/video/BV1kvDsBAEGz?spm_id_from=333.788.videopod.episodes&vd_source=9a146b8fa39d5ea05ce3a524dcff45d4) |
+> | 2    | 虚幻引擎倾囊相授计划：AI行为树系统教程       | 布兰德儿老蒋 | [b站](https://www.bilibili.com/video/BV1dz4y1A7G3)           |                                                              |
 
 ### 0.AIController控制器
 
 需要创建一个AIController为父级的子蓝图
 
-
+自带的PathFollowingComponent是干什么的？
 
 
 
@@ -43,6 +43,18 @@ RunTree运行行为树
 #### 0.3 快速执行
 
 > 快捷键：Alt + P
+
+
+
+#### 0.4 大脑组件Brain Component
+
+通过AIcontroller获取，可以StartLogic，StopLogic来开关行为树
+
+
+
+
+
+
 
 
 
@@ -266,16 +278,59 @@ LiteralName字面名称是什么？
 
 OnTargetPerceptionUpdated
 
-##### 3.1 Senses Config感官配置
+Senses Config感官配置
 
-- AI视觉配置AI Sight Config
-  - 视线半径Sight Radius
-  - 丢失视野半径Lose Sight Radius
-  - 周边视觉半角PeripheralVisionHalfAngle
-  - 按阵营检测Dectection By Affiliation
-    - 检测敌人Detect Enemies
-    - 检测中立单位Detect Neutrals
-    - 检测友军Detect Friendlies
+| AI视力配置                 | AI监听配置     | AI触摸配置 | AI预感感官配置 |
+| -------------------------- | -------------- | ---------- | -------------- |
+| More ActionsAI伤害感官配置 | AI团队感官配置 |            |                |
+
+
+
+#### 3.1 AI视野配置 AI Sight Config
+
+AI视觉配置AI Sight Config
+
+- 视线半径 Sight Radius
+- 丢失视野半径 Lose Sight Radius
+- 周边视觉半角 PeripheralVisionHalfAngle
+- 按阵营检测 Dectection By Affiliation
+    - 检测敌人 Detect Enemies
+    - 检测中立单位 Detect Neutrals
+    - 检测友军 Detect Friendlies
+- 最大年龄 Max Age
+
+#### 3.2 AI听力配置 AI Hearing config
+
+功能：听力感知
+
+- 听力范围 Hearing Range ：
+- 最大年龄 Max Age：
+
+
+
+需要配合节点Make Noise使用
+
+
+
+#### 3.3 AI预感感官配置 AI Prediction sense config
+
+功能：预测玩家接下来的位置
+
+
+
+#### 3.4 AI伤害感官配置 Al Damage sense config
+
+功能：接受伤害来源判断
+
+需要配合节点Report Damage Event使用
+
+
+
+#### 3.5 AI触觉配置 AI Touch config
+
+功能：接受触觉来源
+
+需要配合节点Report Touch Event使用
 
 
 
@@ -289,11 +344,169 @@ OnTargetPerceptionUpdated
 
 
 
-
+Task 只负责「流程、条件、触发」；
 
 
 
 每个任务都要单独创建？
+
+
+
+#### 5.1 自带任务 
+
+##### 5.1.1 带结果完成 Finish with Result
+
+强制结束当前的逻辑分支，并明确返回“成功”或“失败”。这在处理条件判断或需要手动截断逻辑时非常有用。
+
+
+
+立刻结束当前任务，强制返回指定结果（成功 / 失败 / 取消），常用于逻辑分支控制。
+
+##### 5.1.2 制造噪音 Make Noise
+
+这里的噪声不是指音频，而是指AI感知系统AIPerception里的信号。它会通知周围的其他 AI：“这里有动静”，常用于潜行游戏的警报机制。
+
+向 AI 感知系统 “发出噪音”，让周围能听声音的 AI 察觉（比如枪声、脚步声）。
+
+
+
+##### 5.1.3 直线移动 Move Directly Toward
+
+不进行复杂的路径规划，直接往目标冲过去。常用于冲锋、飞行物或简单的物理推力。
+
+无视导航网格，直线冲向目标，不绕障碍；适合短距离、无障碍场景。
+
+可以执行冲撞，破墙等情况。
+
+
+
+##### 5.1.4 移动 Move To
+
+让 AI 利用导航网格（NavMesh）寻找路径并移动到指定的目标Actor或坐标点。
+
+标准 AI 寻路，沿 NavMesh 绕障碍走到目标点 / 目标 Actor；常用、最稳。
+
+
+
+##### 5.1.5 播放动画 Play Animation
+
+播放指定动画片段（非蒙太奇），播完即结束。
+
+
+
+##### 5.1.6 播放音效 Play Sound
+
+在 AI 角色位置播放指定音效（如吼叫、提示音）。
+
+在 AI 所在的位置触发音频，如咆哮声或脚步声。
+
+
+
+##### 5.1.7 转向目标 Rotate to Face BBEntry
+
+让AI原地旋转，直到正面朝向黑板（Blackboard）中指定的某个条目（比如玩家）。
+
+让AI转向黑板里存的目标（位置或 Actor），原地转头不移动。
+
+
+
+##### 5.1.8  运行子行为树 Run Behavior
+
+运行另一棵独立的行为树（子树），可复用逻辑。
+
+允许你把复杂的逻辑拆分，像调用函数一样运行另一个行为树文件。
+
+必须使用同一块黑板
+
+
+
+##### 5.1.9 运行动态行为树 Run Behavior Dynamic
+
+支持在运行时动态更换要执行的树。
+
+运行动态状态树（UE5 新状态机系统，比 BT 更适合复杂状态）。
+
+Injection Tag
+
+Gameplay Tag
+
+
+
+##### 5.1.10 运行动态状态树 Run Dynamic State Tree
+
+ UE5 新推的系统，比行为树更轻量、更适合处理复杂的逻辑状态切换。
+
+运行动态状态树（UE5 新状态机系统，比 BT 更适合复杂状态）。
+
+
+
+##### 5.1.11 运行EQS查询 Run EQS Query
+
+这是 AI 的思考过程。例如：寻找附近 10 米内最好的掩体，或者寻找离玩家最远的逃跑点。
+
+执行 EQS（环境查询），在场景里找符合条件的位置（如最近掩体、玩家身后）。
+
+
+
+##### 5.1.12 运行状态树 Run State Tree
+
+运行状态树
+
+ UE5 新推的系统，比行为树更轻量、更适合处理复杂的逻辑状态切换。
+
+运行动态状态树（UE5 新状态机系统，比 BT 更适合复杂状态）。
+
+##### 5.1.13 设置标签冷却 Set Tag Cooldown
+
+也是Gameplay Tag的标签
+
+Injection Tag
+
+##### 5.1.14 等待时间 Wait Time
+
+延迟时间
+
+##### 5.1.15 等待黑板时间 Wait Blackboard Time
+
+用浮点数的黑板键设置等待时间
+
+##### 5.1.16 设置键值
+
+Set Bool Key
+Set Class Key
+Set Enum Key
+Set Float Key
+Set Int Key
+Set Name Key
+Set Object Key
+Set Rotator Key
+Set String Key
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### 6.装饰器Decoration
 
@@ -305,9 +518,152 @@ OnTargetPerceptionUpdated
 
 
 
-#### 6.1 Cooldown
+#### 6.1 自带装饰器
+
+##### 6.1.1 基于黑板条件 Blackboard Based Condition
+
+监听黑板变量变化，值变了立刻重判分支。
+
+ 检查黑板中的某个变量是否满足条件（例如：TargetActor 是否已设置，或者 Health 是否大于 50）。
+
+##### 6.1.2 检查角色游戏标签 Check Gameplay Tags on Actor
+
+检查目标 Actor 是否拥有特定的Gameplay Tags。这对解耦非常有用，比如判断敌人是否处于眩晕Stunned状态。
+
+检测目标身上是否带有指定游戏标签
+
+##### 6.1.3 比较黑板键 Compare BBEntries
+
+比较两个黑板条目的值。例如：比较“当前目标”是否等于“之前锁定的目标”。
+
+对比黑板两个键值大小 / 相等，做数值判断
+
+##### 6.1.4 复合逻辑Composite
+
+它允许你将多个装饰器组合在一起。你可以使用 AND (与) 或 OR (或) 逻辑。例如：“如果 (看到玩家 AND 弹药充足) OR (处于狂暴状态)”，则执行后续攻击。
+
+组合型装饰器，叠加多个判定条件
+
+##### 6.1.5 条件循环 Conditional Loop
+
+让一个分支执行多次。Conditional Loop会在条件满足时一直循环。
+
+满足条件就循环执行子节点
+
+##### 6.1.6 椎体检测 Cone Check
+
+扇形视野检测，判断目标是否在视角锥内
+
+判断目标是否在 AI 的视野（圆锥范围）内。常用于判断 AI 是否正对着玩家。
+
+##### 6.1.7 冷却 Cooldown
 
 冷却时间
+
+限制该节点执行的频率。例如：攻击动作每 3 秒才能触发一次。
+
+添加冷却，短时间内禁止重复执行
+
+##### 6.1.8 路径是否存在 Does Path Exist
+
+检测能否寻路到达目标，有路才执行
+
+检查 AI 是否能通过导航网格（NavMesh）到达目标点。如果中间隔着一堵墙且没路走，该分支就不会执行。
+
+
+
+##### 6.1.9 强制成功 Force Success
+
+无论子节点返回什么（甚至是失败），这个装饰器都会告诉上级：“我成功了”。常用于一些不重要但必须跑一下的逻辑。
+
+强制让该分支最终返回成功结果
+
+
+
+##### 6.1.10 是否处于位置 Is at Location
+
+判断 AI 是否抵达指定点位
+
+判断 AI 是否已经到达了某个坐标或某个 Actor 附近。
+
+判断 AI 是否抵达指定点位
+
+
+
+##### 6.1.11 是否属于该类 Is BBEntry Of Class
+
+判断黑板目标是不是指定蓝图 / Actor 类
+
+检查黑板中的对象是否属于特定的类 Class。
+
+##### 6.1.12 在椎体中 Keep in Cone
+
+持续维持目标在视野扇形内，出范围终止
+
+检查。如果目标离开了指定的圆锥范围，则立即停止当前任务。
+
+##### 6.1.13 循环 Loop
+
+无条件无限循环子节点
+
+让一个分支执行多次。Conditional Loop会在条件满足时一直循环。
+
+##### 6.1.14 循环直到 Loop Until
+
+循环直到满足设定条件才停止
+
+##### 6.1.15 设置标签冷却 Set Tag Cooldown
+
+靠游戏标签实现技能 / 行为冷却
+
+在任务开始或结束时，给某个 Tag 设置冷却时长。这在处理复杂技能系统时非常强大。
+
+##### 6.1.16 标签冷却 Tag Cooldown
+
+标签式冷却判定，有标签就禁止运行
+
+检查某个 Gameplay Tag 是否处于冷却状态。
+
+##### 6.1.17 限制时间 Time Limit
+
+限时执行，超时直接终止当前行为
+
+给任务设个闹钟。如果任务在规定时间内没跑完，直接强制失败。
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 6.2 基于黑板的条件 BlackBoard Based Condition
+
+
+
+##### 6.2.1 观察者中止 Observer Aborts
+
+功能：条件变化时，要终止哪些分支。控制流概念
+
+On Result Change：仅当条件的最终结果（True/False）变化时，才触发终止（性能更高）。
+
+On Value Change：只要黑板键的值变了，就触发终止（更灵敏，但性能消耗略高）。
+
+|      **选项**      |     翻译     | 概念 | **通俗解释**                                     |
+| :----------------: | :----------: | ---- | ------------------------------------------------ |
+|      **None**      |    不中止    | 被动 | 只在运行到时检查，之后不中断                     |
+|      **Self**      |   中止自身   | 自杀 | 如果条件不成立，立刻停止自身，返回控制权给父节点 |
+| **Lower Priority** | 中止低优先级 | 抢占 | 如果条件满足，停止低优先级，并运行自身           |
+|      **Both**      |   中止两者   | 兼备 | 兼具Self和LowerPriority                          |
+
+
+
+#### 6.3 循环 Loop
 
 
 
@@ -317,21 +673,26 @@ OnTargetPerceptionUpdated
 
 #### 7.服务Service
 
-Task 只负责「流程、条件、触发」；
+功能：改属性、改状态
 
-服务只负责「改属性、改状态」，各司其职。
+特点：
+
+- 只要Service所在的分支是激活状态,它就会一直运行,持续更新目标位置
+- 性能优化，同功能挂父节点，可以设置时间间隔和偏差
 
 
 
-为什么不写在 Task 里？（核心区别）
 
-如果你把“寻找目标”的逻辑写在 `Task_Attack` 里，会产生以下几个问题：
+
+为什么不写在 Task 里？
+
+如果你把寻找目标的逻辑写在 Task_Attack`里，会产生以下几个问题：
 
 A. 生命周期与并发性
 
 - Task： 只有当行为树运行到这个 Task 时，逻辑才会执行。如果 Task 结束了（比如攻击动画播完了），逻辑就停止了。
 - Service： 只要 Service 所在的分支（Branch）是激活状态，它就会一直运行。
-    - *场景：* 当 AI 在执行“移动到目标”这个 Task 时，挂在父节点上的 Service 可以持续更新目标位置。如果目标跑了，Service 更新黑板，左边的装饰器（条件）就能立刻发现并中止当前的移动 Task。
+    - 场景： 当 AI 在执行移动到目标这个Task时，挂在父节点上的 Service可以持续更新目标位置。如果目标跑了，Service 更新黑板，左边的装饰器（条件）就能立刻发现并中止当前的移动 Task。
 
 B. 逻辑复用（DRY原则）
 
@@ -357,9 +718,172 @@ B. 逻辑复用（DRY原则）
 
 
 
-### 7.AIController
+### 7.EQS系统
 
-自带的PathFollowingComponent是干什么的？
+> 全称：环境查询系统 Enviorment Query System 
+>
+> 版本：Version 1.0
+
+#### 7.1 自带节点
+
+##### 7.1.1 类角色 Actors Of Class
+
+> 返回：Actor
+
+在指定中心和半径内，找出指定类的所有 Actor（比如玩家、敌人、道具）
+
+搜索场景中特定类型的所有 Actor（比如所有的“掩体”或“玩家”）。它会将这些 Actor 的位置作为待评估的点。
+
+
+
+##### 7.1.2 合成Composite 
+
+复合生成器。允许你把多个生成器的结果组合在一起。比如：我想同时评估“玩家周围的点”和补给品周围的点。
+
+把多个生成器的结果合并成一组比如同时找敌人 + 找掩体点。
+
+
+
+##### 7.1.3 当前位置 Current Location
+
+就一个点：查询者自己当前的位置。
+
+在 AI 当前位置（或黑板指定的 Actor 位置）生成一个点。通常用于原地检查，比如判断我当前站的地方是否安全。
+
+
+
+##### 7.1.4 感知角色 Perceived Actors
+
+直接拿 AI 感知系统（Sight/Hearing）已经看到 / 听到的所有 Actor，不用再检测。
+
+结合 AIPerception 组件。它只获取 AI 真正“感知”到（看到、听到）的 Actor 位置。比起 Actors Of Class，它更符合真实逻辑——AI 不应该知道自己视线外的掩体在哪。
+
+
+
+##### 7.1.5 圆环检测 Points: Circle 
+
+在 AI 周围生成一个或多个圆环。适合寻找环绕玩家的位置，或者保持距离。
+
+
+
+##### 7.1.6 柱形检测 Points: Cone 
+
+在 AI 正前方生成一个扇形区域的点。适合处理有视野角度要求的逻辑，比如“寻找前方能躲避的掩体”。
+
+以目标为中心、朝指定方向，生成**扇形 / 锥形范围内的点**（适合视野前方搜索）。
+
+
+
+
+
+##### 7.1.7 甜甜圈检测 Points: Donut 
+
+生成圆环（甜甜圈）区域内的点（内径到外径之间，适合保持距离）。
+
+甜甜圈形状。它和 Circle 类似，但可以设置内径和外径。适合强制 AI 保持在“不远不近”的范围内。
+
+
+
+##### 7.1.8 Points: Grid
+
+> 返回：Vector3 点
+
+
+
+##### 7.1.9 Points: Pathing Grid
+
+
+
+
+
+
+
+#### 7.2 自带测试
+
+##### 7.2.1 距离 Distance
+
+可以先过滤再算得分
+
+符合要求的得分高
+
+先筛远近范围，再按距离打分，距离越优分值越高。
+
+
+
+计算点到参考对象（如玩家）的距离。
+
+比如设置“符合要求的得分高”，如果你选 Score Lower，那么离玩家越近的点分数越高。
+
+
+
+##### 7.2.2 点积 Dot
+
+适用场景：让敌人始终出现在玩家面前
+
+
+
+判断目标朝向夹角，正对分值高，侧 / 背对低分，用于选面向目标点位。
+
+测试点的“朝向”关系。
+
+判断一个位置是否在 AI 的正前方，或者判断一个掩体点是否在玩家的视线背面。
+
+##### 7.2.3 游戏标签 Gameplay Tags
+
+##### 7.2.4 重叠 Overlap
+
+##### 7.2.5 路径寻找 Pathfinding
+
+##### 7.2.6 Pathfinding Batch
+
+##### 7.2.7 Project
+
+##### 7.2.8 追踪 Trace
+
+射线穿墙检测，判断两点间是否无遮挡、视野是否通透。
+
+
+
+从点向目标发射一条射线，检查是否有障碍物阻挡。
+
+寻找“玩家看不见我的位置”（射线被挡住的点得分高）。
+
+
+
+
+
+##### 7.2.9 体积 Volume
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 7.3 测试角色
+
+EQSTestingPawn 
+
+
+
+- 创建EQS测试蓝图角色
+- 绑定查询模板QueryTemplate，在角色的self中
+
+
+
+
 
 
 
