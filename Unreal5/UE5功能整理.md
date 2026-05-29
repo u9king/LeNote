@@ -270,12 +270,6 @@ G(GetForwardVector)-->D
 >
 > 组件:编辑器偏好 -> 性能 ->显示帧率和内存 Show Frame Rate and Memory
 
-#### 4.1.4 命令行:显示帧率 Stat FPS
-
-> 解释:指令显示游戏帧率
->
-> 组件:在UE5的cmd窗口中输入Stat FPS
-
 
 
 ### 4.2 快捷键
@@ -287,6 +281,20 @@ G(GetForwardVector)-->D
 > 快捷键：F10
 
 
+
+### 4.3 命令行指令
+
+#### 4.3.1 显示帧率 Stat FPS
+
+> 解释:命令行显示游戏帧率
+>
+> 组件:在UE5的cmd窗口中输入Stat FPS
+
+#### 4.3.2 显示当前输入
+
+> 解释:命令行显示当前激活的Mapping Context以及它们当前绑定的按键列表
+>
+> 组件:在UE5的cmd窗口中输入showdebug enhancedinput
 
 
 
