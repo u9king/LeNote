@@ -41,15 +41,17 @@ SubSystem是套什么系统？
 
 #### 5.有哪些部分是GAS单独为C++开放而不为蓝图开放的？
 
-#### 6.GAS
+#### 6.构建
 
-- Ability SystemComponent
-- Attribute Set
-- GameplayAbility
-- GameplayEffect
-- GameplayCue
-- Ability Task
-- Gameplay Tag
+MSCV是什么？对应版本？
+
+MCP又是什么？
+
+UnrealTool是什么？
+
+
+
+
 
 
 
