@@ -38,7 +38,30 @@
 
 ## 2.角色
 
+### 2.1 人物输入(Input)
 
+> 一句：虚幻通过在输入层将 $W/S$ 拌合至 $Y$ 轴，牺牲了局部直觉，换取了全局（手柄/键盘/UI）在横纵语义上的统一。
+>
+> 解释:首先虚幻是左右系，所以X是世界坐标的前方。但是为了统一2/3D游戏X是左右，Y是上下的行业统一坐标系和Z为上的直觉，所以在输入层面会有一点反直觉，WS是Y,AD是X。然后用Y去连接控制器的前向，用X去连接控制器的左右。最后能够统一到世界坐标中，所以这种反常仅存在输入映射这一环中。
+
+```mermaid
+graph LR
+A(ActionValueX) -->B
+B(GetControlRotation) --> C
+C(GetRightVector) --> D(AddMovementInput)
+
+E(ActionValueY)-->F
+F(GetControlRotation)-->G
+G(GetForwardVector)-->D
+```
+
+### 2.2 旋转
+
+#### 2.2.1 旋转优化(Orient Rotation to Movement)
+
+> 解释:使用内置功能使朝向与移动方向对齐，即优化瞬间旋转变为缓慢旋转为目标方向
+>
+> 组件:关闭Pawn的ControlRotationYaw，然后打开CharacterMoveComp的Orient RotationToMovement的开关
 
 
 
@@ -78,44 +101,11 @@
 >
 > 组件:蓝图->Set Global Time Dilation
 
-#### 3.1.6 相机振动 Camera Shake
-
-> 解释:相机振动
->
-> 组件:蓝图->Play World Camera Shake
->
-> 前提:创建一个CamerShakeBase的蓝图
-
-建议设置：Perlin噪点摄像机晃动模式，Location位置乘数都填7，Timing填入2s，节点Play World Camera Shake填入50000cm范围
-
-#### 3.1.7 范围伤害 Apply Radial Damage
+#### 3.1.6 范围伤害 Apply Radial Damage
 
 > 解释:范围伤害
 >
 > 组件:蓝图->Apply Radial Damage
->
-
-#### 3.1.8 镜头滞后感 Camera Lag
-
-> 解释:延迟摄像机产生滞后感
->
-> 组件:蓝图->弹簧臂 SpringArm ->滞后 Lag
-
-推荐数值：相机延迟速度值为7，相机旋转延迟速度为7
-
-#### 3.1.9 命令行:时间速率Slow Motion
-
-> 解释:调整的是全局的时间膨胀系数，物理模拟加快，动画播放加快，DeltaTime变大
->
-> 组件:在UE5的cmd窗口中输入slomo 5 (其中5倍表示倍率)
-
-#### 3.1.10 运动模糊 Motion Blur
-
-> 解释:快速移动镜头时是否出现模糊
->
-> 组件:ProjectSetting->Rendering->Motion Blur
-
-开启可能产生晕3D的效果
 
 
 
@@ -131,8 +121,6 @@
 
 注释：适合实现人物的布娃娃死亡动画，或者物体的破碎效果
 
-
-
 #### 3.2.2 破碎Destruction
 
 > 解释：物体四散分离，类似破碎
@@ -141,17 +129,11 @@
 >
 > 前提：需要物体是由多组件，多mesh组成
 
-
-
-
-
 #### 3.2.3 碰撞体可见性(Rendering Hidden in Game)
 
 > 解释:碰撞体范围是否在场景中可见
 >
 > 组件:Rendering -> Hidden in Game
-
-
 
 #### 3.2.4 碰撞预设Set Collision Profile Name
 
@@ -201,48 +183,44 @@
 
 注释：`按下 ’ + 4`可以显示AIPerception的视野范围
 
-#### 3.3.5 旋转优化(Orient Rotation to Movement)
 
-> 解释:使用内置功能使朝向与移动方向对齐，即优化瞬间旋转变为缓慢旋转为目标方向
+
+### 3.4 相机
+
+#### 3.4.1 相机俯仰范围 ViewPitch
+
+> 解释:相机上下俯仰最大范围
 >
-> 组件:关闭Pawn的ControlRotationYaw，然后打开CharacterMoveComp的Orient RotationToMovement的开关
-
-
-
-### 3.4 建模
-
-#### 3.4.1 编辑轴心(Edit Pivot)
-
-> 解释:导入的模型需要对轴心进行永久调整，临时修改可以参考Alt+鼠标中键
+> 组件:蓝图->Get Player CameraManager -> Set View Pitch Min/Max
 >
-> 组件:建模模式->XForm->EditPivot
 
+注:可能是同时修改Controller和Camera的Pitch
 
+#### 3.4.2 相机振动 Camera Shake
 
-### 3.5 人物
-
-#### 3.5.1 人物输入(Input)
-
-> 一句：虚幻通过在输入层将 $W/S$ 拌合至 $Y$ 轴，牺牲了局部直觉，换取了全局（手柄/键盘/UI）在横纵语义上的统一。
+> 解释:相机振动
 >
-> 解释:首先虚幻是左右系，所以X是世界坐标的前方。但是为了统一2/3D游戏X是左右，Y是上下的行业统一坐标系和Z为上的直觉，所以在输入层面会有一点反直觉，WS是Y,AD是X。然后用Y去连接控制器的前向，用X去连接控制器的左右。最后能够统一到世界坐标中，所以这种反常仅存在输入映射这一环中。
-
-```mermaid
-graph LR
-A(ActionValueX) -->B
-B(GetControlRotation) --> C
-C(GetRightVector) --> D(AddMovementInput)
-
-E(ActionValueY)-->F
-F(GetControlRotation)-->G
-G(GetForwardVector)-->D
-```
-
-#### 3.5.2 吸附地面
-
-> 一句：帮助PlayerStart或者胶囊体吸附在地面上
+> 组件:蓝图->Play World Camera Shake
 >
-> 快捷键：fn + end
+> 前提:创建一个CamerShakeBase的蓝图
+
+建议设置：Perlin噪点摄像机晃动模式，Location位置乘数都填7，Timing填入2s，节点Play World Camera Shake填入50000cm范围
+
+#### 3.4.3 镜头滞后感 Camera Lag
+
+> 解释:延迟摄像机产生滞后感
+>
+> 组件:蓝图->弹簧臂 SpringArm ->滞后 Lag
+
+推荐数值：相机延迟速度值为7，相机旋转延迟速度为7
+
+#### 3.4.4 运动模糊 Motion Blur
+
+> 解释:快速移动镜头时是否出现模糊
+>
+> 组件:ProjectSetting->Rendering->Motion Blur
+
+开启可能产生晕3D的效果
 
 
 
@@ -270,6 +248,12 @@ G(GetForwardVector)-->D
 >
 > 组件:编辑器偏好 -> 性能 ->显示帧率和内存 Show Frame Rate and Memory
 
+#### 4.1.4 预览场景设置 Preview Scene Settings
+
+> 解释：修改在编辑器中的预览场景，特效动画通用
+>
+> 组件：窗口选项卡 -> Preview Scene Settings
+
 
 
 ### 4.2 快捷键
@@ -286,25 +270,43 @@ G(GetForwardVector)-->D
 >
 > 快捷键：Alt + S
 
+#### 4.2.3 对象吸附地面
+
+> 解释：帮助PlayerStart或者胶囊体吸附在地面上
+>
+> 快捷键：fn + end
 
 
-### 4.3 命令行指令
 
-#### 4.3.1 显示帧率 Stat FPS
+### 4.3 建模
+
+#### 4.3.1 编辑轴心(Edit Pivot)
+
+> 解释:导入的模型需要对轴心进行永久调整，临时修改可以参考Alt+鼠标中键
+>
+> 组件:建模模式->XForm->EditPivot
+
+
+
+### 4.4 命令行指令
+
+#### 4.4.1 显示帧率 Stat FPS
 
 > 解释:命令行显示游戏帧率
 >
 > 组件:在UE5的cmd窗口中输入Stat FPS
 
-#### 4.3.2 显示当前输入
+#### 4.4.2 显示当前输入
 
 > 解释:命令行显示当前激活的Mapping Context以及它们当前绑定的按键列表
 >
 > 组件:在UE5的cmd窗口中输入showdebug enhancedinput
 
+#### 4.4.3 时间速率Slow Motion
 
-
-
+> 解释:调整的是全局的时间膨胀系数，物理模拟加快，动画播放加快，DeltaTime变大
+>
+> 组件:在UE5的cmd窗口中输入slomo 5 (其中5倍表示倍率)
 
 
 
