@@ -207,6 +207,13 @@ Spec是技能学习后的实例，带等级
 
 
 
+- Event ActivateAbility开启能力
+- Event OnEndAbility关闭能力
+
+
+
+
+
 #### 5.Gameplay Effect 玩法效果
 
 > 缩写：GE
@@ -288,6 +295,7 @@ UAbilityTask继承于UGameplayTask，并实现了一系列Task
 
 - 角色挂载`GSC AbilitySystem` 和` GSC AbilityInputBinding`输入绑定
 - 添加能力GA
+- CommitAbility
 
 
 
@@ -297,7 +305,7 @@ UAbilityTask继承于UGameplayTask，并实现了一系列Task
 
 #### 9.其他
 
-##### *.1 一个技能的自我修养
+##### 9.1 一个技能的自我修养
 
 一个技能的自我修养:
 
@@ -345,7 +353,7 @@ UAbilityTask继承于UGameplayTask，并实现了一系列Task
 #### 10.2 插件
 
 - GASAttachEditor 实时显示属性
-- GAS Companion
+- GAS Companion 貌似存在属性添加问题
 - Gameplay attribute blueprint
 - Blueprint Attributes 纯蓝图创建
 
