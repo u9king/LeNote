@@ -254,6 +254,12 @@ G(GetForwardVector)-->D
 >
 > 组件：窗口选项卡 -> Preview Scene Settings
 
+#### 4.1.5 插件默认开启
+
+> 解释：插件默认开启步骤
+>
+> 组件：引擎目录下Plugins找到插件名，找到内部XXX.uplugin,将内部的EnabledByDefault改为true
+
 
 
 ### 4.2 快捷键
